@@ -1,0 +1,57 @@
+# App + WORM checkpoint store. Secrets come from deploy/.env (python deploy/make_env.py).
+# The app only receives the checkpoint WRITER (put-only) and READER credentials, never MinIO root.
+# MinIO images: Chainguard builds pinned by digest (MinIO no longer publishes community images).
+name: internal-brain
+
+services:
+  minio:
+    image: chainguard/minio@sha256:6a1d0b45c8669726bba580ced0bfa4cb9fdeed1ed636dfabd81d1577beb6937b
+    command: ["server", "/data", "--address", ":9000", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?run deploy/make_env.py}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?run deploy/make_env.py}
+    volumes: [minio-data:/data]
+    ports: ["127.0.0.1:9000:9000"]      # host access for the standalone verifier and live tests
+
+  checkpoint-init:
+    image: chainguard/minio-client@sha256:fdb40d819ca51969c86fa76f45a67bb841759daf85d4c6ce9aa86d27f6e47ae9
+    entrypoint: ["/bin/sh", "/init/minio-init.sh"]
+    volumes: ["./minio-init.sh:/init/minio-init.sh:ro"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      BUCKET: ${CHECKPOINT_BUCKET:-audit-checkpoints}
+      RETENTION_DAYS: ${CHECKPOINT_RETENTION_DAYS:-30}
+      WRITER_KEY: ${CHECKPOINT_WRITER_KEY}
+      WRITER_SECRET: ${CHECKPOINT_WRITER_SECRET}
+      READER_KEY: ${CHECKPOINT_READER_KEY}
+      READER_SECRET: ${CHECKPOINT_READER_SECRET}
+    depends_on: [minio]
+    restart: "no"
+
+  app:
+    build: {context: .., dockerfile: deploy/Dockerfile}
+    environment:
+      IB_DEMO_MODE: ${IB_DEMO_MODE:-1}
+      IB_SECRET_KEY: ${IB_SECRET_KEY:?run deploy/make_env.py}
+      IB_WEBHOOK_SECRET: ${IB_WEBHOOK_SECRET}
+      IB_AUDIT_PSEUDONYM_KEY: ${IB_AUDIT_PSEUDONYM_KEY}
+      IB_AUDIT_CONTENT_KEY: ${IB_AUDIT_CONTENT_KEY}
+      IB_CHECKPOINT_S3_ENDPOINT: http://minio:9000
+      IB_CHECKPOINT_S3_BUCKET: ${CHECKPOINT_BUCKET:-audit-checkpoints}
+      IB_CHECKPOINT_WRITER_KEY: ${CHECKPOINT_WRITER_KEY}
+      IB_CHECKPOINT_WRITER_SECRET: ${CHECKPOINT_WRITER_SECRET}
+      IB_CHECKPOINT_READER_KEY: ${CHECKPOINT_READER_KEY}
+      IB_CHECKPOINT_READER_SECRET: ${CHECKPOINT_READER_SECRET}
+      IB_LLM_PROVIDER: ${IB_LLM_PROVIDER:-stub}
+      IB_LLM_BASE_URL: ${IB_LLM_BASE_URL:-}
+      IB_LLM_MODEL: ${IB_LLM_MODEL:-}
+      IB_LLM_API_KEY: ${IB_LLM_API_KEY:-}
+    volumes: [app-data:/data]
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      checkpoint-init: {condition: service_completed_successfully}
+
+volumes:
+  minio-data:
+  app-data:

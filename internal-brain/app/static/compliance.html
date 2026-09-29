@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compliance audit</title>
+<style>
+  :root {
+    --bg:#f4f3ef; --panel:#ffffff; --ink:#1b1d1f; --muted:#646a70; --line:#dcdad3; --soft:#eeece6;
+    --accent:#1f4e79; --ok:#1d6b3a; --ok-bg:#e3f1e7; --bad:#a3231b; --bad-bg:#f8e3e1; --warn:#8a5a00; --warn-bg:#f8eed8;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141517; --panel:#1c1e21; --ink:#e8e8e6; --muted:#9aa0a6; --line:#2e3135; --soft:#24272b;
+            --accent:#8ab4e8; --ok:#7fcf98; --ok-bg:#16301f; --bad:#f09a92; --bad-bg:#3a1c1a; --warn:#e8c16f; --warn-bg:#3a2e14; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { border-bottom:1px solid var(--line); background:var(--panel); }
+  .bar { max-width:1180px; margin:0 auto; padding:14px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .brand { font-weight:650; letter-spacing:-.01em; margin-right:auto; }
+  .brand small { display:block; font-weight:400; color:var(--muted); font-size:12.5px; }
+  main { max-width:1180px; margin:0 auto; padding:18px 16px 48px; display:grid; grid-template-columns:320px 1fr; gap:18px; align-items:start; }
+  @media (max-width: 860px) { main { grid-template-columns:1fr; } }
+  section.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:18px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; font-weight:600; }
+  label { display:block; font-size:12.5px; color:var(--muted); margin-bottom:4px; }
+  input, select, button { font:inherit; color:var(--ink); }
+  input, select { width:100%; padding:7px 9px; border:1px solid var(--line); border-radius:7px; background:var(--panel); }
+  input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  button { padding:7px 14px; border-radius:7px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; }
+  @media (prefers-color-scheme: dark) { button { color:#10233a; } }
+  button.quiet { background:transparent; color:var(--accent); }
+  button:disabled { opacity:.5; cursor:default; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px 12px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:end; }
+  .row > div { flex:1; min-width:140px; }
+  .actions { display:flex; gap:8px; margin-top:12px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .mono { font-family:var(--mono); font-size:12.5px; overflow-wrap:anywhere; }
+  .hidden { display:none !important; }
+  .status { border-radius:8px; padding:12px; margin-bottom:12px; }
+  .status b { font-size:17px; display:block; }
+  .s-verified { background:var(--ok-bg); color:var(--ok); }
+  .s-failed { background:var(--bad-bg); color:var(--bad); }
+  .s-unverifiable { background:var(--warn-bg); color:var(--warn); }
+  dl { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0; font-size:13.5px; }
+  dt { color:var(--muted); } dd { margin:0; }
+  .chip { display:inline-block; font-size:12px; padding:1px 8px; border-radius:999px; background:var(--soft); border:1px solid var(--line); margin:0 4px 4px 0; }
+  .chip.ok { background:var(--ok-bg); color:var(--ok); border-color:transparent; }
+  .chip.bad { background:var(--bad-bg); color:var(--bad); border-color:transparent; }
+  .chip.warn { background:var(--warn-bg); color:var(--warn); border-color:transparent; }
+  .story { border:1px solid var(--line); border-radius:9px; padding:14px; margin-top:12px; }
+  .story-head { display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; }
+  .story-head strong { font-size:15px; }
+  blockquote { margin:10px 0; padding:8px 12px; border-left:3px solid var(--accent); background:var(--soft); border-radius:0 6px 6px 0; }
+  .answer { white-space:pre-wrap; font-size:14px; margin:6px 0 0; }
+  details { margin-top:10px; } summary { cursor:pointer; font-size:13.5px; color:var(--accent); }
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px; }
+  th, td { text-align:left; padding:5px 7px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  td.mono { white-space:nowrap; overflow-wrap:normal; }
+  .allowed { color:var(--ok); } .denied { color:var(--bad); } .unavailable { color:var(--warn); }
+  .empty { color:var(--muted); padding:18px 0 6px; }
+  .error { color:var(--bad); font-size:13.5px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">Compliance audit<small>The Internal Brain: reconstruct requests and verify the audit chain</small></div>
+    <div><label for="user">Account</label>
+      <select id="user">
+        <option value="priya">priya, compliance officer</option>
+        <option value="dana">dana, platform admin</option>
+        <option value="jdoe">jdoe, backend engineer</option>
+      </select></div>
+    <div><label for="pw">Password</label><input id="pw" type="password" value="demo" autocomplete="current-password"></div>
+    <button id="signin" style="align-self:end">Sign in</button>
+  </div>
+</header>
+<main>
+  <div>
+    <section class="card">
+      <h2>Session</h2>
+      <p id="who" class="muted">Not signed in. Every audit read is itself recorded.</p>
+    </section>
+    <section class="card hidden" id="integrityCard">
+      <h2>Audit chain integrity</h2>
+      <div id="verifyOut" aria-live="polite"><p class="muted">Run the verifier to compare the audit log with its protected checkpoints.</p></div>
+      <button id="verifyBtn">Run verifier</button>
+    </section>
+    <section class="card hidden" id="pseudoCard">
+      <h2>Resolve a pseudonym</h2>
+      <label for="pseudo">Pseudonym shown to administrators</label>
+      <input id="pseudo" placeholder="user-3f2a9c01de" class="mono">
+      <div class="actions"><button id="pseudoBtn">Resolve</button></div>
+      <p id="pseudoOut" class="muted" aria-live="polite"></p>
+    </section>
+  </div>
+  <div>
+    <section class="card hidden" id="searchCard">
+      <h2>Find requests</h2>
+      <label for="nl">Question (optional, plain English)</label>
+      <input id="nl" placeholder="everything user 'jdoe' accessed in 'payment-gateway' last 30 days">
+      <div class="grid" style="margin-top:10px">
+        <div><label for="f-actor">Actor</label><input id="f-actor" placeholder="jdoe"></div>
+        <div><label for="f-platform">Platform</label>
+          <select id="f-platform"><option value="">Any</option><option>confluence</option><option>jira</option><option>slack</option><option>gdrive</option></select></div>
+        <div><label for="f-doc">Document</label><input id="f-doc" class="mono" placeholder="jira:MIG-1"></div>
+        <div><label for="f-decision">Decision</label>
+          <select id="f-decision"><option value="">Any</option><option>allowed</option><option>denied</option><option>unavailable</option></select></div>
+        <div><label for="f-since">From</label><input id="f-since" type="datetime-local"></div>
+        <div><label for="f-until">To</label><input id="f-until" type="datetime-local"></div>
+        <div><label for="f-qid">Query ID</label><input id="f-qid" class="mono"></div>
+      </div>
+      <div class="actions"><button id="searchBtn">Search</button><button class="quiet" id="clearBtn">Clear</button></div>
+      <div id="results" aria-live="polite"></div>
+    </section>
+    <section class="card hidden" id="metaCard">
+      <h2>Operational events (metadata only)</h2>
+      <p class="muted">Administrators see event types, times, outcomes and pseudonymised actors. Questions, answers, document identifiers and reasons are not available in this scope.</p>
+      <div class="row"><div><label for="sev">Severity</label>
+        <select id="sev"><option value="">All</option><option>alert</option><option>warning</option><option>info</option></select></div>
+        <button id="eventsBtn" style="flex:0">Load</button></div>
+      <div id="eventsOut" class="table-wrap"></div>
+    </section>
+    <section class="card hidden" id="noAccess">
+      <h2>No audit access</h2>
+      <p>This account has no audit rights. The attempt to open the audit trail has been recorded.</p>
+    </section>
+  </div>
+</main>
+<script>
+let token = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const when = ts => ts ? new Date(ts * 1000).toLocaleString() : "";
+const epoch = v => v ? new Date(v).getTime() / 1000 : null;
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
+  return j;
+}
+
+async function signIn() {
+  try {
+    const j = await api("/api/login", { method: "POST", body: JSON.stringify({ username: $("user").value, password: $("pw").value }) });
+    token = j.token;
+    const full = j.user.rights.includes("audit"), meta = j.user.rights.includes("audit_meta");
+    $("who").innerHTML = `${esc(j.user.name)}, ${esc(j.user.title)}<br><span class="chip ${full ? "ok" : meta ? "warn" : "bad"}">${full ? "Full audit access" : meta ? "Metadata only" : "No audit access"}</span>`;
+    ["integrityCard"].forEach(id => $(id).classList.toggle("hidden", !(full || meta)));
+    ["searchCard", "pseudoCard"].forEach(id => $(id).classList.toggle("hidden", !full));
+    $("metaCard").classList.toggle("hidden", !meta || full);
+    $("noAccess").classList.toggle("hidden", full || meta);
+    ["results", "eventsOut", "pseudoOut"].forEach(id => $(id).innerHTML = "");
+    $("verifyOut").innerHTML = '<p class="muted">Run the verifier to compare the audit log with its protected checkpoints.</p>';
+    if (!full && !meta) api("/api/audit/events?limit=1").catch(() => {});   // recorded as audit_access_denied
+  } catch (e) { $("who").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+}
+
+const ASSURANCE = {
+  independent_worm: ["ok", "Independent WORM store (S3 Object Lock, compliance mode)"],
+  local_only: ["warn", "Local file only: not independent of the application"],
+  unprotected_bucket: ["warn", "S3 bucket without a compliance-mode lock"],
+};
+const STATUS = {
+  verified: "Verified", failed: "Tampering detected", unverifiable: "Cannot be verified",
+};
+
+async function verify() {
+  $("verifyBtn").disabled = true;
+  try {
+    const r = await api("/api/audit/verify");
+    const [tone, text] = ASSURANCE[r.assurance] || ["warn", "Unknown"];
+    const tail = r.uncheckpointed_rows > 0
+      ? `<span class="chip warn">${r.uncheckpointed_rows} newer rows not yet checkpointed</span>` : `<span class="chip ok">No uncheckpointed rows</span>`;
+    $("verifyOut").innerHTML = `
+      <div class="status s-${esc(r.status)}"><b>${STATUS[r.status] || esc(r.status)}</b>
+        ${r.problem ? `${esc(r.problem)}${r.at_id ? ` at row ${esc(r.at_id)}` : ""}` : r.fully_verified ? "Every row is covered by an independent checkpoint." : "Verified up to the last protected checkpoint."}</div>
+      <dl>
+        <dt>Rows</dt><dd>${esc(r.rows)}</dd>
+        <dt>Verified through</dt><dd>row ${esc(r.verified_through)}</dd>
+        <dt>Tail</dt><dd>${r.status === "verified" ? tail : "—"}</dd>
+        <dt>Checkpoints</dt><dd>${esc(r.anchors_checked)} in ${esc(r.checkpoint_store || "—")}</dd>
+        <dt>Assurance</dt><dd>${r.assurance ? `<span class="chip ${tone}">${esc(text)}</span>` : "—"}</dd>
+        <dt>Sealed text</dt><dd>${esc(r.content.ok)} intact, ${esc(r.content.redacted)} redacted by retention, ${esc(r.content.unchecked)} not checked</dd>
+        <dt>Checked</dt><dd>${esc(when(r.checked_at))}</dd>
+      </dl>`;
+  } catch (e) { $("verifyOut").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
+  $("verifyBtn").disabled = false;
+}
+
+const deliveryTone = { delivered: "ok", withheld: "bad", failed: "bad", delivery_failed: "bad", abandoned: "warn", unconfirmed: "warn" };
+
+function story(s) {
+  const decisions = s.decisions.map(d => `<tr><td>${esc(d.stage)}${d.phase ? ` / ${esc(d.phase)}` : ""}${d.attempt ? ` #${esc(d.attempt)}` : ""}</td>
+    <td class="mono">${esc(d.doc_uid)}</td><td class="${esc(d.decision)}">${esc(d.decision)}</td><td class="mono">${esc(d.reason_code)}</td>
+    <td>${esc(d.reason)}</td><td class="mono">${esc(d.resource_version)}</td><td class="mono">${esc(d.platform_account)}</td></tr>`).join("");
+  const context = s.context_sent.map(a => `<div><span class="muted">Attempt ${esc(a.attempt)}:</span> ${(a.docs || []).map(d =>
+    `<span class="chip mono">${esc(d.uid)} @ ${esc(d.version)}</span>`).join("") || '<span class="muted">nothing sent</span>'}</div>`).join("");
+  const discarded = s.discarded.map(d => `<div><span class="muted">Attempt ${esc(d.attempt)} discarded; revoked:</span> ${(d.revoked || []).map(u => `<span class="chip bad mono">${esc(u)}</span>`).join("")}
+    <div class="answer">${esc(d.answer)}</div></div>`).join("");
+  return `<article class="story">
+    <div class="story-head"><strong>${esc(s.actor)}</strong><span class="muted">${esc(when(s.ts))}</span>
+      <span class="chip">${esc(s.release)}</span><span class="chip ${deliveryTone[s.delivery] || ""}">delivery: ${esc(s.delivery)}</span>
+      ${s.generation ? `<span class="chip">mode: ${esc(s.generation.mode)}</span>` : ""}</div>
+    <div class="muted mono">query ${esc(s.query_id)}${s.request_id ? ` · request ${esc(s.request_id)}` : ""}</div>
+    <blockquote>${esc(s.question) || '<span class="muted">question not recorded</span>'}</blockquote>
+    <div class="muted">Answer returned</div><div class="answer">${esc(s.answer) || "—"}</div>
+    <div style="margin-top:8px">${(s.cited || []).map(u => `<span class="chip ok mono">${esc(u)}</span>`).join("")}</div>
+    <details><summary>Versions sent to the model (${s.context_sent.length} attempt${s.context_sent.length === 1 ? "" : "s"})</summary>${context || '<p class="muted">No context assembled.</p>'}
+      ${s.permitted_not_sent.length ? `<div style="margin-top:6px"><span class="muted">Permitted but not sent:</span> ${s.permitted_not_sent.map(u => `<span class="chip mono">${esc(u)}</span>`).join("")}</div>` : ""}</details>
+    <details><summary>Authorization decisions (${s.decisions.length})</summary><div class="table-wrap"><table>
+      <tr><th>Stage</th><th>Document</th><th>Decision</th><th>Code</th><th>Reason</th><th>Version</th><th>Account</th></tr>${decisions}</table></div></details>
+    ${discarded ? `<details><summary>Discarded drafts (${s.discarded.length})</summary>${discarded}</details>` : ""}
+  </article>`;
+}
+
+async function search() {
+  const body = { question: $("nl").value || null, actor: $("f-actor").value || null, platform: $("f-platform").value || null,
+    doc_uid: $("f-doc").value || null, decision: $("f-decision").value || null, query_id: $("f-qid").value || null,
+    since: epoch($("f-since").value), until: epoch($("f-until").value) };
+  $("results").innerHTML = '<p class="muted">Searching…</p>';
+  try {
+    const j = await api("/api/compliance/requests", { method: "POST", body: JSON.stringify(body) });
+    const filters = Object.entries(j.filters).map(([k, v]) => `<span class="chip mono">${esc(k)}=${esc(k === "since" || k === "until" ? when(v) : v)}</span>`).join("");
+    $("results").innerHTML = `<p class="muted" style="margin-top:12px">${j.results.length} request${j.results.length === 1 ? "" : "s"} ${filters}</p>`
+      + (j.results.map(story).join("") || '<p class="empty">No recorded requests match these filters.</p>');
+  } catch (e) { $("results").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
+}
+
+async function events() {
+  try {
+    const sev = $("sev").value;
+    const j = await api(`/api/audit/events?limit=100${sev ? "&severity=" + sev : ""}`);
+    $("eventsOut").innerHTML = `<table><tr><th>Time</th><th>Actor</th><th>Event</th><th>Severity</th><th>Platform</th><th>Decision</th></tr>${j.events.map(e =>
+      `<tr><td>${esc(when(e.ts))}</td><td class="mono">${esc(e.actor)}</td><td>${esc(e.event)}</td><td>${esc(e.severity)}</td><td>${esc(e.platform)}</td><td class="${esc(e.decision)}">${esc(e.decision)}</td></tr>`).join("")}</table>`;
+  } catch (e) { $("eventsOut").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
+}
+
+async function resolvePseudonym() {
+  try {
+    const j = await api("/api/audit/pseudonym", { method: "POST", body: JSON.stringify({ pseudonym: $("pseudo").value.trim() }) });
+    $("pseudoOut").textContent = j.actor ? `${j.pseudonym} is ${j.actor}. This lookup was recorded.` : "No matching account. This lookup was recorded.";
+  } catch (e) { $("pseudoOut").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+}
+
+$("signin").onclick = signIn;
+$("verifyBtn").onclick = verify;
+$("searchBtn").onclick = search;
+$("eventsBtn").onclick = events;
+$("pseudoBtn").onclick = resolvePseudonym;
+$("clearBtn").onclick = () => { document.querySelectorAll("#searchCard input, #searchCard select").forEach(el => el.value = ""); $("results").innerHTML = ""; };
+$("nl").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+</script>
+</body>
+</html>

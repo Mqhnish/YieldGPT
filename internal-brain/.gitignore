@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+node_modules/
+data/
+.env
+.env.*
+!.env.example
+slack-config.json
+*.db
+*.db-wal
+*.db-shm
+.DS_Store

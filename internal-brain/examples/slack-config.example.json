@@ -1,0 +1,11 @@
+{
+  "team_id": "TREALTEAM",
+  "channels": ["CAPPROVED", "GPRIVATE"],
+  "ingestion_token_env": "IB_SLACK_INGESTION_TOKEN",
+  "user_token_envs": {"TREALTEAM/UJANE": "IB_SLACK_JANE_TOKEN"},
+  "signing_secret_env": "IB_SLACK_SIGNING_SECRET",
+  "app_id": "AREALAPP",
+  "page_limit": 100,
+  "max_pages": 100,
+  "request_timeout": 2.0
+}
