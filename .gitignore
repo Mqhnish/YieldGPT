@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Runtime data (audit logs, sync state, anchors) - never commit
+data/*
+!data/.gitkeep
+
+# Secrets
+.env
+*.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
