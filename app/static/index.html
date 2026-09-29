@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Internal Brain</title>
+<style>
+  :root { --bg:#f6f6f3; --fg:#1a1a1a; --muted:#6a6a6a; --card:#fff; --line:#e2e2de; --accent:#0f6b5c;
+          --warn:#a65400; --alert:#b3261e; --conf:#1d4ed8; --jira:#2563eb; --slack:#7c3aed; --gdrive:#15803d; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#131313; --fg:#ececec; --muted:#9a9a9a; --card:#1c1c1c; --line:#303030; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:900px; margin:0 auto; padding:16px; }
+  h1 { font-size:20px; margin:6px 0 2px; } h2 { font-size:15px; margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:14px; }
+  input, select, button, textarea { font:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
+  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--line); font-size:13px; padding:5px 9px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .grow { flex:1; min-width:220px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .answer { white-space:pre-wrap; margin:12px 0 6px; }
+  .cite { font-size:13px; margin:3px 0; }
+  .badge { display:inline-block; font-size:11px; font-weight:600; color:#fff; border-radius:4px; padding:1px 6px; margin-right:6px; }
+  .confluence { background:var(--conf); } .jira { background:var(--jira); } .slack { background:var(--slack); } .gdrive { background:var(--gdrive); }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  td, th { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .warning { color:var(--warn); } .alert { color:var(--alert); font-weight:600; }
+  .denied { color:var(--alert); } .allowed { color:var(--gdrive); }
+  .hidden { display:none; }
+  .story { border-top:1px solid var(--line); padding:8px 0; font-size:13px; }
+  details summary { cursor:pointer; }
+</style>
+</head>
+<body>
+<main>
+  <h1>The Internal Brain</h1>
+  <div class="sub">Permission-aware answers across Confluence, Jira, Slack and Drive (simulated Company A)</div>
+
+  <div class="card">
+    <div class="row">
+      <select id="user">
+        <option value="jdoe">jdoe, backend engineer</option>
+        <option value="ravi">ravi, SRE / payments on-call</option>
+        <option value="asha">asha, security engineer</option>
+        <option value="kim">kim, external contractor</option>
+        <option value="priya">priya, compliance officer</option>
+        <option value="dana">dana, platform admin</option>
+      </select>
+      <button onclick="login()">Sign in</button>
+      <span id="who" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Ask</h2>
+    <div class="row">
+      <input id="q" class="grow" placeholder="Ask anything about Company A">
+      <button onclick="ask()">Ask</button>
+    </div>
+    <div class="row" style="margin-top:8px" id="examples"></div>
+    <div id="out"></div>
+  </div>
+
+  <div class="card hidden" id="simCard">
+    <h2>Demo controls (simulate platform changes)</h2>
+    <div class="row">
+      <button class="ghost" onclick="sim('confluence_update','CONF-101','Step 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway.', false)">Scenario 2: runbook updated, webhook MISSED</button>
+      <button class="ghost" onclick="sim('slack_remove_member','db-migration','jdoe', false)">Scenario 4: remove jdoe from #db-migration, webhook MISSED</button>
+      <button class="ghost" onclick="sim('confluence_restrict','CONF-102','user:asha', true)">Restrict ADR-17 to asha only</button>
+      <button class="ghost" onclick="api('/api/sync/poll',{method:'POST'}).then(r=>note('Polled: '+JSON.stringify(r)))">Force poll now</button>
+    </div>
+    <div id="simOut" class="muted" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card hidden" id="auditCard">
+    <h2>Audit trail <span id="auditScope" class="muted"></span></h2>
+    <div class="row" id="auditQueryRow">
+      <input id="aq" class="grow" value="Show me everything user 'jdoe' accessed related to the 'payment-gateway' Confluence space in the last 30 days">
+      <button onclick="auditQuery()">Query</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" onclick="verify()">Verify hash chain</button>
+      <button class="ghost" onclick="alerts()">Security alerts</button>
+      <span id="chain" class="muted"></span>
+    </div>
+    <div id="auditOut" style="margin-top:8px"></div>
+  </div>
+</main>
+<script>
+const EX = [
+  "What's the status of the database migration project and were there any blockers raised in Slack last week?",
+  "What was the root cause of the payment outage last quarter, and what follow-up tickets were created?",
+  "Summarize the design discussion around the new auth service from last sprint's Slack threads and link the Confluence decision doc",
+  "What's the latest runbook for the payment-service incident?",
+  "Show me the security incident report from the Q3 breach",
+  "Show me all security vulnerabilities",
+];
+let token = null, me = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+EX.forEach(q => { const b = document.createElement("button"); b.className = "ghost"; b.textContent = q.length > 42 ? q.slice(0, 40) + "..." : q; b.onclick = () => { $("q").value = q; ask(); }; $("examples").appendChild(b); });
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || r.status);
+  return j;
+}
+function note(t) { $("simOut").textContent = t; }
+
+async function login() {
+  const j = await api("/api/login", { method: "POST", body: JSON.stringify({ username: $("user").value, password: "demo" }) });
+  token = j.token; me = j.user;
+  $("who").textContent = `${me.name}, ${me.title}`;
+  $("out").innerHTML = "";
+  $("simCard").classList.toggle("hidden", !me.rights.includes("admin"));
+  const full = me.rights.includes("audit"), meta = me.rights.includes("audit_meta");
+  $("auditCard").classList.toggle("hidden", !(full || meta));
+  $("auditQueryRow").classList.toggle("hidden", !full);
+  $("auditScope").textContent = full ? "full access (compliance)" : "metadata only: no questions, answers or document ids";
+}
+
+async function ask() {
+  if (!token) { $("out").innerHTML = '<p class="muted">Sign in first.</p>'; return; }
+  $("out").innerHTML = '<p class="muted">Thinking...</p>';
+  try {
+    const j = await api("/api/ask", { method: "POST", body: JSON.stringify({ question: $("q").value }) });
+    const cites = j.citations.map(c => `<div class="cite"><span class="badge ${c.platform}">${c.platform}</span><b>${c.ref}</b> <a href="${esc(c.url)}" target="_blank">${esc(c.title)}</a> <span class="muted">updated ${esc(c.updated_iso)}</span></div>`).join("");
+    const plan = j.plan ? `<div class="muted">searched: ${j.plan.platforms.join(", ")}${j.plan.window ? " | window: " + j.plan.window : ""} | query ${j.query_id}</div>` : "";
+    $("out").innerHTML = `<div class="answer">${esc(j.answer)}</div>${cites}${plan}`;
+  } catch (e) { $("out").textContent = "Error: " + e.message; }
+}
+
+async function sim(action, target, value, push) {
+  try { await api("/api/sim", { method: "POST", body: JSON.stringify({ action, target, value, push }) });
+        note(`Done: ${action} on ${target}${push ? "" : " (no webhook, index is now stale)"}. Sign in as the affected user and ask again.`); }
+  catch (e) { note("Error: " + e.message); }
+}
+
+async function auditQuery() {
+  const j = await api("/api/audit/query", { method: "POST", body: JSON.stringify({ question: $("aq").value }) });
+  const head = `<div class="muted">parsed filters: ${esc(JSON.stringify(j.filters))} | ${j.results.length} matching queries</div>`;
+  $("auditOut").innerHTML = head + j.results.map(s => `
+    <div class="story">
+      <b>${new Date(s.ts * 1000).toLocaleString()}</b> <b>${esc(s.actor)}</b> asked: "${esc(s.question)}"
+      <div>matched: ${s.matched.map(m => `<span class="${m.decision}">${esc(m.doc_uid)} (${m.decision})</span>`).join(", ")}</div>
+      <details><summary class="muted">all authorization decisions (${s.decisions.length})</summary>
+        <table>${s.decisions.map(d => `<tr><td class="${d.decision}">${d.decision}</td><td>${esc(d.doc_uid)}</td><td>${esc(d.stage)}</td><td>${esc(d.reason)}</td></tr>`).join("")}</table>
+      </details>
+      <details><summary class="muted">answer returned</summary><div class="answer">${esc(s.answer)}</div></details>
+    </div>`).join("");
+}
+
+async function verify() {
+  const j = await api("/api/audit/verify");
+  $("chain").textContent = j.ok ? `chain intact: ${j.rows} rows, ${j.anchors_checked} anchors checked` : `TAMPERING DETECTED: ${j.problem} at id ${j.at_id}`;
+}
+
+async function alerts() {
+  const j = await api("/api/audit/events?severity=alert&limit=30").catch(e => ({ events: [], error: e.message }));
+  $("auditOut").innerHTML = `<table><tr><th>time</th><th>actor</th><th>event</th><th>detail</th></tr>${j.events.map(e =>
+    `<tr class="alert"><td>${new Date(e.ts * 1000).toLocaleTimeString()}</td><td>${esc(e.actor)}</td><td>${esc(e.event)}</td><td>${esc(e.doc_uid)} ${esc(JSON.stringify(e.detail))}</td></tr>`).join("")}</table>` || "none";
+}
+</script>
+</body>
+</html>
