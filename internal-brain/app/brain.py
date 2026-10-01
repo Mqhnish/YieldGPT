@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 from . import audit, grounding, guard, llm, planner
 from .config import CONTEXT_BUDGET_CHARS, PER_PLATFORM_K
+from .metrics import Measurement, timed
 from .identity import User, principals
 from .index import Index, relevance, tokenize
 from .evidence import EvidenceCache, EvidenceUnavailable, assemble, fingerprint
@@ -39,6 +40,20 @@ class Brain:
         self.syncer.full_load()
 
     def ask(self, user: User, question: str) -> dict:
+        try:
+            with Measurement() as measured:
+                result = self._ask(user, question)
+        except llm.ModelUnavailable as error:
+            self._log(user.username, 'query_performance', query_id=error.query_id,
+                      phases_ms=measured.snapshot(), outcome='model_unavailable',
+                      scope='pipeline wall time; excludes HTTP checkpoint and delivery')
+            raise
+        self._log(user.username, 'query_performance', query_id=result['query_id'],
+                  phases_ms=measured.snapshot(),
+                  scope='pipeline wall time; excludes HTTP checkpoint and delivery')
+        return result
+
+    def _ask(self, user: User, question: str) -> dict:
         question = question.strip()
         if not question or len(question) > 2000:
             raise ValueError('Question must contain 1–2000 characters.')
@@ -107,14 +122,22 @@ class Brain:
                 'status': 'answered' if citations else 'no_answer', 'quality': quality,
                 'plan': {'platforms': sorted(plan.platforms), 'window': plan.window_label}}
 
+    @timed('generation_and_grounding_ms')
     def _generate(self, user, qid, question, sources):
         # Keep llm.complete's established interface for teammate tests and model adapters.
-        raw = llm.complete(question, sources, f'{user.name} ({user.title})')
+        try:
+            raw = llm.complete(question, sources, f'{user.name} ({user.title})')
+        except llm.ModelUnavailable as error:
+            error.query_id = qid
+            self._log(user.username, 'model_measurement', query_id=qid, **error.measurement)
+            raise
         answer, stats = grounding.enforce(raw, sources)
         answer, n_red = guard.redact(answer)
         if stats['dropped']:
             self._log(user.username, 'ungrounded_claims_removed', severity='warning', query_id=qid,
                       dropped=stats.get('dropped_text', [])[:20])
+        self._log(user.username, 'model_measurement', query_id=qid,
+                  **getattr(raw, 'measurement', {'mode': 'custom_adapter', 'remote_attempts': 0}))
         mode = getattr(raw, 'mode', 'extractive')
         if getattr(raw, 'reason', None):
             self._log(user.username, 'generation_fallback', query_id=qid, reason=raw.reason)
@@ -124,6 +147,7 @@ class Brain:
         return answer, citations, stats, n_red, {'mode': mode, 'rejected_claims': stats['dropped'],
                                                 'grounding': 'complete_source_passages'}
 
+    @timed('retrieval_ms')
     def _retrieve(self, user, qid, question, plan):
         mine, candidates = principals(user), {}
         # No top-k/relative cutoff before live authorization. Hidden candidates cannot crowd out visible ones.
@@ -160,6 +184,7 @@ class Brain:
         reader = getattr(conn, 'read_authorized', None)
         return reader(user, native_id) if reader else conn.fetch(native_id)
 
+    @timed('authorization_and_read_ms')
     def _authorize_and_refresh(self, user, qid, candidates, question=None, plan=None):
         output = []
         for uid, (score, entry) in candidates.items():
@@ -213,6 +238,7 @@ class Brain:
             output.append((score, doc))
         return output
 
+    @timed('release_authorization_ms')
     def _release_check(self, user, qid, sources, attempt):
         revoked = []
         for source in sources:

@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 import os
 import time
+import math
+from decimal import Decimal, InvalidOperation
 from urllib.parse import urlparse
 
 import httpx
@@ -17,9 +19,10 @@ from .evidence import model_source, passage_score, passages
 
 
 class Completion(str):
-    def __new__(cls, text, mode='extractive', reason=None):
+    def __new__(cls, text, mode='extractive', reason=None, measurement=None):
         obj = super().__new__(cls, text)
         obj.mode, obj.reason = mode, reason
+        obj.measurement = measurement or {"mode": mode, "remote_attempts": 0, "model_elapsed_ms": 0.0, "provider_http_ms": 0.0, "usage": None, "estimated_cost": None}
         return obj
 
 
@@ -91,45 +94,125 @@ def _stub(question, sources):
     return _render(selections[:20], sources)
 
 
+class ModelUnavailable(RuntimeError):
+    def __init__(self, measurement):
+        super().__init__('Configured live model is unavailable; offline fallback is disabled')
+        self.measurement = {**measurement, 'mode': 'failed'}
+
+
+def configuration_problems():
+    if LLM_PROVIDER != 'openai_compatible':
+        return ['provider_not_live']
+    values = (LLM_BASE_URL, LLM_MODEL, LLM_API_KEY)
+    if any(not v or v.upper().startswith(('YOUR_', 'REPLACE', 'CHANGE_ME', 'PLACEHOLDER')) for v in values):
+        return ['provider_not_configured']
+    parsed = urlparse(LLM_BASE_URL)
+    if ((parsed.scheme != 'https' and not (parsed.scheme == 'http' and parsed.hostname in ('localhost','127.0.0.1','::1')))
+            or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment):
+        return ['invalid_provider_url']
+    return []
+
+
+def _usage(value):
+    if not isinstance(value,dict):
+        return None
+    result = {}
+    for key in ('prompt_tokens','completion_tokens'):
+        number = value.get(key)
+        if type(number) is not int or number < 0:
+            return None
+        result[key] = number
+    result['total_tokens'] = sum(result.values())
+    return result
+
+
+def estimated_cost(usage):
+    """User-configured unit prices, never guessed prices or fake zero bills."""
+    if usage is None:
+        return None
+    try:
+        rates = [Decimal(os.environ[k]) for k in ('IB_LLM_INPUT_PER_MILLION','IB_LLM_OUTPUT_PER_MILLION')]
+        if any(not r.is_finite() or r < 0 for r in rates):
+            return None
+    except (KeyError, InvalidOperation):
+        return None
+    amount = (usage['prompt_tokens']*rates[0] + usage['completion_tokens']*rates[1])/Decimal(1000000)
+    return {'amount':str(amount), 'currency':os.getenv('IB_LLM_CURRENCY','USD'),
+            'basis':'reported tokens multiplied by configured per-million rates; estimate, not invoice',
+            'input_per_million':str(rates[0]),'output_per_million':str(rates[1])}
+
+
 def complete(question: str, sources: list[dict], asker: str) -> str:
     sources = _prepared(sources)
     if not sources:
         return Completion('NO_ANSWER')
-    if LLM_PROVIDER in ('stub', 'extractive'):
-        return Completion(_stub(question, sources))
-    fallback = lambda reason: Completion(_stub(question, sources), 'extractive_fallback', reason)
-    if LLM_PROVIDER != 'openai_compatible' or not all((LLM_BASE_URL, LLM_API_KEY, LLM_MODEL)):
-        return fallback('provider_not_configured')
-    parsed = urlparse(LLM_BASE_URL)
-    if parsed.scheme != 'https' and not (parsed.scheme == 'http' and parsed.hostname in ('localhost','127.0.0.1','::1')):
-        return fallback('invalid_provider_url')
-    if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        return fallback('invalid_provider_url')
+    required = os.getenv('IB_LLM_REQUIRE_LIVE','0') == '1'
+    if LLM_PROVIDER in ('stub','extractive') and not required:
+        return Completion(_stub(question,sources))
+    measurement = {'provider':LLM_PROVIDER,'model':LLM_MODEL,'remote_attempts':0,
+                   'model_elapsed_ms':0.0,'provider_http_ms':0.0,'attempts':[],
+                   'usage':None,'estimated_cost':None}
+    def fallback(reason):
+        if required:
+            raise ModelUnavailable(measurement) from None
+        measurement['mode'] = 'extractive_fallback'
+        return Completion(_stub(question,sources),'extractive_fallback',reason,measurement)
+    problems = configuration_problems()
+    if problems:
+        return fallback(problems[0])
+    began = time.perf_counter()
+    usages = []
+    def finish():
+        measurement['model_elapsed_ms'] = round((time.perf_counter()-began)*1000,3)
+        if len(usages) == measurement['remote_attempts'] and usages:
+            measurement['usage'] = {k:sum(u[k] for u in usages) for k in usages[0]}
+        measurement['estimated_cost'] = estimated_cost(measurement['usage'])
+        measurement['provider_http_ms'] = round(measurement['provider_http_ms'],3)
     try:
-        timeout = min(max(float(os.getenv('IB_LLM_TIMEOUT_S','20')), 1), 60)
-        with httpx.Client(timeout=timeout, follow_redirects=False) as client:
+        timeout = float(os.getenv('IB_LLM_TIMEOUT_S','20'))
+        if not math.isfinite(timeout):
+            raise ValueError('invalid timeout')
+        timeout = min(max(timeout,1),60)
+        with httpx.Client(timeout=timeout,follow_redirects=False) as client:
             for attempt in range(2):
-                r = client.post(LLM_BASE_URL.rstrip('/') + '/chat/completions',
-                    headers={'Authorization': 'Bearer ' + LLM_API_KEY},
-                    json={'model': LLM_MODEL, 'temperature': 0, 'max_tokens': 1600,
-                          'messages': build_messages(question, sources, asker)})
-                if r.status_code in (429, 500, 502, 503, 504) and attempt == 0:
-                    time.sleep(0.2)
+                measurement['remote_attempts'] += 1
+                started = time.perf_counter()
+                status = None
+                try:
+                    r = client.post(LLM_BASE_URL.rstrip('/')+'/chat/completions',
+                        headers={'Authorization':'Bearer '+LLM_API_KEY},
+                        json={'model':LLM_MODEL,'temperature':0,'max_tokens':1600,
+                              'messages':build_messages(question,sources,asker)})
+                    status = r.status_code
+                finally:
+                    elapsed = (time.perf_counter()-started)*1000
+                    measurement['provider_http_ms'] += elapsed
+                    measurement['attempts'].append({'http_status':status,'elapsed_ms':round(elapsed,3)})
+                if r.status_code in (429,500,502,503,504) and attempt == 0:
+                    # Usage for unsuccessful requests is unknown; never call the retry free.
+                    time.sleep(.2)
                     continue
                 r.raise_for_status()
+                payload = r.json()
+                usage = _usage(payload.get('usage'))
+                if usage is not None:
+                    usages.append(usage)
+                content = payload['choices'][0]['message']['content']
                 break
-        content = r.json()['choices'][0]['message']['content']
-        if not isinstance(content, str) or len(content) > 30000:
+        if not isinstance(content,str) or len(content)>30000:
             raise ValueError('invalid response')
         if content.startswith('```'):
-            content = content.strip().split('\n',1)[1].rsplit('```',1)[0]
-        value = json.loads(content)
-        if not isinstance(value, dict) or set(value) != {'selections'}:
+            content=content.strip().split('\n',1)[1].rsplit('```',1)[0]
+        value=json.loads(content)
+        if not isinstance(value,dict) or set(value)!={'selections'}:
             raise ValueError('invalid response')
-        selected = value['selections']
-        if not isinstance(selected, list) or len(selected) > 16:
+        selected=value['selections']
+        if not isinstance(selected,list) or len(selected)>16:
             raise ValueError('invalid selections')
-        return Completion(_render(selected, sources), 'model_selected')
-    except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
-        # Never include a provider response, URL, API key, or exception message in the UI.
+        result = _render(selected,sources)
+        finish()
+        measurement['mode']='model_selected'
+        return Completion(result,'model_selected',measurement=measurement)
+    except (httpx.HTTPError,ValueError,KeyError,IndexError,TypeError,AttributeError):
+        finish()
         return fallback('provider_unavailable_or_invalid_response')

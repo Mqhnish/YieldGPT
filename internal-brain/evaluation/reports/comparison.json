@@ -1,0 +1,61 @@
+{
+  "schema": "internal-brain.comparison/1",
+  "case_sha256": "5fa11b74bfa5590e754d713e24113bf69b35a70572c7574dd18e8ad81c0d6fb1",
+  "metrics": {
+    "passed": {
+      "before": 50,
+      "after": 65
+    },
+    "total": {
+      "before": 65,
+      "after": 65
+    },
+    "source_recall": {
+      "before": 0.8571428571428571,
+      "after": 1.0
+    },
+    "unauthorized_citations": {
+      "before": 0,
+      "after": 0
+    },
+    "unauthorized_context_sources": {
+      "before": 0,
+      "after": 0
+    },
+    "no_answer_correct": {
+      "before": 13,
+      "after": 16
+    },
+    "no_answer_cases": {
+      "before": 16,
+      "after": 16
+    },
+    "grounding_accuracy": {
+      "before": 0.5357142857142857,
+      "after": 1.0
+    },
+    "grounding_false_accepts": {
+      "before": 13,
+      "after": 0
+    }
+  },
+  "improved": [
+    "exact-migration-epic",
+    "exact-migration-blocker",
+    "exact-pool-ticket",
+    "exact-payment-incident",
+    "exact-runbook",
+    "exact-drive-postmortem",
+    "migration-progress",
+    "migration-sequence",
+    "auth-decision",
+    "payments-duration",
+    "time-no-recent-auth",
+    "time-old-incident",
+    "missing-approval",
+    "security-inherited-page-allow",
+    "security-external-shared-guide"
+  ],
+  "regressed": [],
+  "method": "Frozen original Member 1 lexical pipeline vs current pipeline, both rerun on identical current fixtures and expectations with offline generators. Controlled reconstruction, not a historical live-model measurement."
+}

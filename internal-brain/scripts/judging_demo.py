@@ -18,6 +18,12 @@ def run(scratch):
     os.environ['IB_AUDIT_DB'] = str(scratch / 'audit.db')
     os.environ['IB_ANCHOR_PATH'] = str(scratch / 'anchors.jsonl')
     os.environ['IB_LLM_PROVIDER'] = 'stub'
+    os.environ['IB_ENV_FILE'] = str(scratch / '.env')
+    os.environ['IB_LLM_REQUIRE_LIVE'] = '0'
+    os.environ['IB_SLACK_CONFIG'] = ''
+    for key in list(os.environ):
+        if key.startswith('IB_CHECKPOINT_'):
+            os.environ.pop(key)
     from app import audit, audit_policy
     from app.brain import Brain
     from app.grounding import NEUTRAL_NO_ANSWER
@@ -38,8 +44,8 @@ def run(scratch):
 
     migration = ask('jdoe', "What's the status of the database migration project and were there any blockers raised in Slack last week?")
     ids = {c['uid'] for c in migration['citations']}
-    checks['unified_jira_slack_drive'] = {'jira:MIG-1','slack:db-migration/2001','gdrive:DRV-2'} <= ids
-    checks['private_channel_excluded'] = 'slack:mig-leads/2101' not in ids and 'licence' not in migration['answer']
+    checks['unified_jira_slack_drive'] = {'jira:MIG-1','slack:T0COMPANYA/db-migration/2001','gdrive:DRV-2'} <= ids
+    checks['private_channel_excluded'] = 'slack:T0COMPANYA/mig-leads/2101' not in ids and 'licence' not in migration['answer']
     examples.append({'scenario':1,'title':'Unified natural-language query','requests':[migration]})
 
     runbook_q = "What's the latest runbook for the payment-service incident?"
@@ -63,7 +69,7 @@ def run(scratch):
     pre = ask('ravi',private_q)
     brain.world.slack_remove_member('payments-oncall','ravi',push=False)
     post = ask('ravi',private_q)
-    uid = 'slack:payments-oncall/3001'
+    uid = 'slack:T0COMPANYA/payments-oncall/3001'
     checks['private_revocation_effective_next_question'] = (uid in {c['uid'] for c in pre['citations']}
         and uid not in {c['uid'] for c in post['citations']})
     checks['revoked_content_excluded_from_model'] = uid not in {s['uid'] for s in post['authorized_context']}

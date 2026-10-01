@@ -1,6 +1,9 @@
 """Central config. Everything comes from env vars so nothing secret lives in the repo."""
 import os
 from pathlib import Path
+from .env import load_env
+
+load_env()
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.getenv('IB_DATA_DIR', ROOT / 'data')).expanduser()

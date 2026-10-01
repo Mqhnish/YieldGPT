@@ -1,6 +1,6 @@
 """HTTP API + demo UI.
 
-Run:  uvicorn app.main:app --reload     then open http://localhost:8000
+Run:  uvicorn app.server:app --reload     then open http://localhost:8000
 """
 import hmac
 from contextlib import asynccontextmanager
@@ -30,6 +30,8 @@ state: dict = {}
 
 @asynccontextmanager
 async def lifespan(_app):
+    if _app is app:
+        raise RuntimeError("Use app.server:app; direct app.main startup bypasses audited delivery")
     audit.init()
     live = create_live_slack_from_env()
     world = World()
@@ -53,6 +55,10 @@ async def lifespan(_app):
         service.syncer.stop()
         if live and stopped:
             live[0].client.close()
+            from . import slack_oauth
+            if slack_oauth.RUNTIME is not None:
+                slack_oauth.RUNTIME.client.close()
+                slack_oauth.RUNTIME = None
         state.clear()
 
 
@@ -150,6 +156,8 @@ def session(user: User = Depends(current_user)):
 
 @app.post("/api/login")
 def login(body: LoginIn):
+    if not DEMO_MODE or not state.get('demo_mode', False):
+        raise HTTPException(403, 'Demo sign-in is disabled. Configure the trusted identity provider.')
     token = identity.login(body.username, body.password)
     if not token:
         audit.log(body.username, "login_failed", severity="warning")

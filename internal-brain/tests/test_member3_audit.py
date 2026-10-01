@@ -228,13 +228,13 @@ def test_deleted_or_swapped_sealed_text_fails():
     assert audit.verify_report()["problem"] == "sealed content deleted without retention record"
 
 
-def test_without_cryptography_text_is_marked_unencrypted(monkeypatch):
+def test_without_cryptography_refuses_plaintext_persistence(monkeypatch):
     monkeypatch.setattr(audit, "encryption_available", lambda: False)
-    row = audit.log("jdoe", "query_received", question="plain")
+    with pytest.raises(RuntimeError, match="refusing plaintext"):
+        audit.log("jdoe", "query_received", question="plain")
     with db() as c:
-        assert c.execute("SELECT alg FROM audit_content WHERE row_id=?", (row,)).fetchone()[0] == "none"
-    assert "no_content_encryption" in {p["code"] for p in reliability.config_problems()}
-    assert audit.search(event="query_received")[0]["detail"]["question"] == "plain"
+        assert not c.execute("SELECT * FROM audit_content").fetchall()
+    assert not audit.search(event="query_received")
 
 
 def test_pre_member3_schema_is_refused(tmp_path, monkeypatch):

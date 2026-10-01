@@ -1,0 +1,18 @@
+{
+  "workspaces": [
+    {
+      "team_id": "TTEAMONE",
+      "channels": ["CPUBLIC", "GPRIVATE", "DDIRECT"],
+      "ingestion_token_env": "TEAM_ONE_INGESTION_TOKEN",
+      "signing_secret_env": "TEAM_ONE_SIGNING_SECRET",
+      "user_token_envs": {"TTEAMONE/UJANE": "TEAM_ONE_JANE_TOKEN"}
+    },
+    {
+      "team_id": "TTEAMTWO",
+      "channels": ["CPUBLIC", "GPRIVATE"],
+      "ingestion_token_env": "TEAM_TWO_INGESTION_TOKEN",
+      "signing_secret_env": "TEAM_TWO_SIGNING_SECRET",
+      "user_token_envs": {"TTEAMTWO/UJANE": "TEAM_TWO_JANE_TOKEN"}
+    }
+  ]
+}

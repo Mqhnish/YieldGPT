@@ -20,6 +20,7 @@
   };
   let selectedPersona = 'jdoe';
   let loginBusy = false;
+  let historySerial = 0;
 
   function node(tag, className, text) {
     const el = document.createElement(tag);
@@ -100,12 +101,14 @@
     $('avatar').textContent = user ? String(user.name || user.username).split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase() : '?';
     $('account-button').replaceChildren(document.createTextNode(user ? 'Switch account' : 'Sign in'), node('span', '', '↗'));
     $('mobile-account').textContent = user ? user.name.split(' ')[0] + ' · Account' : 'Sign in';
+    $('history-button').hidden = !user;
     $('logout-button').hidden = !user; $('dialog-logout').hidden = !user;
     const canAdmin = user && Array.isArray(user.rights) && user.rights.some(right => ['admin', 'audit', 'audit_meta'].includes(right));
     $('console-link').hidden = !canAdmin; $('mobile-console-link').hidden = !canAdmin;
   }
   function clearSession() {
     state.epoch++; state.askSerial++; state.evidenceSerial++;
+    closeHistory();
     state.controllers.forEach(controller => controller.abort()); state.controllers.clear();
     state.askController = null; state.evidenceController = null; state.loginController = null;
     state.token = null; state.user = null; state.pendingQuestion = '';
@@ -302,6 +305,53 @@
     if ($('evidence-dialog').open) $('evidence-dialog').close();
     $('evidence-content').replaceChildren();
   }
+  function closeHistory() {
+    historySerial++;
+    if ($('history-dialog').open) $('history-dialog').close();
+    $('history-content').replaceChildren();
+  }
+  async function openHistory() {
+    if (!state.user) return;
+    const epoch = state.epoch, serial = ++historySerial;
+    const content = $('history-content');
+    content.replaceChildren(node('p', '', 'Loading previous questions…'));
+    if (!$('history-dialog').open) $('history-dialog').showModal();
+    try {
+      const result = await api('/api/history');
+      if (!isCurrent(epoch) || serial !== historySerial || !$('history-dialog').open) return;
+      content.replaceChildren();
+      for (const item of result.items || []) {
+        const when = new Date(typeof item.created_at === 'number' ? item.created_at * 1000 : item.created_at);
+        const label = Number.isNaN(when.getTime()) ? 'Previous question' : when.toLocaleString();
+        const button = node('button', 'source-card', `Revisit question · ${label}`);
+        button.type = 'button';
+        button.addEventListener('click', () => replayQuestion(item.query_id));
+        content.append(button);
+      }
+      if (!content.children.length) content.append(node('p', '', 'No previous questions are available.'));
+    } catch (error) {
+      if (isCurrent(epoch) && serial === historySerial) content.replaceChildren(node('p', '', 'Previous questions could not be loaded.'));
+    }
+  }
+  async function replayQuestion(queryId) {
+    closeHistory(); cancelAsk(); closeEvidence(); clearAnswer(); clearError('form-error');
+    const epoch = state.epoch, serial = ++state.askSerial;
+    const controller = new AbortController(); state.askController = controller;
+    setWorking(true);
+    try {
+      const result = await api(`/api/history/${encodeURIComponent(queryId)}/replay`, { method: 'POST', controller });
+      if (!isCurrent(epoch) || serial !== state.askSerial) return;
+      renderAnswer(result, 'Previous question · checked against your current access');
+      announce('Your previous question has been answered with current evidence.');
+    } catch (error) {
+      if (isCurrent(epoch) && serial === state.askSerial && error.name !== 'AbortError') requestError(error);
+    } finally {
+      if (isCurrent(epoch) && serial === state.askSerial) { setWorking(false); state.askController = null; }
+    }
+  }
+  $('history-button').addEventListener('click', openHistory);
+  $('close-history').addEventListener('click', closeHistory);
+  $('history-dialog').addEventListener('cancel', closeHistory);
   async function copyAnswer() {
     if (!state.answer) return;
     const epoch = state.epoch; const answer = state.answer;

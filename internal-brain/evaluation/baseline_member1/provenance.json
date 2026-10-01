@@ -1,0 +1,12 @@
+{
+  "source": "User-supplied internal-brain (2).zip",
+  "archive_sha256": "f9fcb048b23fd9bef65130b1c2373d03b87cedc8fb6f6baa48a72dcbd7cb0304",
+  "files": {
+    "brain.py": "a5edab72bc405931b60ee6de9493b796ca647fd760505effe9ae40264d50337c",
+    "index.py": "3672e279888ff5cfd8fec622ad43598f5092d8669f7de7d79c7ab9edb5cbdeb3",
+    "llm.py": "cbab80efbc4f09edce406dcff7108cb22708864af594936d69b5b24e1cf31564",
+    "grounding.py": "b2406c5584206f35bd91ae5b275bf700d2b78df6cb2737dcaf6f55fe56eb9fa3",
+    "planner.py": "2624d946eedc068a0795ccf248deb6b9aaaa11875eee6eb030f4ef149cc6c332"
+  },
+  "purpose": "Controlled before/after comparison of frozen Member 1 lexical pipeline on the SAME current native-source fixtures; not a claimed historical measurement"
+}

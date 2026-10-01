@@ -1,0 +1,9 @@
+{
+  "schema": "internal-brain.live-slack/1",
+  "generated_at": "2026-09-29T11:40:53.967586+00:00",
+  "phase": "initial",
+  "status": "not_run_missing_credentials",
+  "cases": [],
+  "scope": "Read-only current native permissions and content expectations; manual fixture transitions. No source contents or credentials saved.",
+  "reason": "IB_SLACK_CONFIG is unset"
+}

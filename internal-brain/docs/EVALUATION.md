@@ -17,7 +17,7 @@ Reports are created only at the destinations requested. A failed case or missed 
 
 The submitted measured snapshots are in `evaluation/reports/`. Regenerate them after changing the code. JSON reports include implementation-file fingerprints taken at run start, the case/corpus fingerprint, and the run time so a report is not mistaken for a guarantee about a later build.
 
-The scripts force the offline `stub` provider and configure temporary audit, anchor and sync paths **before importing the application**. Each evaluation uses a fresh fictional company and a temporary durable sync store. Your existing demo audit and synchronization state are not used or modified. No model key or network service is required. Run these as separate processes, not after importing the app into an interactive Python session.
+The default offline scripts force the `stub` provider and configure temporary audit, anchor and sync paths **before importing the application**. Each evaluation uses a fresh fictional company and a temporary durable sync store. Your existing demo audit and synchronization state are not used or modified. No model key or network service is required. Run these as separate processes, not after importing the app into an interactive Python session.
 
 ## What the question set measures
 
@@ -32,7 +32,7 @@ The scripts force the offline `stub` provider and configure temporary audit, anc
 
 **Source recall** is the fraction of citation obligations satisfied: one obligation per `expected_all` item and one per nonempty `expected_any` group. This is not precision; an extra relevant source may be perfectly valid. Do not rename this metric to “accuracy.” The evaluator separately reports all-case pass rate, neutral-answer success, forbidden citations, and unauthorized citations. It independently checks both citations and every assembled model-context source with the user's current connector permissions.
 
-These phrase checks catch selected factual failures such as missing amounts, dates and actors. They do not establish general semantic entailment. A retrieved source could be correctly cited while the answer misrepresents it. The grounding tests must separately exercise negation, altered numbers, unsupported clauses, fabricated source references and source instructions.
+These phrase checks catch selected factual failures such as missing amounts, dates and actors. They do not establish general semantic entailment. A retrieved source could be correctly cited while the answer misrepresents it. The measured `grounding` category now runs 28 explicit accept/reject decisions covering negation, altered numbers/dates, uncertainty, contradictory citations, short claims and fabricated references. It reports accuracy, false accepts and false rejects, alongside the pipeline cases. Unit tests additionally cover source instructions.
 
 `tests/test_member2_review.py` independently checks that unrelated citations cannot be attached to a valid claim, that adding an unsupported clause invalidates an otherwise supported sentence, and that permissions or source versions changing during the final read invalidate the answer or evidence preview.
 
@@ -64,3 +64,14 @@ Keep the existing `Brain.ask(user, question)` response's `answer`, `citations`, 
 Member 1 can replace connectors without changing the evaluator, provided the fictional fixture UIDs and `Connector.check()` contract remain stable. Member 3 can replace audit persistence while preserving the existing queryable event contract. `scripts/benchmark.py` requires only the existing `Index.upsert(doc, hint)` and `Index.search(query, platforms, since)` contracts.
 
 Before a judged demonstration, run the whole automated test suite and save a fresh evaluator report. Report failures honestly and keep the measured report beside the submitted code. For a real model, create a separate reviewed evaluation run using permitted test accounts; these offline results must not be described as Hunyuan or live-Slack results.
+
+
+## Paired baseline and live run
+
+`python scripts/compare.py` runs the frozen original Member 1 lexical pipeline and current pipeline in separate isolated processes. `evaluation/baseline_member1/provenance.json` records the source archive and file hashes. Both use current source fixtures/permissions and the same 65 expectations. This isolates retrieval/answer/grounding behavior; it does not reconstruct old permissions or prove historical performance. Before/after measured results and per-case regressions are saved under `evaluation/reports/`.
+
+`python scripts/evaluate.py --mode live --json evaluation/reports/live-model.json --markdown evaluation/reports/live-model.md` loads approved `.env` credentials but uses isolated audit/sync persistence and fictional sources. It adds 13 additional paraphrase/adversarial probes. Every answerable case must report successful model selection; fallback is disabled. No-evidence and blocked cases deliberately do not need a model call. Missing credentials exit 2 and write NOT RUN. A failed assertion exits 1. Offline quality is never relabeled as live-model quality.
+
+Per-case JSON includes audit measurements: provider/model, attempts/status/HTTP duration, total model elapsed time, reported token usage, configured-price cost estimate, retrieval duration, source authorization/read duration, final permission check duration, and overall pipeline time. Pipeline totals exclude HTTP checkpoint/delivery latency. Stage timers are nested; do not sum them. A failed retry with unknown billing makes aggregate usage/cost unknown. Missing rates remain null. The original baseline did not instrument stage times, so its stage values are unavailable, not zero.
+
+Grounding decisions are directly measured on the same labeled inputs for both variants. They test passage support, not whether retrieval finds every contradiction or whether a source is truthful. Broad factual correctness still needs a larger human-reviewed corpus. `live_cases.py` contains additional held-out wording; no live output has been used to tune this revision.

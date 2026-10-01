@@ -1,8 +1,8 @@
 # Member 3: audit, reliability and the Drive adapter
 
-Member 3 owns event persistence, checkpoint storage, the verifier, the Drive adapter, the compliance UI, deployment, recovery and submission assembly. This work builds on the shared app from `internal-brain-member2.zip` without changing any Member 2 file.
+Member 3 owns event persistence, checkpoint storage, the verifier, the Drive adapter, the compliance UI, deployment, recovery and submission assembly. The original Member 3 delivery built on `internal-brain-member2.zip`. This integrated revision changes shared files as recorded in CHANGES_INTEGRATED.md.
 
-- **Entrypoint.** Use `uvicorn app.server:app` in place of `app.main:app`. The shared app is mounted unchanged, and Member 3's layer wraps it.
+- **Entrypoint.** Use `uvicorn app.server:app` in place of `app.main:app`. The shared app is mounted under Member 3's layer; ask, previews and replay are protected.
 - **Files Member 3 edits:** `app/audit.py`, `app/audit_policy.py`, `app/sync_state.py` (storage only), `app/sources/gdrive.py`, and the gdrive entry in `tests/contract/specs.py`.
 - **New files:** `app/checkpoints.py`, `app/reliability.py`, `app/server.py`, `app/static/compliance.html`, `deploy/`, `scripts/{verify_audit,reset_demo,demo_member3}.py`, and `tests/test_member3_*.py`.
 
@@ -14,7 +14,7 @@ Member 3 owns event persistence, checkpoint storage, the verifier, the Drive ada
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r deploy/requirements.lock          # requirements.txt + cryptography, hash-pinned
 python -m pytest -q                               # every test; the live S3 tests skip without an endpoint
-uvicorn app.server:app --port 8000                # employee UI at /, compliance UI at /compliance
+uvicorn app.server:app --port 8000 --workers 1 --no-access-log                # employee UI at /, compliance UI at /compliance
 python scripts/demo_member3.py                    # scripted backup demo on isolated data
 ```
 
@@ -170,4 +170,4 @@ All five cases from handoff §5.4 are contract `extra` cases in `tests/contract/
 - **Delivery precision.** "Delivered" means handed to the HTTP server. Client receipt isn't observable, and a delivered answer can't be recalled.
 - **Tail window.** Up to 30 s of non-answer events can sit in the uncheckpointed tail, and it's labeled as such.
 - **The shared `/api/webhooks/{platform}` route** still uses one shared secret. Per-platform signatures are an open item for each connector owner, alongside the routes.
-- **Two entrypoints.** Running `app.main:app` directly skips this layer. Deploy with `app.server:app`, as the Dockerfile does.
+- **Canonical entrypoint.** Direct `app.main` startup is rejected. Deploy with `app.server:app`, as the Dockerfile does.

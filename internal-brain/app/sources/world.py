@@ -46,7 +46,7 @@ class World:
                 body="Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. "
                      "Sticky server sessions were rejected because they block horizontal scaling. "
                      "Refresh tokens rotate on every use. Owner: platform team. Discussion happened in #auth-design.",
-                links=["slack:auth-design/1001"]),
+                links=["slack:T0COMPANYA/auth-design/1001"]),
             "CONF-103": dict(space="security", parent=None, restrict=None, updated=n - 5 * DAY,
                 title="Q3 breach incident report",
                 body="Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. "
@@ -82,14 +82,14 @@ class World:
             "MIG-7": dict(project="MIG", level=None, status="Blocked", updated=n - 4 * DAY,
                 summary="Replication lag on orders table during dual-write",
                 desc="Replication lag on the orders table reaches 40 seconds during dual-write. Cutover cannot proceed until this is fixed.",
-                links=["slack:db-migration/2001"]),
+                links=["slack:T0COMPANYA/db-migration/2001"]),
             "MIG-9": dict(project="MIG", level=None, status="Done", updated=n - 12 * DAY,
                 summary="Tune ORM connection pool for PG16", desc="Connection pool resized to 40 per pod.", links=[]),
             "PAY-101": dict(project="PAY", level=None, status="Done", updated=n - 110 * DAY,
                 summary="Root cause: payment outage (Q2)",
                 desc="Root cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly "
                      "renewal job failed silently. Follow-up tickets created: PAY-102 and PAY-103.",
-                links=["gdrive:DRV-1", "confluence:CONF-101", "jira:PAY-102", "jira:PAY-103", "slack:payments-oncall/3001"]),
+                links=["gdrive:DRV-1", "confluence:CONF-101", "jira:PAY-102", "jira:PAY-103", "slack:T0COMPANYA/payments-oncall/3001"]),
             "PAY-102": dict(project="PAY", level=None, status="In Progress", updated=n - 30 * DAY,
                 summary="Alert when any certificate expires within 14 days", desc="Follow-up to PAY-101. Add expiry alerting.", links=[]),
             "PAY-103": dict(project="PAY", level=None, status="Done", updated=n - 60 * DAY,
@@ -106,38 +106,38 @@ class World:
 
         # ---------------- Slack ----------------
         self.channels = {
-            "db-migration":    {"workspace": "companya", "private": False, "members": {"jdoe", "ravi", "dana"}, "retention_days": 365},
-            "mig-leads":       {"workspace": "companya", "private": True,  "members": {"ravi", "dana"}, "retention_days": 365},
-            "auth-design":     {"workspace": "companya", "private": False, "members": {"jdoe", "asha", "ravi"}, "retention_days": 365},
-            "payments-oncall": {"workspace": "companya", "private": True,  "members": {"ravi", "dana"}, "retention_days": 365},
-            "sec-incidents":   {"workspace": "companya", "private": True,  "members": {"asha"}, "retention_days": 90},
-            "vendor-collab":   {"workspace": "vendor-connect", "private": False, "members": {"kim", "jdoe", "dana"}, "retention_days": 365},
+            "db-migration":    {"workspace": "T0COMPANYA", "private": False, "members": {"jdoe", "ravi", "dana"}, "retention_days": 365},
+            "mig-leads":       {"workspace": "T0COMPANYA", "private": True,  "members": {"ravi", "dana"}, "retention_days": 365},
+            "auth-design":     {"workspace": "T0COMPANYA", "private": False, "members": {"jdoe", "asha", "ravi"}, "retention_days": 365},
+            "payments-oncall": {"workspace": "T0COMPANYA", "private": True,  "members": {"ravi", "dana"}, "retention_days": 365},
+            "sec-incidents":   {"workspace": "T0COMPANYA", "private": True,  "members": {"asha"}, "retention_days": 90},
+            "vendor-collab":   {"workspace": "T0VENDOR", "private": False, "members": {"kim", "jdoe", "dana"}, "retention_days": 365},
         }
         # thread id -> root message + replies (a thread is the unit of meaning in Slack)
         self.threads = {
-            "db-migration/2001": dict(ts=n - 4 * DAY, msgs=[
+            "T0COMPANYA/db-migration/2001": dict(ts=n - 4 * DAY, msgs=[
                 ("ravi", n - 4 * DAY, "Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed."),
                 ("jdoe", n - 4 * DAY + 600, "Could we batch the backfill overnight to cut write load? I can prototype it this week."),
             ]),
-            "db-migration/2000": dict(ts=n - 25 * DAY, msgs=[
+            "T0COMPANYA/db-migration/2000": dict(ts=n - 25 * DAY, msgs=[
                 ("dana", n - 25 * DAY, "Kickoff for the database migration project. Tracking everything in the MIG Jira project."),
             ]),
-            "mig-leads/2101": dict(ts=n - 3 * DAY, msgs=[
+            "T0COMPANYA/mig-leads/2101": dict(ts=n - 3 * DAY, msgs=[
                 ("ravi", n - 3 * DAY, "Private blocker: the licence for the migration tooling vendor expires 25 Oct, which could slip the cutover."),
             ]),
-            "auth-design/1001": dict(ts=n - 10 * DAY, msgs=[
+            "T0COMPANYA/auth-design/1001": dict(ts=n - 10 * DAY, msgs=[
                 ("asha", n - 11 * DAY, "For the new auth service design: token exchange with short-lived JWTs, or sticky sessions?"),
                 ("jdoe", n - 10 * DAY, "Sticky sessions block horizontal scaling. I'd go with token exchange and rotating refresh tokens."),
                 ("ravi", n - 10 * DAY + 900, "Agreed. Writing it up as ADR-17 in Confluence."),
             ]),
-            "payments-oncall/3001": dict(ts=n - 112 * DAY, msgs=[
+            "T0COMPANYA/payments-oncall/3001": dict(ts=n - 112 * DAY, msgs=[
                 ("ravi", n - 112 * DAY, "PAGE: card payments failing, TLS handshake errors to the card network gateway."),
                 ("ravi", n - 112 * DAY + 1800, "Found it: gateway certificate expired. Renewed manually, payments recovering."),
             ]),
-            "sec-incidents/4001": dict(ts=n - 5 * DAY, msgs=[
+            "T0COMPANYA/sec-incidents/4001": dict(ts=n - 5 * DAY, msgs=[
                 ("asha", n - 5 * DAY, "Q3 breach confirmed as credential stuffing on the admin portal. Forcing resets on 37 accounts."),
             ]),
-            "vendor-collab/5001": dict(ts=n - 2 * DAY, msgs=[
+            "T0VENDOR/vendor-collab/5001": dict(ts=n - 2 * DAY, msgs=[
                 ("kim", n - 2 * DAY, "Can you share the sandbox setup steps for the payouts API integration?"),
                 ("jdoe", n - 2 * DAY + 300, "The vendor API onboarding guide in the shared Drive folder has the sandbox steps."),
             ]),
@@ -211,7 +211,7 @@ class World:
 
     def slack_remove_member(self, channel: str, username: str, push: bool = True):
         self.channels[channel]["members"].discard(username)
-        for tid in [t for t in self.threads if t.startswith(channel + "/")]:
+        for tid in [t for t in self.threads if t.rsplit("/", 2)[-2] == channel]:
             self._changed("slack", tid, push, kind="acl")
 
     def slack_post(self, channel: str, username: str, text: str, thread_id: str | None = None, push: bool = True):
@@ -220,7 +220,7 @@ class World:
             self.threads[thread_id]["msgs"].append((username, now, text))
             self.threads[thread_id]["ts"] = now
         else:
-            thread_id = f"{channel}/{int(now * 1000)}"
+            thread_id = f"{self.channels[channel]['workspace']}/{channel}/{int(now * 1000)}"
             self.threads[thread_id] = dict(ts=now, msgs=[(username, now, text)])
         self._changed("slack", thread_id, push)
         return thread_id

@@ -129,7 +129,7 @@ def _key(create: bool = False) -> bytes | None:
 
 def _seal(nonce: bytes, plaintext: bytes, digest: str) -> tuple[str, bytes]:
     if not encryption_available():
-        return "none", plaintext     # flagged by health; fatal config error outside demo mode
+        raise RuntimeError("Audit encryption dependency is missing; refusing plaintext persistence")
     key = _key(create=True)
     if key is None:
         raise RuntimeError("audit content key unavailable: set IB_AUDIT_CONTENT_KEY")

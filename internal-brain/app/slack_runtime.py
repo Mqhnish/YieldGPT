@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 from .config import DATA_DIR
+from . import slack_oauth
 from .sources.slack_events import SlackEventReceiver, SlackEventStore
 from .sources.slack_live import SlackLiveConnector
 
@@ -29,7 +30,7 @@ def _env_name(value):
 
 def _required_secret(name):
     value = os.environ.get(_env_name(name), "")
-    if not value or not value.strip():
+    if not value or not value.strip() or value.upper().startswith(('YOUR_', 'PLACEHOLDER', 'REPLACE', 'CHANGE_ME')):
         raise ValueError("A required Slack credential environment variable is unset")
     return value
 
@@ -43,6 +44,7 @@ def create_live_slack_from_env():
     """
     config_path = os.getenv("IB_SLACK_CONFIG", "").strip()
     if not config_path:
+        slack_oauth.RUNTIME = None
         return None
     try:
         path = Path(config_path)
@@ -51,6 +53,26 @@ def create_live_slack_from_env():
         settings = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         raise ValueError("Slack configuration file is unreadable or invalid") from None
+    if isinstance(settings,dict) and set(settings)=={'workspaces'}:
+        rows=settings['workspaces']
+        if not isinstance(rows,list) or not 1 <= len(rows) <= 100:
+            raise ValueError('Slack configuration requires 1–100 workspaces')
+        slack_oauth.configure([row.get('team_id') for row in rows if isinstance(row,dict)])
+        built=[]
+        try:
+            for row in rows:
+                built.append(_build_workspace(row))
+            from .sources.slack_multi import SlackWorkspaces, SlackWorkspaceEvents
+            return SlackWorkspaces([c for c,r in built]), SlackWorkspaceEvents([r for c,r in built])
+        except Exception:
+            for c,r in built:
+                c.client.close()
+            raise
+    slack_oauth.configure([settings.get('team_id')] if isinstance(settings,dict) else [])
+    return _build_workspace(settings)
+
+
+def _build_workspace(settings):
     if not isinstance(settings, dict) or set(settings) - _ALLOWED:
         raise ValueError("Slack configuration contains unsupported fields")
     try:
@@ -66,7 +88,7 @@ def create_live_slack_from_env():
     if (not isinstance(channels, list) or not channels or len(channels) > 1000
             or not all(isinstance(c, str) and re.fullmatch(r"[CGD][A-Z0-9]+", c) for c in channels)):
         raise ValueError("Slack configuration requires a conversation allowlist")
-    if not isinstance(env_map, dict) or not env_map:
+    if not isinstance(env_map, dict) or (not env_map and slack_oauth.RUNTIME is None):
         raise ValueError("Slack configuration requires delegated user credential mappings")
     for account, env_name in env_map.items():
         if not isinstance(account, str) or not _ACCOUNT.fullmatch(account) or account.split("/", 1)[0] != team_id:
@@ -86,6 +108,10 @@ def create_live_slack_from_env():
     # each request so rotations don't require cached credential invalidation.
     lookup = dict(env_map)
     def resolve(mapped_account):
+        if slack_oauth.RUNTIME is not None:
+            token = slack_oauth.RUNTIME.credential(mapped_account)
+            if token is not None:
+                return token
         env_name = lookup.get(mapped_account)
         return os.environ.get(env_name) if env_name else None
     try:

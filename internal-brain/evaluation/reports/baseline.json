@@ -1,0 +1,2110 @@
+{
+  "schema": "internal-brain.evaluation/2",
+  "status": "completed",
+  "variant": "frozen_member1_lexical",
+  "generated_at": "2026-09-29T11:49:34.070848+00:00",
+  "provider": "stub",
+  "corpus": "fictional Company A app/sources/world.py",
+  "case_sha256": "5fa11b74bfa5590e754d713e24113bf69b35a70572c7574dd18e8ad81c0d6fb1",
+  "implementation_sha256_at_start": {
+    "brain.py": "a5edab72bc405931b60ee6de9493b796ca647fd760505effe9ae40264d50337c",
+    "index.py": "3672e279888ff5cfd8fec622ad43598f5092d8669f7de7d79c7ab9edb5cbdeb3",
+    "grounding.py": "b2406c5584206f35bd91ae5b275bf700d2b78df6cb2737dcaf6f55fe56eb9fa3",
+    "llm.py": "cbab80efbc4f09edce406dcff7108cb22708864af594936d69b5b24e1cf31564",
+    "planner.py": "2624d946eedc068a0795ccf248deb6b9aaaa11875eee6eb030f4ef149cc6c332"
+  },
+  "summary": {
+    "total": 65,
+    "passed": 50,
+    "source_obligations": 56,
+    "source_obligations_met": 48,
+    "source_recall": 0.8571428571428571,
+    "unauthorized_citations": 0,
+    "unauthorized_context_sources": 0,
+    "forbidden_citations": 2,
+    "forbidden_context_sources": 2,
+    "no_answer_cases": 16,
+    "no_answer_correct": 13,
+    "elapsed_seconds": 0.504
+  },
+  "categories": {
+    "exact_identifier": {
+      "passed": 4,
+      "total": 10
+    },
+    "paraphrase": {
+      "passed": 18,
+      "total": 22
+    },
+    "cross_source": {
+      "passed": 5,
+      "total": 5
+    },
+    "time": {
+      "passed": 4,
+      "total": 6
+    },
+    "no_evidence": {
+      "passed": 4,
+      "total": 5
+    },
+    "security": {
+      "passed": 15,
+      "total": 17
+    },
+    "grounding": {
+      "passed": 15,
+      "total": 28
+    }
+  },
+  "cases": [
+    {
+      "id": "exact-migration-epic",
+      "category": "exact_identifier",
+      "user": "jdoe",
+      "question": "What is MIG-1?",
+      "passed": false,
+      "failures": [
+        "missing fact: 70%"
+      ],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "jira:MIG-9",
+        "slack:T0COMPANYA/db-migration/2000",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "jira:MIG-9",
+        "slack:T0COMPANYA/db-migration/2000",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Jira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S1]\nBlocked by MIG-7. [S1]\nJira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S2]\nJira MIG-9 [Done] Tune ORM connection pool for PG16. [S3]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S4]\nSlack #db-migration, @dana: Kickoff for the database migration project. Tracking everything in the MIG Jira project. [S5]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 18.537
+    },
+    {
+      "id": "exact-migration-blocker",
+      "category": "exact_identifier",
+      "user": "jdoe",
+      "question": "Explain MIG-7.",
+      "passed": false,
+      "failures": [
+        "missing citation jira:MIG-7",
+        "unexpected abstention",
+        "missing fact: 40 seconds / 40s"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.872
+    },
+    {
+      "id": "exact-pool-ticket",
+      "category": "exact_identifier",
+      "user": "jdoe",
+      "question": "What changed in MIG-9?",
+      "passed": false,
+      "failures": [
+        "missing citation jira:MIG-9",
+        "unexpected abstention",
+        "missing fact: 40 per pod"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.018
+    },
+    {
+      "id": "exact-payment-incident",
+      "category": "exact_identifier",
+      "user": "ravi",
+      "question": "What happened in PAY-101?",
+      "passed": false,
+      "failures": [
+        "missing fact: expired"
+      ],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nFollow-up tickets created: PAY-102 and PAY-103. [S1]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S2]\nFollow-up to PAY-101. [S2]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S3]\nFollow-up to PAY-101. [S3]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S4]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 11.491
+    },
+    {
+      "id": "exact-expiry-alert",
+      "category": "exact_identifier",
+      "user": "ravi",
+      "question": "What does PAY-102 ask us to do?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Jira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 10.784
+    },
+    {
+      "id": "exact-renewal-failure",
+      "category": "exact_identifier",
+      "user": "ravi",
+      "question": "What was fixed in PAY-103?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Jira PAY-103 [Done] Make cert renewal job fail loudly. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S4]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 12.025
+    },
+    {
+      "id": "exact-auth-adr",
+      "category": "exact_identifier",
+      "user": "jdoe",
+      "question": "Explain ADR-17.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. [S1]\nSticky server sessions were rejected because they block horizontal scaling. [S1]\nRefresh tokens rotate on every use. [S1]\nOwner: platform team. [S1]\nDiscussion happened in #auth-design. [S1]\nSlack #auth-design, @ravi: Agreed. Writing it up as ADR-17 in Confluence. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.343
+    },
+    {
+      "id": "exact-runbook",
+      "category": "exact_identifier",
+      "user": "ravi",
+      "question": "Show me CONF-101.",
+      "passed": false,
+      "failures": [
+        "missing citation confluence:CONF-101",
+        "unexpected abstention"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.596
+    },
+    {
+      "id": "exact-drive-postmortem",
+      "category": "exact_identifier",
+      "user": "jdoe",
+      "question": "Summarize DRV-1.",
+      "passed": false,
+      "failures": [
+        "missing citation gdrive:DRV-1",
+        "unexpected abstention",
+        "missing fact: 47 minutes"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.159
+    },
+    {
+      "id": "exact-security-issue",
+      "category": "exact_identifier",
+      "user": "asha",
+      "question": "What is PAY-110?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "jira:PAY-110"
+      ],
+      "context_sources": [
+        "jira:PAY-110"
+      ],
+      "answer": "Jira PAY-110 [Open] Security vulnerability: tokenisation endpoint writes card numbers to debug logs. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.548
+    },
+    {
+      "id": "migration-progress",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "How far along is the database migration?",
+      "passed": false,
+      "failures": [
+        "missing fact: 70%"
+      ],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "answer": "Slack #db-migration, @dana: Kickoff for the database migration project. Tracking everything in the MIG Jira project. [S1]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S2]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.213
+    },
+    {
+      "id": "migration-cutover-date",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "When is the move to Postgres 16 planned?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7"
+      ],
+      "answer": "Jira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S1]\nCutover to Postgres 16 is planned for 20 Oct. [S1]\nJira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S2]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 9.327
+    },
+    {
+      "id": "migration-delay",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "Why can't we finish the database cutover?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S1]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S2]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S3]\nCutover to Postgres 16 is planned for 20 Oct. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 10.202
+    },
+    {
+      "id": "migration-night-work",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "Who suggested doing the backfill overnight?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Slack #db-migration, @jdoe: Could we batch the backfill overnight to cut write load? I can prototype it this week. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.327
+    },
+    {
+      "id": "migration-pool",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "What size is the ORM connection pool per pod?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "jira:MIG-9"
+      ],
+      "context_sources": [
+        "jira:MIG-9"
+      ],
+      "answer": "Jira MIG-9 [Done] Tune ORM connection pool for PG16. [S1]\nConnection pool resized to 40 per pod. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.542
+    },
+    {
+      "id": "migration-sequence",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "What order should we follow for the database cutover?",
+      "passed": false,
+      "failures": [
+        "missing citation gdrive:DRV-2",
+        "missing fact: freeze schema",
+        "missing fact: switch read traffic"
+      ],
+      "citations": [
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Jira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S1]\nReplication lag on the orders table reaches 40 seconds during dual-write. [S1]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.101
+    },
+    {
+      "id": "migration-lag-threshold",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "How low must replication lag be before switching traffic?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Jira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S1]\nReplication lag on the orders table reaches 40 seconds during dual-write. [S1]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S2]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S3]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S4]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 8.574
+    },
+    {
+      "id": "auth-scalability",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "Why were sticky sessions rejected for authentication?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Slack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S1]\nConfluence \"ADR-17: New auth service design decision\": Sticky server sessions were rejected because they block horizontal scaling. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.504
+    },
+    {
+      "id": "auth-refresh",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "How are refresh tokens handled by the new auth service?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. [S1]\nSticky server sessions were rejected because they block horizontal scaling. [S1]\nRefresh tokens rotate on every use. [S1]\nOwner: platform team. [S1]\nDiscussion happened in #auth-design. [S1]\nSlack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.97
+    },
+    {
+      "id": "auth-owner",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "Which team owns the new authentication service?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. [S1]\nSticky server sessions were rejected because they block horizontal scaling. [S1]\nRefresh tokens rotate on every use. [S1]\nOwner: platform team. [S1]\nDiscussion happened in #auth-design. [S1]\nSlack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.015
+    },
+    {
+      "id": "auth-decision",
+      "category": "paraphrase",
+      "user": "asha",
+      "question": "Which authentication approach did we choose?",
+      "passed": false,
+      "failures": [
+        "missing citation confluence:CONF-102",
+        "unexpected abstention",
+        "missing fact: short-lived JWT / token-exchange"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.021
+    },
+    {
+      "id": "payments-root-cause",
+      "category": "paraphrase",
+      "user": "ravi",
+      "question": "Why did card payments stop working in Q2?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Postmortem for the Q2 payment outage. [S1]\nImpact: card payments failed for 47 minutes. [S1]\nRoot cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S1]\nFollow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S1]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S2]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S4]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 12.924
+    },
+    {
+      "id": "payments-duration",
+      "category": "paraphrase",
+      "user": "jdoe",
+      "question": "How long were card payments unavailable during the Q2 outage?",
+      "passed": false,
+      "failures": [
+        "missing fact: 47 minutes"
+      ],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103"
+      ],
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 11.448
+    },
+    {
+      "id": "payments-protocol",
+      "category": "paraphrase",
+      "user": "ravi",
+      "question": "How does payment-service communicate with the card network gateway?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 3: If certificate expiry is suspected, run the cert-check job and page the payments lead. [S1]\nStep 4: Post status updates in #payments-oncall every 15 minutes. [S1]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S2]\nDrive \"Postmortem: Q2 payment outage\": Root cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S3]\nConfluence \"Payment gateway architecture\": payment-service calls the card network gateway over mutual TLS. [S4]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S5]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S5]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 12.872
+    },
+    {
+      "id": "payments-oncall-cadence",
+      "category": "paraphrase",
+      "user": "ravi",
+      "question": "How often should payment incident status updates be posted?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "jira:PAY-101"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "jira:PAY-101"
+      ],
+      "answer": "Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 3: If certificate expiry is suspected, run the cert-check job and page the payments lead. [S1]\nStep 4: Post status updates in #payments-oncall every 15 minutes. [S1]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S2]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.48
+    },
+    {
+      "id": "payments-renewal",
+      "category": "paraphrase",
+      "user": "ravi",
+      "question": "How frequently are the gateway certificates renewed?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "payment-service calls the card network gateway over mutual TLS. [S1]\nCertificates are renewed by a nightly job. [S1]\nSlack #payments-oncall, @ravi: Found it: gateway certificate expired. Renewed manually, payments recovering. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S3]\nDrive \"Postmortem: Q2 payment outage\": Root cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S4]\nConfluence \"Runbook: payment-service incident\": Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S5]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 13.385
+    },
+    {
+      "id": "vendor-sandbox",
+      "category": "paraphrase",
+      "user": "kim",
+      "question": "How do I set up the payouts API sandbox?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-3",
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-3",
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "answer": "Vendor onboarding guide for the payouts API. [S1]\nSandbox setup: request a sandbox key from the vendor portal, then call the test payout endpoint. [S1]\nSlack #vendor-collab, @kim: Can you share the sandbox setup steps for the payouts API integration? [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.976
+    },
+    {
+      "id": "vendor-guide-location",
+      "category": "paraphrase",
+      "user": "kim",
+      "question": "Where did Jane say I could find the vendor sandbox steps?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-3",
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-3",
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "answer": "Slack #vendor-collab, @jdoe: The vendor API onboarding guide in the shared Drive folder has the sandbox steps. [S1]\nDrive \"Vendor API onboarding guide\": Sandbox setup: request a sandbox key from the vendor portal, then call the test payout endpoint. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 8.678
+    },
+    {
+      "id": "security-accounts",
+      "category": "paraphrase",
+      "user": "asha",
+      "question": "How many staff accounts were compromised in the Q3 breach?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "gdrive:DRV-4",
+        "jira:SEC-4",
+        "slack:T0COMPANYA/sec-incidents/4001"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "gdrive:DRV-4",
+        "jira:SEC-4",
+        "slack:T0COMPANYA/sec-incidents/4001"
+      ],
+      "answer": "Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S1]\nAttack source was a botnet using leaked passwords. [S1]\nAll affected accounts were force-reset and MFA made mandatory. [S1]\nJira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S2]\nTrack remediation of the Q3 breach. [S2]\nDrive \"Security incident evidence log\": Evidence log for the Q3 breach: attacker IP ranges and compromised account list. [S3]\nSlack #sec-incidents, @asha: Q3 breach confirmed as credential stuffing on the admin portal. Forcing resets on 37 accounts. [S4]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 9.136
+    },
+    {
+      "id": "security-response",
+      "category": "paraphrase",
+      "user": "asha",
+      "question": "What was done to affected accounts after the credential stuffing attack?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "jira:SEC-4",
+        "slack:T0COMPANYA/sec-incidents/4001"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "jira:SEC-4",
+        "slack:T0COMPANYA/sec-incidents/4001"
+      ],
+      "answer": "Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S1]\nAttack source was a botnet using leaked passwords. [S1]\nAll affected accounts were force-reset and MFA made mandatory. [S1]\nSlack #sec-incidents, @asha: Q3 breach confirmed as credential stuffing on the admin portal. Forcing resets on 37 accounts. [S2]\nJira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 8.767
+    },
+    {
+      "id": "security-remediation",
+      "category": "paraphrase",
+      "user": "asha",
+      "question": "Which admin portal security vulnerabilities remain open?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "jira:PAY-110",
+        "jira:SEC-4"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "jira:PAY-110",
+        "jira:SEC-4"
+      ],
+      "answer": "Jira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S1]\nOpen security vulnerabilities: admin portal rate limiting, password reuse. [S1]\nJira PAY-110 [Open] Security vulnerability: tokenisation endpoint writes card numbers to debug logs. [S2]\nSecurity vulnerability: debug logging on the tokenisation endpoint captures full card numbers. [S2]\nConfluence \"Q3 breach incident report\": Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.223
+    },
+    {
+      "id": "security-evidence",
+      "category": "paraphrase",
+      "user": "asha",
+      "question": "Where are the attacker IP ranges and compromised account list recorded?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "gdrive:DRV-4",
+        "jira:SEC-4"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "gdrive:DRV-4",
+        "jira:SEC-4"
+      ],
+      "answer": "Evidence log for the Q3 breach: attacker IP ranges and compromised account list. [S1]\nConfluence \"Q3 breach incident report\": Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S2]\nJira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S3]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.83
+    },
+    {
+      "id": "cross-migration",
+      "category": "cross_source",
+      "user": "jdoe",
+      "question": "What's the status of the database migration project and were there any blockers raised in Slack last week?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Jira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S1]\nStatus: 70% of tables migrated. [S1]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S2]\nJira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S3]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S4]",
+      "source_obligations": 2,
+      "source_obligations_met": 2,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 10.006
+    },
+    {
+      "id": "cross-payment",
+      "category": "cross_source",
+      "user": "ravi",
+      "question": "What was the root cause of the payment outage last quarter, and what follow-up tickets were created?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nFollow-up to PAY-101. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "source_obligations": 3,
+      "source_obligations_met": 3,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 15.268
+    },
+    {
+      "id": "cross-auth",
+      "category": "cross_source",
+      "user": "jdoe",
+      "question": "Summarize the auth service design decision and the Slack discussion that led to ADR-17.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. [S1]\nSticky server sessions were rejected because they block horizontal scaling. [S1]\nRefresh tokens rotate on every use. [S1]\nOwner: platform team. [S1]\nDiscussion happened in #auth-design. [S1]\nSlack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S2]",
+      "source_obligations": 2,
+      "source_obligations_met": 2,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 11.417
+    },
+    {
+      "id": "cross-cutover-checklist",
+      "category": "cross_source",
+      "user": "jdoe",
+      "question": "Summarize MIG-1 and the migration cutover checklist in Drive.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S1]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S2]\nCutover to Postgres 16 is planned for 20 Oct. [S2]\nJira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S3]\nCutover cannot proceed until this is fixed. [S3]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S4]",
+      "source_obligations": 2,
+      "source_obligations_met": 2,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 10.59
+    },
+    {
+      "id": "cross-security",
+      "category": "cross_source",
+      "user": "asha",
+      "question": "What does the Q3 breach incident report say, and what remediation is tracked in SEC-4?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "jira:SEC-4"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "jira:SEC-4"
+      ],
+      "answer": "Jira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S1]\nTrack remediation of the Q3 breach. [S1]\nConfluence \"Q3 breach incident report\": Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S2]",
+      "source_obligations": 2,
+      "source_obligations_met": 2,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.657
+    },
+    {
+      "id": "time-recent-blocker",
+      "category": "time",
+      "user": "jdoe",
+      "question": "What database migration blockers were discussed in Slack in the last 7 days?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "context_sources": [
+        "slack:T0COMPANYA/db-migration/2001"
+      ],
+      "answer": "Slack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 5.709
+    },
+    {
+      "id": "time-no-recent-auth",
+      "category": "time",
+      "user": "jdoe",
+      "question": "What auth-design messages appeared in Slack in the last 3 days?",
+      "passed": false,
+      "failures": [
+        "forbidden citation slack:T0COMPANYA/auth-design/1001",
+        "forbidden model context slack:T0COMPANYA/auth-design/1001",
+        "expected neutral no-answer with no citations"
+      ],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Decision: the new auth service will issue short-lived JWTs through a token-exchange service using OAuth2. [S1]\nSticky server sessions were rejected because they block horizontal scaling. [S1]\nRefresh tokens rotate on every use. [S1]\nOwner: platform team. [S1]\nDiscussion happened in #auth-design. [S1]\nSlack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S2]",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "forbidden_context_sources": [
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "no_answer_expected": true,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.239
+    },
+    {
+      "id": "time-auth-last-sprint",
+      "category": "time",
+      "user": "jdoe",
+      "question": "What was discussed in the Slack auth-design thread last sprint?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "context_sources": [
+        "confluence:CONF-102",
+        "slack:T0COMPANYA/auth-design/1001"
+      ],
+      "answer": "Slack #auth-design, @asha: For the new auth service design: token exchange with short-lived JWTs, or sticky sessions? [S1]\nConfluence \"ADR-17: New auth service design decision\": Discussion happened in #auth-design. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 9.564
+    },
+    {
+      "id": "time-vendor-week",
+      "category": "time",
+      "user": "kim",
+      "question": "What was said about the sandbox in vendor-collab Slack last week?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "context_sources": [
+        "slack:T0VENDOR/vendor-collab/5001"
+      ],
+      "answer": "Slack #vendor-collab, @jdoe: The vendor API onboarding guide in the shared Drive folder has the sandbox steps. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.993
+    },
+    {
+      "id": "time-kickoff-month",
+      "category": "time",
+      "user": "jdoe",
+      "question": "Find the database migration kickoff message in Slack from the last 30 days.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "context_sources": [
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "answer": "Slack #db-migration, @dana: Kickoff for the database migration project. Tracking everything in the MIG Jira project. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 5.458
+    },
+    {
+      "id": "time-old-incident",
+      "category": "time",
+      "user": "ravi",
+      "question": "Were any payment outage messages posted in Slack in the last week?",
+      "passed": false,
+      "failures": [
+        "forbidden citation slack:T0COMPANYA/payments-oncall/3001",
+        "forbidden model context slack:T0COMPANYA/payments-oncall/3001",
+        "expected neutral no-answer with no citations"
+      ],
+      "citations": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "forbidden_context_sources": [
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "no_answer_expected": true,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 12.807
+    },
+    {
+      "id": "missing-unicorn",
+      "category": "no_evidence",
+      "user": "kim",
+      "question": "Show me the unicorn migration to Mars report.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.911
+    },
+    {
+      "id": "missing-cafeteria",
+      "category": "no_evidence",
+      "user": "jdoe",
+      "question": "What is the cafeteria lunch menu for tomorrow?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.646
+    },
+    {
+      "id": "missing-identifier",
+      "category": "no_evidence",
+      "user": "ravi",
+      "question": "What is PAY-99999?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.05
+    },
+    {
+      "id": "missing-cfo-salary",
+      "category": "no_evidence",
+      "user": "priya",
+      "question": "What is the CFO's annual salary?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.039
+    },
+    {
+      "id": "missing-approval",
+      "category": "no_evidence",
+      "user": "jdoe",
+      "question": "Who approved a 40 million dollar budget for the database migration?",
+      "passed": false,
+      "failures": [
+        "expected neutral no-answer with no citations"
+      ],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "slack:T0COMPANYA/db-migration/2000"
+      ],
+      "answer": "Slack #db-migration, @dana: Kickoff for the database migration project. Tracking everything in the MIG Jira project. [S1]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S2]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S3]",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 8.006
+    },
+    {
+      "id": "security-contractor-breach",
+      "category": "security",
+      "user": "kim",
+      "question": "Show me the security incident report from the Q3 breach.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.208
+    },
+    {
+      "id": "security-contractor-jira",
+      "category": "security",
+      "user": "kim",
+      "question": "What is MIG-1?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 13.986
+    },
+    {
+      "id": "security-issue-level-denial",
+      "category": "security",
+      "user": "jdoe",
+      "question": "What is PAY-110?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 7.758
+    },
+    {
+      "id": "security-inherited-page-denial",
+      "category": "security",
+      "user": "jdoe",
+      "question": "Show me the engineering reorg team mapping.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 5.838
+    },
+    {
+      "id": "security-named-page-allow",
+      "category": "security",
+      "user": "dana",
+      "question": "Show me the engineering reorg plan.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-104"
+      ],
+      "context_sources": [
+        "confluence:CONF-104"
+      ],
+      "answer": "Draft reorg: merge the payments and billing squads under one lead from November. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 5.386
+    },
+    {
+      "id": "security-inherited-page-allow",
+      "category": "security",
+      "user": "dana",
+      "question": "Show me CONF-105.",
+      "passed": false,
+      "failures": [
+        "missing citation confluence:CONF-105",
+        "unexpected abstention"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.627
+    },
+    {
+      "id": "security-admin-no-payment",
+      "category": "security",
+      "user": "dana",
+      "question": "Show me CONF-101.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.1
+    },
+    {
+      "id": "security-compliance-no-evidence",
+      "category": "security",
+      "user": "priya",
+      "question": "Show me the Q3 breach evidence log.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.912
+    },
+    {
+      "id": "security-private-leads-allow",
+      "category": "security",
+      "user": "ravi",
+      "question": "What private migration blocker was raised in mig-leads?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2000",
+        "slack:T0COMPANYA/db-migration/2001",
+        "slack:T0COMPANYA/mig-leads/2101"
+      ],
+      "context_sources": [
+        "gdrive:DRV-2",
+        "jira:MIG-1",
+        "jira:MIG-7",
+        "slack:T0COMPANYA/db-migration/2000",
+        "slack:T0COMPANYA/db-migration/2001",
+        "slack:T0COMPANYA/mig-leads/2101"
+      ],
+      "answer": "Slack #mig-leads, @ravi: Private blocker: the licence for the migration tooling vendor expires 25 Oct, which could slip the cutover. [S1]\nJira MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S2]\nBlocked by MIG-7. [S2]\nSlack #db-migration, @ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S3]\nJira MIG-7 [Blocked] Replication lag on orders table during dual-write. [S4]\nDrive \"Migration cutover checklist\": Cutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S5]\nSlack #db-migration, @dana: Kickoff for the database migration project. Tracking everything in the MIG Jira project. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 14.359
+    },
+    {
+      "id": "security-private-leads-deny",
+      "category": "security",
+      "user": "jdoe",
+      "question": "What was said in mig-leads about the vendor licence?",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.778
+    },
+    {
+      "id": "security-private-oncall-allow",
+      "category": "security",
+      "user": "ravi",
+      "question": "What did payments-oncall say about the gateway certificate?",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "context_sources": [
+        "confluence:CONF-101",
+        "confluence:CONF-106",
+        "gdrive:DRV-1",
+        "jira:PAY-101",
+        "jira:PAY-102",
+        "jira:PAY-103",
+        "slack:T0COMPANYA/payments-oncall/3001"
+      ],
+      "answer": "Slack #payments-oncall, @ravi: Found it: gateway certificate expired. Renewed manually, payments recovering. [S1]\nConfluence \"Runbook: payment-service incident\": Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S3]\nDrive \"Postmortem: Q2 payment outage\": Root cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S4]\nConfluence \"Payment gateway architecture\": payment-service calls the card network gateway over mutual TLS. [S5]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S6]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 14.103
+    },
+    {
+      "id": "security-poisoned-notes",
+      "category": "security",
+      "user": "kim",
+      "question": "vendor payouts API integration notes",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "gdrive:DRV-3"
+      ],
+      "context_sources": [
+        "gdrive:DRV-3"
+      ],
+      "answer": "Vendor onboarding guide for the payouts API. [S1]\nSandbox setup: request a sandbox key from the vendor portal, then call the test payout endpoint. [S1]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.802
+    },
+    {
+      "id": "security-external-shared-guide",
+      "category": "security",
+      "user": "kim",
+      "question": "Show me DRV-3.",
+      "passed": false,
+      "failures": [
+        "missing citation gdrive:DRV-3",
+        "unexpected abstention"
+      ],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 1,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 3.793
+    },
+    {
+      "id": "security-external-internal-drive",
+      "category": "security",
+      "user": "kim",
+      "question": "Show me DRV-2.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 4.068
+    },
+    {
+      "id": "security-engineer-report",
+      "category": "security",
+      "user": "asha",
+      "question": "Show me the Q3 breach incident report.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "jira:SEC-4"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "jira:SEC-4"
+      ],
+      "answer": "Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S1]\nAttack source was a botnet using leaked passwords. [S1]\nAll affected accounts were force-reset and MFA made mandatory. [S1]\nJira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S2]\nTrack remediation of the Q3 breach. [S2]",
+      "source_obligations": 1,
+      "source_obligations_met": 1,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 6.51
+    },
+    {
+      "id": "security-vulnerability-list",
+      "category": "security",
+      "user": "asha",
+      "question": "Show me all security vulnerabilities.",
+      "passed": true,
+      "failures": [],
+      "citations": [
+        "confluence:CONF-103",
+        "jira:PAY-110",
+        "jira:SEC-4"
+      ],
+      "context_sources": [
+        "confluence:CONF-103",
+        "jira:PAY-110",
+        "jira:SEC-4"
+      ],
+      "answer": "Jira PAY-110 [Open] Security vulnerability: tokenisation endpoint writes card numbers to debug logs. [S1]\nSecurity vulnerability: debug logging on the tokenisation endpoint captures full card numbers. [S1]\nJira SEC-4 [In Progress] Q3 breach remediation and security vulnerabilities list. [S2]\nOpen security vulnerabilities: admin portal rate limiting, password reuse. [S2]\nConfluence \"Q3 breach incident report\": Q3 breach: a credential stuffing attack against the admin portal compromised 37 staff accounts. [S3]",
+      "source_obligations": 2,
+      "source_obligations_met": 2,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": false,
+      "no_answer_correct": false,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 8.44
+    },
+    {
+      "id": "security-engineer-no-vulns",
+      "category": "security",
+      "user": "jdoe",
+      "question": "Show me all security vulnerabilities.",
+      "passed": true,
+      "failures": [],
+      "citations": [],
+      "context_sources": [],
+      "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
+      "source_obligations": 0,
+      "source_obligations_met": 0,
+      "unauthorized_citations": [],
+      "unauthorized_context_sources": [],
+      "forbidden_citations": [],
+      "forbidden_context_sources": [],
+      "no_answer_expected": true,
+      "no_answer_correct": true,
+      "measurements": [],
+      "phases_ms": {},
+      "elapsed_ms": 5.73
+    }
+  ],
+  "grounding": {
+    "category": "grounding",
+    "total": 28,
+    "passed": 15,
+    "false_accepts": 13,
+    "false_rejects": 0,
+    "case_sha256": "f2584d91648949c87644e6b2cd64993b7797060633451d57bc45526dbdd7b87b",
+    "cases": [
+      {
+        "id": "negation-approval-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "negation-approval-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "negation-required-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "negation-required-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "negation-completion-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "negation-completion-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "number-duration-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "number-duration-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "number-percent-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "number-percent-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "number-decimal-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "number-decimal-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "number-accounts-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "number-accounts-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "date-cutover-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "date-cutover-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "date-deadline-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "date-deadline-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "uncertainty-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "uncertainty-altered",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "short-yes-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "short-yes-altered",
+        "expected_accept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "short-status-supported",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "short-status-altered",
+        "expected_accept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "contradiction-preserved",
+        "expected_accept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "contradiction-wrong-citation",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "unknown-ref-alongside-valid",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      },
+      {
+        "id": "uncited-short-claim",
+        "expected_accept": false,
+        "accepted": true,
+        "passed": false
+      }
+    ],
+    "scope": "Exact supported passage decisions. Not broad semantic entailment or contradictory evidence retrieval."
+  }
+}

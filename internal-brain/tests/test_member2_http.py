@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 from fastapi.testclient import TestClient
+from app import server
 
 from app import main
 from app.sources.registry import build_connectors
@@ -10,8 +11,9 @@ from app.sources.world import World
 
 
 def headers(client, username='dana'):
-    result = client.post('/api/login', json={'username': username, 'password': 'demo'})
-    return {'Authorization': 'Bearer ' + result.json()['token']}
+    # An authenticated test principal; live-mode UI login deliberately refuses demo credentials.
+    from app import identity
+    return {'Authorization': 'Bearer ' + identity.login(username, 'demo')}
 
 
 @pytest.fixture
@@ -26,7 +28,7 @@ def live_app(monkeypatch):
     worker.status.return_value = {'running': True}
     monkeypatch.setattr(main, 'create_live_slack_from_env', lambda: (connector, receiver))
     monkeypatch.setattr(main, 'SlackMaintenance', lambda *a, **k: worker)
-    with TestClient(main.app) as client:
+    with TestClient(server.app) as client:
         yield client, receiver, worker
     worker.start.assert_called_once()
     worker.stop.assert_called_once()
@@ -35,6 +37,7 @@ def live_app(monkeypatch):
 
 def test_live_session_disables_mutations_and_shared_secret_slack_route(live_app):
     client, receiver, worker = live_app
+    assert client.post('/api/login', json={'username':'dana','password':'demo'}).status_code == 403
     auth = headers(client)
     session = client.get('/api/session', headers=auth).json()
     assert session['source_mode'] == 'mixed'
@@ -94,6 +97,6 @@ def test_operational_counts_are_admin_only_and_poll_is_serialized(live_app):
 
 def test_unconfigured_slack_endpoint_is_absent(monkeypatch):
     monkeypatch.setattr(main, 'create_live_slack_from_env', lambda: None)
-    with TestClient(main.app) as client:
+    with TestClient(server.app) as client:
         assert client.post('/api/slack/events', content=b'{}').status_code == 404
         assert client.get('/api/session', headers=headers(client,'jdoe')).json()['source_mode'] == 'simulated'

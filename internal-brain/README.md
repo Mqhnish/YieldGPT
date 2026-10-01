@@ -1,122 +1,80 @@
-# Internal Brain — Member 2 delivery
+# Internal Brain — integrated team delivery
 
-Built **on Member 1's `internal-brain (2).zip`**, preserving his native permission, identity, synchronization and audit interfaces. Member 2 adds retrieval, evidence selection, answer checks, citation previews, an employee interface and an optional live Slack adapter.
+This project integrates Member 2’s retrieval and answer checks with the supplied **Tencent---YieldGPT-main.zip**, including Member 3’s encrypted audit log, protected checkpoint adapter, compliance console and delivery controls. The previous project is preserved separately.
 
-The default app runs locally with fictional Company A data across Confluence, Jira, Slack and Google Drive. It needs **no cloud account or API key**. It returns complete source passages with citations. An optional language model selects which passages to use; the server supplies the actual factual text.
+The default is a local Company A demonstration: Confluence, Jira, Slack and Drive fixtures with different native permission rules. A model can select evidence passages; the server reconstructs the factual text and citations from authorized source snapshots. Real credentials are intentionally placeholders.
 
-## Start here
+## Run locally
 
-Use Python 3.11 or newer (verified with Python 3.14). In this folder:
+Python 3.11+; this delivery was tested with Python 3.14.
 
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+python -m pip install -r requirements-lock.txt
+cp .env.example .env
+python -m uvicorn app.server:app --host 127.0.0.1 --port 8000 --workers 1 --no-access-log
 ```
 
-Open **http://127.0.0.1:8000**. Choose Jane Doe and enter `demo`. The original teammate interface is retained at **/console**. Stop the server with Ctrl+C. On Windows, activate with `.venv\Scripts\activate` instead.
+Open http://127.0.0.1:8000. On Windows use `.venv\Scripts\activate`. Choose a demo persona; passwords are `demo`. `.env` loads automatically, and exported variables take precedence. Never commit real `.env` files. Use `IB_ENV_FILE` to select another settings file.
 
-Try these questions:
+**Always use `app.server:app`.** Direct `app.main` startup is rejected. Questions, citation previews and replayed answers pass through Member 3’s checkpoint-before-release middleware. A checkpoint failure returns a generic 503 and withholds the answer.
 
-- What's the status of the database migration project and were there any blockers raised in Slack last week?
-- What are the steps in the payment-gateway failover runbook?
-- Why did we choose JWT for authentication?
-- Switch to contractor Kim and ask for the Q3 breach incident report. The response reveals no source metadata.
-
-| Account | Role | Demonstrates |
+| Account | Role | Source access example |
 |---|---|---|
-| `jdoe` | Jane, backend engineer | Cross-platform retrieval with team access |
-| `ravi` | Payments on-call | Payments documents and private on-call context |
-| `asha` | Security engineer | Restricted security materials |
-| `kim` | External contractor | Narrow shared access; neutral missing answers |
-| `priya` | Compliance | Audit inquiry via the existing console |
-| `dana` | Platform administrator | Operations and audit metadata; no automatic document access |
+| jdoe | Backend engineer | Engineering documentation and team conversations |
+| ravi | Payments on-call | Payments runbooks and private on-call conversations |
+| asha | Security engineer | Restricted security reports |
+| kim | Contractor | Vendor-shared material only |
+| priya | Compliance officer | Audit content; no automatic access to source documents |
+| dana | Platform administrator | Operations and audit metadata; no automatic source access |
 
-All demo passwords are `demo`. This is a local demonstration identity directory, not production SSO.
+Ask about migration progress and Slack blockers, payment-outage follow-up tickets, or ADR-17. Open a citation. Use **Previous questions** to rerun a prior question with current permissions and current content. The history list exposes timestamps and query IDs, never old answers or source titles. It survives server restart and is separate from the five-minute citation-preview cache. Audit-content retention limits replay availability.
 
-## What Member 2 delivers
+Operations are at `/console`; the integrated compliance screen is `/compliance`.
 
-- Search across all four platforms, exact issue identifiers, controlled vocabulary expansion, explicit platform filters and rolling Slack time windows.
-- Live permission checks **before source content reaches the model**, current source reads, and another permission/version check before delivery. No positive permission cache across questions.
-- Cross-source links followed only from permitted parents; each linked target is independently authorized. Hidden records cannot change corpus-wide ranking statistics or occupy a pre-authorization result cutoff.
-- Bounded context composed of complete passages, stable passage IDs, exact text offsets and source versions. Old Slack messages retain their own timestamps when a thread receives a new reply.
-- Strict grounding: unsupported claims, fabricated references, altered numbers, lost negations and unrelated extra citations are rejected. This proves that returned text occurs in supplied evidence; it does not prove the source itself is true or that every requested fact was answered.
-- Clickable citations with independently authorized, version-checked previews. Account changes clear prior answers and evidence; API responses are not cached by the browser.
-- Optional model selection with an explicit extractive fallback. Missing credentials and provider failures do not masquerade as successful AI generation.
-- Optional live Slack with delegated user reads, signed durable events, deduplication, complete thread pagination and scheduled reconciliation.
-- An employee UI for desktop and mobile; teammate operations and compliance screens remain available separately.
-
-## Architecture
-
-```mermaid
-flowchart TD
-  A[Authenticated employee] --> B[Question and source/time plan]
-  B --> C[Indexed candidates]
-  C --> D[Member 1 permission check]
-  D --> E[Read current user-visible source and recheck]
-  E --> F[Rank authorized evidence and follow authorized links]
-  F --> G[Bounded complete passages]
-  G --> H[Local selector or optional language model]
-  H --> I[Validate passage IDs and ground claims]
-  I --> J[Recheck permissions and source versions]
-  J --> K[Cited answer and employee interface]
-  K --> L[Separately authorized evidence preview]
-  D --> M[Member 3 audit interface]
-  J --> M
-  L --> M
-  N[Signed Slack events] --> O[Durable feed and serialized worker]
-  O --> C
-  P[Scheduled poll and reconciliation] --> O
-```
-
-If evidence changes during generation, the draft is discarded and rebuilt once without the affected source. A second change withholds the answer. Changes after the final check remain the usual distributed-system race; a later preview or question checks access again. Neutral missing answers do not constitute a constant-time side-channel guarantee.
-
-## Brief review and worked examples
-
-The full scope was reviewed against this build. Read [the requirement-by-requirement review](docs/BRIEF_REVIEW.md) and [all five generated worked examples](docs/WORKED_EXAMPLES.md). Reproduce them with:
-
-```sh
-python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluation/reports/judging-scenarios.json
-```
-
-Requested procedures retain every step in order; procedures too large for the evidence budget are withheld. Linked evidence can traverse up to three hops, with an authorization check at each hop.
-
-## Verification
+## Verification and measured results
 
 ```sh
 python -m pytest -q
+python scripts/compare.py
 python scripts/evaluate.py --json evaluation/reports/offline-evaluation.json --markdown evaluation/reports/offline-evaluation.md
 python scripts/benchmark.py --size full --json evaluation/reports/synthetic-benchmark.json --markdown evaluation/reports/synthetic-benchmark.md
+python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluation/reports/judging-scenarios.json
 ```
 
-The delivery passed **225 automated tests**, **65/65 curated question cases**, all **56 citation obligations**, and all **16 expected abstentions**, with zero unauthorized context sources or citations in that set. Seven employee browser-check groups passed. See [evaluation methods](docs/EVALUATION.md), [saved reports](evaluation/reports/) and [browser checks](tests/browser/README.md).
+The controlled comparison runs the original Member 1 lexical pipeline and the current pipeline on the **same** current fixtures and 65 question expectations. It measures **50/65 → 65/65** passing questions and **85.7% → 100%** required-source recall. The separate 28-case grounding category measures **15/28 → 28/28**, with false accepts falling from 13 to zero. Neither pipeline exposed unauthorized citations/context in this fixture set. This is a reconstructed offline comparison, not historical production evidence.
 
-The synthetic benchmark contains **19,700 objects** across 52 Confluence spaces, 32 Jira projects, 220 Slack channels and 150 Drive folders. It retrieved all eight target documents. This measures the local index, **not** live authorization throughput or complete answer latency. It is a generated workload, not a live enterprise crawl.
+The integrated automated suite passes **311 tests**, with four real-S3 checks skipped because no endpoint is configured.
 
-## Optional real connections
+See [the comparison](evaluation/reports/comparison.md), [current per-case measurements](evaluation/reports/current.json), [integration review](docs/INTEGRATION_REVIEW.md) and [evaluation methods](docs/EVALUATION.md). The 19,700-object synthetic benchmark measures the local index only.
 
-The default `IB_LLM_PROVIDER=stub` uses the offline evidence selector. To connect your approved Hunyuan or other compatible chat endpoint, set:
+## Approved model and live evaluation
+
+Edit `.env`: set `IB_LLM_PROVIDER=openai_compatible`, `IB_LLM_REQUIRE_LIVE=1`, and replace `IB_LLM_BASE_URL`, `IB_LLM_MODEL`, `IB_LLM_API_KEY` with your approved account settings. The adapter calls `/chat/completions`. HTTPS is required except on localhost. Price settings are optional actual per-million-token rates; missing prices or usage are recorded as unknown, never a fictitious zero cost.
 
 ```sh
-export IB_LLM_PROVIDER=openai_compatible
-export IB_LLM_BASE_URL='YOUR_PROVIDER_BASE_URL'
-export IB_LLM_MODEL='YOUR_AVAILABLE_MODEL_ID'
-export IB_LLM_API_KEY='YOUR_KEY'
+python scripts/evaluate.py --mode live --json evaluation/reports/live-model.json --markdown evaluation/reports/live-model.md
 ```
 
-The adapter appends `/chat/completions` and expects the chat-completions response format. Use the endpoint/model from your provider account. HTTPS is required except on localhost. Real provider credentials were not supplied, so cloud integration has been tested with mock HTTP responses, not a live Hunyuan account. The model selects passage IDs; free-form paraphrasing is intentionally not enabled.
+This runs 65 regression cases plus 13 additional paraphrase/adversarial probes, and the grounding category. Answerable cases must actually use the remote model. Offline fallback cannot produce a live pass. Missing credentials return exit code 2 and a **NOT RUN** report. Failed checks return 1. Model HTTP latency, total model elapsed time, retries, token usage and estimated cost are recorded separately from authorization/read and final release checks in the audit and JSON results. Timings are nested and must not be summed.
 
-For live Slack, follow [the Slack setup and limits](docs/SLACK_MEMBER2.md) and [example configuration](examples/slack-config.example.json). `IB_SLACK_CONFIG` enables the adapter automatically. The signed endpoint is `/api/slack/events`; accepted events wake the background worker. It polls every five minutes by default and reconciles every fifteen minutes. `/api/slack/maintenance` is admin-only. Demo mutation controls are automatically disabled in this mode. Confluence, Jira and Drive remain simulated until teammates replace their adapters.
+The current saved live report is **not run**, because credentials remain placeholders. See [Tencent requirements and model setup](docs/TENCENT_REQUIREMENTS.md). Exact organizer service requirements still need confirmation before deployment.
 
-Environment variables are read at startup. `.env.example` is documentation; the application does not automatically load a `.env` file. Runtime data defaults to `data/`; set `IB_DATA_DIR` to change it. `requirements-lock.txt` captures the tested dependency versions.
+## Slack and team integration
 
-## Integrating the team
+[Slack setup](docs/SLACK_MEMBER2.md) covers multiple workspaces, `TEAM/USER` identities, `TEAM/CHANNEL/THREAD` resource IDs, delegated reads, encrypted OAuth installs, single-use state, refresh rotation, signed events and 15-minute reconciliation. The common contract suite exercises DMs, public-channel scope, edits, deletion and retention on simulated and mocked HTTP implementations. A separate [live verifier](scripts/verify_live_slack.py) records real-workspace checks once configured.
 
-Read [Member 2 handoff](docs/HANDOFF_MEMBER2.md) before merging parallel work. The original [Member 1 handoff](docs/HANDOFF_member1_to_member3.md) is retained. A generated change manifest accompanies the delivery.
+Member 3’s independent S3 Object Lock checkpoint implementation is included. Default local checkpoints are explicitly weaker; live WORM tests need a configured service. Read [Member 3 operations](docs/MEMBER3.md) and [the integration handoff](docs/HANDOFF_MEMBER2.md).
 
-Remaining team work includes trusted SSO/account mappings, real Confluence/Jira/Drive adapters, deployment secrets/rate limits, and independently protected audit checkpoints. The inherited audit checkpoint file is local and writable by the app: **external WORM storage has not been implemented**. Member 3 must supply that protection before claiming resistance to a fully compromised application.
+## Boundaries
 
-The index is in memory and rebuilt at startup. Search currently uses deterministic lexical ranking, not embeddings or a vector database. Live permission checks cover every lexical candidate and may cause many API calls; batch/source-native authorization and measured capacity work are necessary for the full company footprint. Webhooks, reconciliation and read-through improve freshness, but outages, missing events, API rate limits and scan duration prevent an unconditional one-hour guarantee. A source newly relevant to a question cannot be found until its index entry has refreshed.
+- Production SSO is still a teammate integration. The seeded demo identity directory must be replaced before connecting real employees or sensitive company data.
+- Confluence, Jira and Drive remain simulated. Real Slack/model/OAuth/WORM deployments have not been verified in this integration session.
+- Conversation allowlists intentionally bound ingestion; multi-workspace support does not grant access to every private channel or DM. Slack itself authorizes every delegated read.
+- Search uses controlled lexical expansion and authorized link traversal, without embeddings. Broad queries can require many native permission calls; measure live throughput before scaling.
+- Grounding proves exact passage support, not source truth, complete answers, semantic entailment or perfect contradiction handling. Source dates remain visible.
+- Revocation takes effect at subsequent checks. Previously delivered text cannot be recalled, and the final distributed check-to-delivery race and timing side channels remain.
+- Freshness depends on successful events, polling, reconciliation, API budgets and source availability. There is no unconditional one-hour guarantee during outages.
 
-Demo screenshots are in [docs/screenshots](docs/screenshots/).
+Security integration note: seeded demo login and demo-token verification are disabled outside demo mode or when live Slack configuration is present. Member 1 must supply the trusted identity provider before real-source employee access or OAuth linking. This guard prevents the public `demo` password from opening real company data.

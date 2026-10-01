@@ -1,6 +1,6 @@
 {
   "schema": "internal-brain.retrieval-benchmark/1",
-  "generated_at": "2026-09-28T18:50:13.133699+00:00",
+  "generated_at": "2026-09-29T11:49:51.362875+00:00",
   "mode": "synthetic local index only; no model, connector, live gate or audit cost",
   "size": "full",
   "seed": 20260928,
@@ -20,27 +20,27 @@
       "gdrive": 1800
     },
     "containers": {
-      "gdrive": 150,
       "confluence": 52,
-      "slack": 220,
-      "jira": 32
+      "gdrive": 150,
+      "jira": 32,
+      "slack": 220
     },
     "tenants": {
-      "gdrive": 1,
       "confluence": 1,
-      "slack": 3,
-      "jira": 1
+      "gdrive": 1,
+      "jira": 1,
+      "slack": 3
     },
     "eligible_by_synthetic_hint": 11261,
     "mean_words": 85.1
   },
   "measurements": {
-    "build_seconds": 0.677,
+    "build_seconds": 0.69,
     "search_samples": 40,
-    "search_p50_ms": 39.976,
-    "search_p95_ms": 704.982,
-    "search_max_ms": 709.392,
-    "process_peak_rss_mib": 239.9
+    "search_p50_ms": 42.623,
+    "search_p95_ms": 736.994,
+    "search_max_ms": 785.347,
+    "process_peak_rss_mib": 237.8
   },
   "quality": {
     "queries": 8,

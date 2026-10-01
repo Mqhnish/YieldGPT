@@ -1,3 +1,4 @@
+from app import server
 """Tests for the Member 1 -> Member 3 handoff items:
 decision records, release recheck, fail-closed, audit access policy, sync bookkeeping."""
 import pytest
@@ -40,7 +41,7 @@ def test_denied_content_never_reaches_the_model(brain, monkeypatch):
     brain.ask(USERS["jdoe"], MIGRATION_Q)
     sent = {s["uid"] for batch in seen for s in batch}
     text = " ".join(s["text"] for batch in seen for s in batch)
-    assert "slack:mig-leads/2101" not in sent and "licence" not in text.lower()
+    assert "slack:T0COMPANYA/mig-leads/2101" not in sent and "licence" not in text.lower()
     # and the audit log records exactly what was sent, with versions
     ctx = audit.search(event="context_assembled")[0]["detail"]["context"]
     assert {c["uid"] for c in ctx} == sent and all(c["version"] for c in ctx)
@@ -58,12 +59,12 @@ def test_revocation_during_generation_discards_and_rebuilds(brain, monkeypatch):
 
     monkeypatch.setattr(llm, "complete", generate_then_revoke)
     r = brain.ask(USERS["jdoe"], MIGRATION_Q)
-    assert "slack:db-migration/2001" in calls[0] and "slack:db-migration/2001" not in calls[1]
-    assert "slack:db-migration/2001" not in cited(r)
+    assert "slack:T0COMPANYA/db-migration/2001" in calls[0] and "slack:T0COMPANYA/db-migration/2001" not in calls[1]
+    assert "slack:T0COMPANYA/db-migration/2001" not in cited(r)
     assert "40s" not in r["answer"]                                  # slack-only fact gone
     story = audit.reconstruct(query_id=r["query_id"])[0]
     assert story["release"] == "released_after_rebuild"
-    assert story["discarded"][0]["revoked"] == ["slack:db-migration/2001"]
+    assert story["discarded"][0]["revoked"] == ["slack:T0COMPANYA/db-migration/2001"]
     assert "40s" in story["discarded"][0]["answer"]                  # auditor can see what was thrown away
 
 
@@ -244,7 +245,7 @@ def test_failed_initial_crawl_is_retried_before_incremental_sync():
     w.outages.clear()
     s.poll(["slack"])
     assert s.state("slack").initial_load_complete
-    assert s.index.get("slack:db-migration/2001") is not None
+    assert s.index.get("slack:T0COMPANYA/db-migration/2001") is not None
 
 
 def test_decision_records_are_schema_versioned(ask):
@@ -258,8 +259,10 @@ def test_demo_controls_are_off_outside_demo_mode(monkeypatch):
 
     from app import main
     monkeypatch.setattr(main, "DEMO_MODE", False)
-    with TestClient(main.app) as c:
-        t = c.post("/api/login", json={"username": "dana", "password": "demo"}).json()["token"]
+    with TestClient(server.app) as c:
+        from app import identity
+        assert c.post("/api/login", json={"username": "dana", "password": "demo"}).status_code == 403
+        t = identity.login("dana", "demo")  # authenticated test principal, independent of disabled UI login
         r = c.post("/api/sim", json={"action": "slack_remove_member", "target": "db-migration", "value": "jdoe"},
                    headers={"Authorization": "Bearer " + t})
         assert r.status_code == 404

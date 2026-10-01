@@ -1,3 +1,4 @@
+from app import server
 """Security properties: injection, poisoning, grounding, redaction, tamper-evidence, API rights."""
 import json
 import sqlite3
@@ -91,7 +92,7 @@ def test_probing_raises_alert(ask):
 
 
 def test_api_rights(monkeypatch):
-    with TestClient(main.app) as c:
+    with TestClient(server.app) as c:
         def tok(u):
             return {"Authorization": "Bearer " + c.post("/api/login", json={"username": u, "password": "demo"}).json()["token"]}
         assert c.post("/api/login", json={"username": "jdoe", "password": "x"}).status_code == 401

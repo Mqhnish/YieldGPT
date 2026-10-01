@@ -1,2 +1,1 @@
 -r ../requirements.txt
-cryptography==50.0.1

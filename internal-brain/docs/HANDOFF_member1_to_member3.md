@@ -32,7 +32,7 @@ phase in our plan. If I don't hear back by then, I'll build on the defaults in 4
 ## 1. Shared definitions
 
 - **Request / query_id.** One user question. Every audit event for that question shares a 12-hex `query_id`.
-- **Document uid.** `<platform>:<native_id>`, e.g. `confluence:CONF-103`, `slack:db-migration/2001`.
+- **Document uid.** `<platform>:<native_id>`, e.g. `confluence:CONF-103`, `slack:T0COMPANYA/db-migration/2001`.
 - **Considered document.** Any document that scored above the relevance cut-off, or that was linked
   from one that did. **Every considered document gets a decision record.** Documents below the
   cut-off are never fetched, checked or shown, so they are not logged.
@@ -103,7 +103,7 @@ New codes may be **added** without a schema bump. Renaming or removing a code re
 ```json
 {
   "actor": "jdoe", "event": "authz_decision", "query_id": "55811e13e964",
-  "platform": "slack", "container": "mig-leads", "doc_uid": "slack:mig-leads/2101",
+  "platform": "slack", "container": "mig-leads", "doc_uid": "slack:T0COMPANYA/mig-leads/2101",
   "decision": "denied",
   "detail": {
     "schema": "authz_decision/1", "stage": "prefilter",
@@ -123,7 +123,7 @@ An `allowed` record means a doc *could* be used. What the model *actually saw* i
 {"event": "context_assembled", "query_id": "55811e13e964",
  "detail": {"schema": "context_assembled/1", "attempt": 1,
             "context": [{"uid": "jira:MIG-1", "version": "1790440655.539321"},
-                        {"uid": "slack:db-migration/2001", "version": "1790268455.539321:2"}]}}
+                        {"uid": "slack:T0COMPANYA/db-migration/2001", "version": "1790268455.539321:2"}]}}
 ```
 
 Allowed but not in context happens when a doc is cut for context size, or quarantined for

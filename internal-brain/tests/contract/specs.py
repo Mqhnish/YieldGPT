@@ -51,7 +51,7 @@ def _jira_unknown_level(w):
 
 def _slack_revoke(w):
     w.slack_remove_member("db-migration", "jdoe", push=False)
-    return "jdoe", "db-migration/2001"
+    return "jdoe", "T0COMPANYA/db-migration/2001"
 
 
 def _drive_revoke(w):
@@ -104,6 +104,31 @@ DRIVE_EXTRAS = [_drive_domain_share, _drive_limited_folder, _drive_shared_drive_
                 _drive_moved_out_of_shared_folder, _drive_trashed]
 
 
+def _slack_dm(w):
+    import time
+    now=time.time()
+    w.channels['contract-dm']={'workspace':'T0COMPANYA','private':True,'is_im':True,
+        'members':{'jdoe','asha'},'retention_days':1}
+    w.threads['T0COMPANYA/contract-dm/9001']={'ts':now,'msgs':[('asha',now,'Direct confidential discussion.')]}
+    return [('jdoe','T0COMPANYA/contract-dm/9001',A),('ravi','T0COMPANYA/contract-dm/9001',D)]
+
+
+def _slack_public(w):
+    w.channels['db-migration'].update(public_read=True,workspace_accounts={'T0COMPANYA/U0PRIYA'})
+    return [('priya','T0COMPANYA/db-migration/2001',A),('kim','T0COMPANYA/db-migration/2001',D)]
+
+
+def _slack_retention(w):
+    import time
+    w.channels['contract-old']={'workspace':'T0COMPANYA','private':True,'members':{'jdoe'},'retention_days':1}
+    old=time.time()-2*86400
+    w.threads['T0COMPANYA/contract-old/9002']={'ts':old,'msgs':[('jdoe',old,'Expired message.')]}
+    return [('jdoe','T0COMPANYA/contract-old/9002',D)]
+
+
+SLACK_EXTRAS=[_slack_dm,_slack_public,_slack_retention]
+
+
 SPECS = [
     ContractSpec(
         "confluence",
@@ -146,19 +171,19 @@ SPECS = [
     ContractSpec(
         "slack",
         matrix=[
-            ("jdoe", "db-migration/2001", A),
-            ("jdoe", "mig-leads/2101", D),       # private channel she's not in
-            ("ravi", "mig-leads/2101", A),
-            ("jdoe", "sec-incidents/4001", D),
-            ("kim", "vendor-collab/5001", A),    # shared channel
-            ("kim", "db-migration/2001", D),
+            ("jdoe", "T0COMPANYA/db-migration/2001", A),
+            ("jdoe", "T0COMPANYA/mig-leads/2101", D),       # private channel she's not in
+            ("ravi", "T0COMPANYA/mig-leads/2101", A),
+            ("jdoe", "T0COMPANYA/sec-incidents/4001", D),
+            ("kim", "T0VENDOR/vendor-collab/5001", A),    # shared channel
+            ("kim", "T0COMPANYA/db-migration/2001", D),
         ],
         revoke=_slack_revoke,
-        edit=lambda w: (w.slack_post("db-migration", "ravi", "Update: lag fixed.", "db-migration/2001", push=False),
-                        "db-migration/2001")[1],
-        deletable="db-migration/2000",
+        edit=lambda w: (w.slack_post("db-migration", "ravi", "Update: lag fixed.", "T0COMPANYA/db-migration/2001", push=False),
+                        "T0COMPANYA/db-migration/2001")[1],
+        deletable="T0COMPANYA/db-migration/2000",
         inventory=lambda w: set(w.threads),
-        # TODO(Member 2): DM case, public-channel-by-scope case, message deletion/edit, retention expiry
+        extra=SLACK_EXTRAS,
     ),
     ContractSpec(
         "gdrive",

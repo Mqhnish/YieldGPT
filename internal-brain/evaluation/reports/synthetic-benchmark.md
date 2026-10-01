@@ -1,15 +1,15 @@
 # Synthetic retrieval benchmark
 
-Generated: 2026-09-28T18:50:13.133699+00:00
+Generated: 2026-09-29T11:49:51.362875+00:00
 
 This measures local retrieval on generated documents. It excludes authorization checks, API calls, answer generation, audit persistence, ingestion networking and concurrency. Do not present it as production latency.
 
 - Size: **19,700 source objects** (full)
 - Corpus SHA-256: `ab244e27f06b00c2c50f39a96f855a90db2ad8f2b59e1047ebf0f7af91d71a98`
 - Mean document length: 85.1 words
-- Build time: 0.677 seconds
-- Search p50 / p95: 39.976 / 704.982 ms over 40 warmed samples
-- Process peak resident memory: 239.9 MiB (whole process, not index-only)
+- Build time: 0.69 seconds
+- Search p50 / p95: 42.623 / 736.994 ms over 40 warmed samples
+- Process peak resident memory: 237.8 MiB (whole process, not index-only)
 - Expected document found in top 10: 8/8
 
 | Platform | Objects | Containers | Tenants |

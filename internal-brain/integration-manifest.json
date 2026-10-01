@@ -1,0 +1,427 @@
+{
+  "base_archive": "Tencent---YieldGPT-main.zip",
+  "base_archive_sha256": "d3c05cb39591331f3067136477f66fc938ed42e3ba49e836071ec5b8e9efe184",
+  "changes": [
+    {
+      "path": ".env.example",
+      "status": "modified",
+      "sha256": "814fa051344ecbeae58d3a32845d5fd08063ab589ef27bf10c172ba48fc51106"
+    },
+    {
+      "path": "README.md",
+      "status": "modified",
+      "sha256": "d74325f54c950ac070910be3bcf6bcd54236dfc1f33ab5f4c11ffc5d1ec846ce"
+    },
+    {
+      "path": "app/audit.py",
+      "status": "modified",
+      "sha256": "67dd479531b2a965be55709f51bc0da2907d470a915843acfb7fa92b76a3b420"
+    },
+    {
+      "path": "app/brain.py",
+      "status": "modified",
+      "sha256": "bb1a0c65efa43e620153a09674c6626d79897a0e77aa15792401aaaaf732b799"
+    },
+    {
+      "path": "app/config.py",
+      "status": "modified",
+      "sha256": "623f93cc6ce8c9ba725cc61d3dfb2ca4406e27cc6f3744997e11d1800e34341b"
+    },
+    {
+      "path": "app/env.py",
+      "status": "added",
+      "sha256": "163f468f5d8fcd4c91d105f8eb41436b21899f57ae93ceeb44f513a370fd4397"
+    },
+    {
+      "path": "app/history.py",
+      "status": "added",
+      "sha256": "4b1036d6c48299a05bfc16f3d67fc7ff0cedad94c38f498a55aa0d916b977a8d"
+    },
+    {
+      "path": "app/identity.py",
+      "status": "modified",
+      "sha256": "8fbc44351499d5fe5615f37f5a1cf6befcfd6686b9fd6e75a4bd8473a9f82f89"
+    },
+    {
+      "path": "app/llm.py",
+      "status": "modified",
+      "sha256": "3ff9ff3687dfbdeac85f34a9299b10399345fd34f6557cfe54466217f80e315f"
+    },
+    {
+      "path": "app/main.py",
+      "status": "modified",
+      "sha256": "5a590cbf475f832d2b2268afd042f3417a87d606e37d75c987d94247dc859101"
+    },
+    {
+      "path": "app/metrics.py",
+      "status": "added",
+      "sha256": "75e72cdce2476cde44af14ddc424ab53bb8e787954c8325f6ddd1f209a6a54fb"
+    },
+    {
+      "path": "app/reliability.py",
+      "status": "modified",
+      "sha256": "8db93123f2c5195b00c1f2e996aede5b51aa98765f4c00d316dfce4d0ad06432"
+    },
+    {
+      "path": "app/server.py",
+      "status": "modified",
+      "sha256": "29c83c32ffbe7500760419b7e1724cb026364cf8612f0156ce0a41e50577c8f2"
+    },
+    {
+      "path": "app/slack_oauth.py",
+      "status": "added",
+      "sha256": "1a0c630e7179d3cd755284143bf3dc1e7ee917a9f6909044edc331c4d7dd1397"
+    },
+    {
+      "path": "app/slack_runtime.py",
+      "status": "modified",
+      "sha256": "9c186c8b606f7d9b3d54cf00081b12eb056eb809faace0729f20329412eee25a"
+    },
+    {
+      "path": "app/sources/slack.py",
+      "status": "modified",
+      "sha256": "bcde51611c3f0113322f23c69100dc50252258d8d161e21d6a9ace2358d00334"
+    },
+    {
+      "path": "app/sources/slack_live.py",
+      "status": "modified",
+      "sha256": "c2a9681703f7c61ce9a468cb16789a8fc6e4e8e7f9674c151b3daa0bf0f89b4b"
+    },
+    {
+      "path": "app/sources/slack_multi.py",
+      "status": "added",
+      "sha256": "2c68e66ac2dc0c28ab22b91238ba95fd5aafbba35d85ebb1772be9f659895fb3"
+    },
+    {
+      "path": "app/sources/world.py",
+      "status": "modified",
+      "sha256": "a41a1ef994eea909e21009d41e01cf54053517a5a9f841fd3dc2067adf723cfb"
+    },
+    {
+      "path": "app/static/app.js",
+      "status": "modified",
+      "sha256": "14d9d1d015e961b76dee70fa8356ac014e424da28fc4c40bf84a457037bf5c57"
+    },
+    {
+      "path": "app/static/index.html",
+      "status": "modified",
+      "sha256": "a6efd82286f2b13d16424b0fddeb3e5875ae12402dd3e9909451e76287d3ed72"
+    },
+    {
+      "path": "deploy/Dockerfile",
+      "status": "modified",
+      "sha256": "131e78f9d301ec3b6466d32f6b339cb5465496439b29df12b456030fbc42b6bb"
+    },
+    {
+      "path": "deploy/requirements.in",
+      "status": "modified",
+      "sha256": "69c65f7998ef21ec2b7edc38a7362e1d41478293410311c4617ab2b4d61d8bf4"
+    },
+    {
+      "path": "docs/BRIEF_REVIEW.md",
+      "status": "modified",
+      "sha256": "31965f7ffbc254aa0c28ad8efcc9c250d5a814247ab5acd75e4703213335ac9f"
+    },
+    {
+      "path": "docs/EVALUATION.md",
+      "status": "modified",
+      "sha256": "994f7711502ea6d48edb4f7cf3afbfa3bcb53f768e3efbe221818208cf4ddc0e"
+    },
+    {
+      "path": "docs/EVIDENCE_PACK.md",
+      "status": "modified",
+      "sha256": "1984ee3c44b6664270e0938677be6286f76ec9635f1ee5627c99a5418e150ca5"
+    },
+    {
+      "path": "docs/HANDOFF_MEMBER2.md",
+      "status": "modified",
+      "sha256": "0c5959b6da09bed27fcee7fddeaaf01d1c0056d3cf7621d88e97a014717ca764"
+    },
+    {
+      "path": "docs/HANDOFF_member1_to_member3.md",
+      "status": "modified",
+      "sha256": "bb9e713ce4115e6430c0b4f37dcd97bd09dd5ad3dd198726856fd8e96cc39718"
+    },
+    {
+      "path": "docs/INTEGRATION_REVIEW.md",
+      "status": "added",
+      "sha256": "cca9734c80e9f1b3e86c4b5d0ce4bd23184ae735e354882788e05489c3316c3d"
+    },
+    {
+      "path": "docs/MEMBER3.md",
+      "status": "modified",
+      "sha256": "ec4da25ff186e5e7300bba1d4899389b96bd380d62dbca27777420fd1de12926"
+    },
+    {
+      "path": "docs/SLACK_MEMBER2.md",
+      "status": "modified",
+      "sha256": "921f0c7987213672dca1d0894f4e7f5d303612f97c393eb741b46907a162e69a"
+    },
+    {
+      "path": "docs/TENCENT_REQUIREMENTS.md",
+      "status": "added",
+      "sha256": "a67432bd2581be8774107ed5a8ad9b9bc306c8c170b3937b35ad07add6d1073d"
+    },
+    {
+      "path": "docs/WORKED_EXAMPLES.md",
+      "status": "modified",
+      "sha256": "1a1b644ffa541a30ff3bafff879bb35e84b7ec243f77d1787caecf35995b99ae"
+    },
+    {
+      "path": "docs/demo-transcript-integrated.md",
+      "status": "added",
+      "sha256": "717faf12471194d72efc869b8b448ac767306aed75ddbc1aeeb62168d48c5120"
+    },
+    {
+      "path": "docs/demo-transcript-member3.md",
+      "status": "modified",
+      "sha256": "02dd089b3d861f36e76fe0f1e5cf9a0f6ebaffd44d7daea6465ec426191baf37"
+    },
+    {
+      "path": "docs/screenshots/integrated-history.png",
+      "status": "added",
+      "sha256": "43c108d904b88c928a7c2ad85152ed50cb154b3c67502623dec5079c7f14440b"
+    },
+    {
+      "path": "evaluation/baseline_member1/brain.py",
+      "status": "added",
+      "sha256": "a5edab72bc405931b60ee6de9493b796ca647fd760505effe9ae40264d50337c"
+    },
+    {
+      "path": "evaluation/baseline_member1/grounding.py",
+      "status": "added",
+      "sha256": "b2406c5584206f35bd91ae5b275bf700d2b78df6cb2737dcaf6f55fe56eb9fa3"
+    },
+    {
+      "path": "evaluation/baseline_member1/index.py",
+      "status": "added",
+      "sha256": "3672e279888ff5cfd8fec622ad43598f5092d8669f7de7d79c7ab9edb5cbdeb3"
+    },
+    {
+      "path": "evaluation/baseline_member1/llm.py",
+      "status": "added",
+      "sha256": "cbab80efbc4f09edce406dcff7108cb22708864af594936d69b5b24e1cf31564"
+    },
+    {
+      "path": "evaluation/baseline_member1/planner.py",
+      "status": "added",
+      "sha256": "2624d946eedc068a0795ccf248deb6b9aaaa11875eee6eb030f4ef149cc6c332"
+    },
+    {
+      "path": "evaluation/baseline_member1/provenance.json",
+      "status": "added",
+      "sha256": "a2dbf086160023d89deb39de14a68313325df17b5191936e19a66c9bf60253ff"
+    },
+    {
+      "path": "evaluation/cases.py",
+      "status": "modified",
+      "sha256": "09a530e05b010c5e050c7dd9d399e1c809437db7761a27219353fdd7331c9d6e"
+    },
+    {
+      "path": "evaluation/grounding_cases.py",
+      "status": "added",
+      "sha256": "241ceef42dd66f6e3e50fec6f4abbf983b3493b23d374c66d05f4e5836c3c543"
+    },
+    {
+      "path": "evaluation/live_cases.py",
+      "status": "added",
+      "sha256": "7e17b8d181f0f2d2751a2a0e090b4093d946b1d35d61b38e0b6f9a13ddd82a7a"
+    },
+    {
+      "path": "evaluation/reports/baseline.json",
+      "status": "added",
+      "sha256": "1738ebec0c3802ad6f0dab22277e30b79944116e4c974b3e85f66080fae8b738"
+    },
+    {
+      "path": "evaluation/reports/baseline.md",
+      "status": "added",
+      "sha256": "10b03e39583c824aeb4522553742f86aa0235701b804517b73cba3418a001e86"
+    },
+    {
+      "path": "evaluation/reports/browser-review.md",
+      "status": "added",
+      "sha256": "1e3a885a43e468f8ed5deaab5f892d751220f896220889f3f4cd44b247da9261"
+    },
+    {
+      "path": "evaluation/reports/comparison.json",
+      "status": "added",
+      "sha256": "f8a8f37f568aca8d77b9b2f399281377b51ad73109c7411c06355e258af7537d"
+    },
+    {
+      "path": "evaluation/reports/comparison.md",
+      "status": "added",
+      "sha256": "724ebf9bfa667fb45c223bd25a4efd1633b96b82674b4873cececeabe4b07db0"
+    },
+    {
+      "path": "evaluation/reports/current.json",
+      "status": "added",
+      "sha256": "59a7fb493c6d73262003d3a6636ae0896f88be4e00dcbfa3e01492354681b161"
+    },
+    {
+      "path": "evaluation/reports/current.md",
+      "status": "added",
+      "sha256": "c9d8e039d32a5515571f548d08114b3b1481c29754fcc7c7da7b1c09801d5243"
+    },
+    {
+      "path": "evaluation/reports/judging-scenarios.json",
+      "status": "modified",
+      "sha256": "49b48843ca656b983cf0fc5c579cef16c5c05eb83623b9f65a9c7477be278fdd"
+    },
+    {
+      "path": "evaluation/reports/live-model.json",
+      "status": "added",
+      "sha256": "bc322b102670afcc89eafbe7129cdd18326a5dd729cb688bc263681c00570feb"
+    },
+    {
+      "path": "evaluation/reports/live-model.md",
+      "status": "added",
+      "sha256": "5a4b63050ce7be930e38d1638bc454fb5e2fc5791b04295b2d18f45c11a448f6"
+    },
+    {
+      "path": "evaluation/reports/live-slack.json",
+      "status": "added",
+      "sha256": "9eb4bbd2386e0a7196ccc54c30b3c66c03cbe3b66e9e254512bf66ddc3329d04"
+    },
+    {
+      "path": "evaluation/reports/offline-evaluation.json",
+      "status": "modified",
+      "sha256": "9dbd2dd1d81191ceee9eb8ed36cc821ce3cc9a2027e84fd3fe872c2fed4acc6d"
+    },
+    {
+      "path": "evaluation/reports/offline-evaluation.md",
+      "status": "modified",
+      "sha256": "6b2644dd0c82730a2b1221d2d4ad7365bd9f5fdb18ed8c80d8cac994c9ecbefc"
+    },
+    {
+      "path": "evaluation/reports/synthetic-benchmark.json",
+      "status": "modified",
+      "sha256": "e8e6dd6fe85d80acaaa5278f09af0cc54b8c1526da3dea2f27173500adb65d0f"
+    },
+    {
+      "path": "evaluation/reports/synthetic-benchmark.md",
+      "status": "modified",
+      "sha256": "36d6aeac3cbbd8bf96c3b32053ae1a531f5362ff4d5f5212b0b8a699160edac6"
+    },
+    {
+      "path": "evaluation/reports/test-results.txt",
+      "status": "added",
+      "sha256": "f06cf7364d39aeb1b484cfcfd69bdc20594cbdad4ae8dbf0ced081ac3d31e18c"
+    },
+    {
+      "path": "examples/slack-live-checks.example.json",
+      "status": "added",
+      "sha256": "fc5c975b9f4b131ff8e13f6aad3cb691a144bac3235ccafa63a5dc57fdd0c1b5"
+    },
+    {
+      "path": "examples/slack-workspaces.example.json",
+      "status": "added",
+      "sha256": "d7d703cd9d8c165a7a658c6d950543b4ed2f8e2b3c82138a003224a9a3fee844"
+    },
+    {
+      "path": "requirements-lock.txt",
+      "status": "modified",
+      "sha256": "f6582e0230f4ff6a00c199a8df9aba78c2ff4743bd70644932fb11c523ffbc24"
+    },
+    {
+      "path": "requirements.txt",
+      "status": "modified",
+      "sha256": "7786011c2d72d87ab7fbd4651d5a41420df4e9d642757afe06be49ca9b0aaf7e"
+    },
+    {
+      "path": "scripts/benchmark.py",
+      "status": "modified",
+      "sha256": "1f2789685d94c1eed7a712f5357cab6f8f287439f77c45dec7beb0d78222634b"
+    },
+    {
+      "path": "scripts/compare.py",
+      "status": "added",
+      "sha256": "d2eb3b379ca64f36a8ce1d745cb9bc44b93f94eae363120dea22454c1399bf14"
+    },
+    {
+      "path": "scripts/demo_member3.py",
+      "status": "modified",
+      "sha256": "2e43e18a490f9637602bfe10b68e226551f3ca092e7677fa87325fcb98134942"
+    },
+    {
+      "path": "scripts/evaluate.py",
+      "status": "modified",
+      "sha256": "b29c62c4175a6e27b407bd66778a39ade02e6c44d018c0e128d8edc50ae819d5"
+    },
+    {
+      "path": "scripts/judging_demo.py",
+      "status": "modified",
+      "sha256": "094e812458bd93e8f62b7dad6a10d208162d37878c57f183b144f0d3fcc2cb73"
+    },
+    {
+      "path": "scripts/verify_live_slack.py",
+      "status": "added",
+      "sha256": "9d31bcfda7fd74284c06ef187e51be6c5e8d95c2b8330e1a7b5c19b501a17d27"
+    },
+    {
+      "path": "tests/conftest.py",
+      "status": "modified",
+      "sha256": "85b5c413a945437f6548e31f120e65d3f77a52ed4e0c5005c5fe0fb7b2da30bb"
+    },
+    {
+      "path": "tests/contract/specs.py",
+      "status": "modified",
+      "sha256": "d4ab1df73e60e2225c99e5210e79bee3992f6adafee5eecff15ea7c02df13caa"
+    },
+    {
+      "path": "tests/contract/test_slack_lifecycle.py",
+      "status": "added",
+      "sha256": "fd6f6a41468aa992c7d1ac9cec5b7675caf4c9841618a5dbd4d0e0d1e0f46e8c"
+    },
+    {
+      "path": "tests/test_brief_acceptance.py",
+      "status": "modified",
+      "sha256": "6d5cfab3c49fde9186817da4f6e5ef2c48e334811c7a3c1214d619678de0970e"
+    },
+    {
+      "path": "tests/test_integration_completion.py",
+      "status": "added",
+      "sha256": "929cd305bf6817f08d03c38395214576b4ba6b93f3ae5431928e37b7a1c6c130"
+    },
+    {
+      "path": "tests/test_member1_handoff.py",
+      "status": "modified",
+      "sha256": "1255797512d7ceab151be198425e89675a28a2beef42352d45ade6fed57f7bf8"
+    },
+    {
+      "path": "tests/test_member2_http.py",
+      "status": "modified",
+      "sha256": "ff12690d8db45bb29f11cb003dbad601577938c649d657b8d58ee404e5f97e22"
+    },
+    {
+      "path": "tests/test_member2_pipeline.py",
+      "status": "modified",
+      "sha256": "5d2da93e6a1146d3e13366ddf575904e9da52b3dff441de5c806dd726938be6c"
+    },
+    {
+      "path": "tests/test_member3_audit.py",
+      "status": "modified",
+      "sha256": "533acbeb50bd8e6df41add948c4265fba83a6a55037c51a78f1e9d99a97d3151"
+    },
+    {
+      "path": "tests/test_member3_ops.py",
+      "status": "modified",
+      "sha256": "3e64c7523d3a07dd071b5aa8a408af924e13130fe6c53a0beb4a3e0262180a67"
+    },
+    {
+      "path": "tests/test_scenarios.py",
+      "status": "modified",
+      "sha256": "bf68500d5c00aa785e0c9be66c9f1149e0da482065b475a4cf7d1e4e78768f49"
+    },
+    {
+      "path": "tests/test_security.py",
+      "status": "modified",
+      "sha256": "cad6ce6c2a56bd718853aaa6c2a31cc05f2c0c7b3b55968587d01f0636f33924"
+    },
+    {
+      "path": "tests/test_slack_member2.py",
+      "status": "modified",
+      "sha256": "15d7523e2fecb9404561856e561173c1258691cf852a32c32c7190a3c9a0d17b"
+    }
+  ],
+  "excluded": "Runtime databases, .env, caches, environments; no real credentials. New binary screenshots are in the full ZIP, not the text patch."
+}

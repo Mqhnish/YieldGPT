@@ -1,24 +1,31 @@
 {
-  "generated_at": "2026-09-28T18:48:42.222705+00:00",
+  "generated_at": "2026-09-29T11:46:21.738035+00:00",
   "mode": "fictional Company A; offline source selection; no live cloud calls",
   "implementation": {
     "sync.py": "22154e983aba8c13a77bc2999e318f2d753c9cad74c613421a9c89fddc68bbaf",
+    "metrics.py": "75e72cdce2476cde44af14ddc424ab53bb8e787954c8325f6ddd1f209a6a54fb",
     "planner.py": "fdbecc474e589dca7bba09c3325e7597b58626e15c6868d3209004b8e79477df",
-    "config.py": "7a595351ad34938939a37fa45108f255b36842060a89b4d14e5955453cf51688",
-    "audit.py": "4cad5fb1bbaba2eae6efc3c4f1f01f7885544192998682c54eb86ad2486ca466",
+    "server.py": "29c83c32ffbe7500760419b7e1724cb026364cf8612f0156ce0a41e50577c8f2",
+    "config.py": "623f93cc6ce8c9ba725cc61d3dfb2ca4406e27cc6f3744997e11d1800e34341b",
+    "env.py": "163f468f5d8fcd4c91d105f8eb41436b21899f57ae93ceeb44f513a370fd4397",
+    "reliability.py": "8db93123f2c5195b00c1f2e996aede5b51aa98765f4c00d316dfce4d0ad06432",
+    "audit.py": "67dd479531b2a965be55709f51bc0da2907d470a915843acfb7fa92b76a3b420",
     "index.py": "437486fd7dc946f13aca9e62109d10b7b0a3379466c911ed2d0cb837a9668d9e",
+    "slack_oauth.py": "1a0c630e7179d3cd755284143bf3dc1e7ee917a9f6909044edc331c4d7dd1397",
     "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "llm.py": "9f84ce480facc09e25881a19cba0dde8ccbcf337f8fb629cb882e5bea164a336",
-    "slack_runtime.py": "3f1b0872766be7d344b2caea4f6da92df2883e80de5f93046606ac2fb72ff2bc",
-    "brain.py": "b7500e4d8ff31bb88a96b6c262c2406da34e6b9f300f156dc3fb2f1b6c28d926",
-    "audit_policy.py": "25941120ac2fa67ea8df26ba1317be53cd78d24bad4ff9e9fd32767310a3fcd8",
-    "sync_state.py": "2b0eb85aee7126676d21be28639a8e1ea8845d9d39d79318242cc90ddd50d026",
+    "llm.py": "3ff9ff3687dfbdeac85f34a9299b10399345fd34f6557cfe54466217f80e315f",
+    "checkpoints.py": "e0081161742f03b7a1797147ed945ecac9002ebf40ce2b7b320d12b7e423e8a3",
+    "slack_runtime.py": "9c186c8b606f7d9b3d54cf00081b12eb056eb809faace0729f20329412eee25a",
+    "brain.py": "fa08df9841e08e237a74efb9ccebc86546084829054e9977bc3d41916af94257",
+    "audit_policy.py": "7a3cfa49512fa0b0edbfbb907bbdb53e8b1a81a334d71856d28aa8819a228237",
+    "sync_state.py": "b1b71a863b4b2ceefe1ebd78cf9ebd9f6f560072283e4c8f802e0eb055bc2c83",
     "guard.py": "2981e930c945ce9c67009a6921f3a260e840fe32d905f3b0af252c6906b6391e",
     "slack_worker.py": "e4a40e835bf3636ecfad90dc6f375c7a507b02ddf36504a54f73a32b6d1b0e46",
     "grounding.py": "838fc8eed8a29f5264da88cbdbb2878dab92e71a9c4fa0b025bc96d04af23383",
-    "main.py": "f47eeff77aa24b6958379efa24dd7b9418c5fc4e6d5f3937a25572414825a268",
-    "identity.py": "c965cfb38d2399b4609fa430c4b6d066c32b58cb0e30bd8f947622d5173e05f3",
-    "evidence.py": "1380004e8b1e4704a285bb9afb1d94c2204d5ba0eb6a1f1c9469dc50f240f432"
+    "main.py": "6ba82ab95eaac808386e91ae7b35b706e03d1a4e4fe3c7abea030f0f140e3745",
+    "identity.py": "9fbdd1eb88d2e9b2fc6268d846293793f23ca7aa041da1e68dd5a8b5bf178933",
+    "evidence.py": "1380004e8b1e4704a285bb9afb1d94c2204d5ba0eb6a1f1c9469dc50f240f432",
+    "history.py": "4b1036d6c48299a05bfc16f3d67fc7ff0cedad94c38f498a55aa0d916b977a8d"
   },
   "checks": {
     "unified_jira_slack_drive": true,
@@ -41,7 +48,7 @@
         {
           "user": "jdoe",
           "question": "What's the status of the database migration project and were there any blockers raised in Slack last week?",
-          "query_id": "2703cbac5c56",
+          "query_id": "4a427326566e",
           "answer": "MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S1]\nStatus: 70% of tables migrated. [S1]\nCutover to Postgres 16 is planned for 20 Oct. [S1]\nCutover checklist for the database migration: freeze schema changes, verify replication lag under 1s, switch read traffic, then writes. [S2]\n@ravi: Blocker: replication lag on the orders table hit 40s during dual-write, so the migration cutover is on hold until MIG-7 is fixed. [S3]\n@jdoe: Could we batch the backfill overnight to cut write load? [S3]\nMIG-7 [Blocked] Replication lag on orders table during dual-write. [S4]\nReplication lag on the orders table reaches 40 seconds during dual-write. [S4]\nCutover cannot proceed until this is fixed. [S4]",
           "citations": [
             {
@@ -50,9 +57,9 @@
               "title": "MIG-1: Epic: Postgres 12 to 16 migration",
               "url": "https://companya.atlassian.net/browse/MIG-1",
               "container": "MIG",
-              "updated_iso": "2026-09-26 18:48 UTC",
+              "updated_iso": "2026-09-27 11:46 UTC",
               "uid": "jira:MIG-1",
-              "version": "1790448522.119788"
+              "version": "1790509581.553977"
             },
             {
               "ref": "S2",
@@ -60,9 +67,9 @@
               "title": "Migration cutover checklist",
               "url": "https://drive.google.com/file/d/DRV-2",
               "container": "fld-eng",
-              "updated_iso": "2026-09-22 18:48 UTC",
+              "updated_iso": "2026-09-23 11:46 UTC",
               "uid": "gdrive:DRV-2",
-              "version": "1790102922.119788"
+              "version": "1790163981.553977"
             },
             {
               "ref": "S3",
@@ -70,9 +77,9 @@
               "title": "#db-migration thread by @ravi",
               "url": "https://companya.slack.com/archives/db-migration/p2001",
               "container": "db-migration",
-              "updated_iso": "2026-09-24 18:58 UTC",
-              "uid": "slack:db-migration/2001",
-              "version": "08f9684fac5b1ae56da65d1d3788ca1f7dec2c66c4cc28db0e22786853e650b5"
+              "updated_iso": "2026-09-25 11:56 UTC",
+              "uid": "slack:T0COMPANYA/db-migration/2001",
+              "version": "d47d1880159d67c2f51009aaafeff8384172035c1cb5967d75ec445753aca2d1"
             },
             {
               "ref": "S4",
@@ -80,9 +87,9 @@
               "title": "MIG-7: Replication lag on orders table during dual-write",
               "url": "https://companya.atlassian.net/browse/MIG-7",
               "container": "MIG",
-              "updated_iso": "2026-09-24 18:48 UTC",
+              "updated_iso": "2026-09-25 11:46 UTC",
               "uid": "jira:MIG-7",
-              "version": "1790275722.119788"
+              "version": "1790336781.553977"
             }
           ],
           "blocked": false,
@@ -103,43 +110,43 @@
           },
           "authorized_context": [
             {
-              "fingerprint": "f6b7a11faa8fb97e52dfaca64fc3f67167de5fce5480c9f226875f7ac3e473b1",
+              "fingerprint": "72b5a8ecf70d40e71a4380d8602d720e908954750117a992026a35d6cfa371e4",
               "passage_ids": [
-                "p-95cf8a31a2c18794",
-                "p-a471cbe8acc61122",
-                "p-eb061fda649a2416",
-                "p-8ecfd414223c562a"
+                "p-33fe67b92e8d8831",
+                "p-232b8d353e37ae10",
+                "p-abaa3aee4993c7bb",
+                "p-af00525d241e6951"
               ],
               "uid": "jira:MIG-1",
-              "version": "1790448522.119788"
+              "version": "1790509581.553977"
             },
             {
-              "fingerprint": "603291e12f9f53f351aef8f8a89d6dc2bec43af8adc729e55c8f199b94b44643",
+              "fingerprint": "2d78cf8983001754d1fcc89653d9a3381e3b72e112a798a5d666b022a4136b5a",
               "passage_ids": [
-                "p-2e19036afe1d652b"
+                "p-edbb80394831e02a"
               ],
               "uid": "gdrive:DRV-2",
-              "version": "1790102922.119788"
+              "version": "1790163981.553977"
             },
             {
-              "fingerprint": "4250b5c34576a245d89cb0d204585bf2acd659a2f5716b56ccc09a458b3b8535",
+              "fingerprint": "95fdd4616b1e681fdf0be9fb9bcbc77004673a1b75eb574a330bd2f36c42bbfc",
               "passage_ids": [
-                "p-e8ffdaccbf6bbd2e",
-                "p-5cd22114be2e94d8",
-                "p-ec091be2c9edca42"
+                "p-213510f5b54ec248",
+                "p-618d624e6a6a04b3",
+                "p-4cc1f8826c95a7ec"
               ],
-              "uid": "slack:db-migration/2001",
-              "version": "08f9684fac5b1ae56da65d1d3788ca1f7dec2c66c4cc28db0e22786853e650b5"
+              "uid": "slack:T0COMPANYA/db-migration/2001",
+              "version": "d47d1880159d67c2f51009aaafeff8384172035c1cb5967d75ec445753aca2d1"
             },
             {
-              "fingerprint": "12f4c41251d7c117317b5c1fb23cc9cbddd1c0b8a712badc82448ef4e3da587a",
+              "fingerprint": "686e2601d669fc6b7e74718660e3ac44728702e84bf0df30f52b5f79b6aee5b3",
               "passage_ids": [
-                "p-6fc2742f9bdab751",
-                "p-994e46139457e3cc",
-                "p-0747ac186653775d"
+                "p-d30cbb3c743d28fd",
+                "p-89b10ff555ec4b85",
+                "p-9a19f8996b6aef4c"
               ],
               "uid": "jira:MIG-7",
-              "version": "1790275722.119788"
+              "version": "1790336781.553977"
             }
           ]
         }
@@ -152,7 +159,7 @@
         {
           "user": "ravi",
           "question": "What's the latest runbook for the payment-service incident?",
-          "query_id": "b7268f19fcfa",
+          "query_id": "b3a2ecc886e3",
           "answer": "Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 3: If certificate expiry is suspected, run the cert-check job and page the payments lead. [S1]\nStep 4: Post status updates in #payments-oncall every 15 minutes. [S1]\nPAY-101 [Done] Root cause: payment outage (Q2). [S2]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S2]\nFollow-up tickets created: PAY-102 and PAY-103. [S2]\nPostmortem for the Q2 payment outage. [S3]\nImpact: card payments failed for 47 minutes. [S3]\n@ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S4]\n@ravi: Found it: gateway certificate expired. [S4]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nAdd expiry alerting. [S5]\nPAY-103 [Done] Make cert renewal job fail loudly. [S6]\nFollow-up to PAY-101. [S6]\nRenewal job now pages on failure. [S6]",
           "citations": [
             {
@@ -161,9 +168,9 @@
               "title": "Runbook: payment-service incident",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101",
               "container": "payment-gateway",
-              "updated_iso": "2026-09-08 18:48 UTC",
+              "updated_iso": "2026-09-09 11:46 UTC",
               "uid": "confluence:CONF-101",
-              "version": "1788893322.119788"
+              "version": "1788954381.553977"
             },
             {
               "ref": "S2",
@@ -171,9 +178,9 @@
               "title": "PAY-101: Root cause: payment outage (Q2)",
               "url": "https://companya.atlassian.net/browse/PAY-101",
               "container": "PAY",
-              "updated_iso": "2026-06-10 18:48 UTC",
+              "updated_iso": "2026-06-11 11:46 UTC",
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
               "ref": "S3",
@@ -181,9 +188,9 @@
               "title": "Postmortem: Q2 payment outage",
               "url": "https://drive.google.com/file/d/DRV-1",
               "container": "fld-post",
-              "updated_iso": "2026-06-15 18:48 UTC",
+              "updated_iso": "2026-06-16 11:46 UTC",
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
               "ref": "S4",
@@ -191,9 +198,9 @@
               "title": "#payments-oncall thread by @ravi",
               "url": "https://companya.slack.com/archives/payments-oncall/p3001",
               "container": "payments-oncall",
-              "updated_iso": "2026-06-08 19:18 UTC",
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "updated_iso": "2026-06-09 12:16 UTC",
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
               "ref": "S5",
@@ -201,9 +208,9 @@
               "title": "PAY-102: Alert when any certificate expires within 14 days",
               "url": "https://companya.atlassian.net/browse/PAY-102",
               "container": "PAY",
-              "updated_iso": "2026-08-29 18:48 UTC",
+              "updated_iso": "2026-08-30 11:46 UTC",
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
               "ref": "S6",
@@ -211,9 +218,9 @@
               "title": "PAY-103: Make cert renewal job fail loudly",
               "url": "https://companya.atlassian.net/browse/PAY-103",
               "container": "PAY",
-              "updated_iso": "2026-07-30 18:48 UTC",
+              "updated_iso": "2026-07-31 11:46 UTC",
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ],
           "blocked": false,
@@ -234,73 +241,73 @@
           },
           "authorized_context": [
             {
-              "fingerprint": "7eb5fda40616bb3d8a20bca905863e788d74f916a6bc3b6fb5e9cafd5ed7c314",
+              "fingerprint": "025c21f8cc54830da5c2d2476ba8ffdc1f513fba88a7e4c297b1d12a544bf752",
               "passage_ids": [
-                "p-c702fe1acda1f468",
-                "p-a7b6b2472b9999bd",
-                "p-04b76e64a8094995",
-                "p-29390da9cd30e3ff"
+                "p-c0bf236804431b1a",
+                "p-2baf2fd4fc17179e",
+                "p-2b2815d3fd448502",
+                "p-66bdbc494793b283"
               ],
               "uid": "confluence:CONF-101",
-              "version": "1788893322.119788"
+              "version": "1788954381.553977"
             },
             {
-              "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+              "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
               "passage_ids": [
-                "p-b9b6c50117fc9f30",
-                "p-8467228232a7a71e",
-                "p-0fbd734a6c95713a"
+                "p-28f38d8431db8bde",
+                "p-4353db84d366593f",
+                "p-6cace71937587ae0"
               ],
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
-              "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+              "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
               "passage_ids": [
-                "p-e3d959002bbfd04a",
-                "p-a9493ac16c175e8e",
-                "p-f34f0e4e0d85f07a",
-                "p-d24ae2ecc488ac55"
+                "p-f712ca15c4937011",
+                "p-3a7bcd95f19b30e8",
+                "p-5c2d75788378b147",
+                "p-4f9aebaffd3f8646"
               ],
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
-              "fingerprint": "182515c84f2deade4c830abeb056219fcf066799a48ae80ea82612af15d07148",
+              "fingerprint": "5811f4504e350ec6caa08f7745ab4f9e4690d0c150b5a2580f39e8e4d92eb638",
               "passage_ids": [
-                "p-351fa5e758445f29",
-                "p-571ccad16d7bd749",
-                "p-ab8f6393ba769147"
+                "p-20e2fa792145c9a0",
+                "p-ef830480ca6ee9cc",
+                "p-34a584c7d1505277"
               ],
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
-              "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+              "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
               "passage_ids": [
-                "p-b864ba9a00552851",
-                "p-0da1fb618bf7841f",
-                "p-1caa1d9ac104870f"
+                "p-5ad4016152b13cf5",
+                "p-b5c364f2460d5720",
+                "p-9ebec83abae5d60e"
               ],
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
-              "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+              "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
               "passage_ids": [
-                "p-b5122bcbb5602f3a",
-                "p-2749fe12a8d80209",
-                "p-e805523d0ab5560b"
+                "p-4af9a210de3e90e4",
+                "p-61021e907b9c1bc0",
+                "p-2b5620197dbfb45d"
               ],
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ]
         },
         {
           "user": "ravi",
           "question": "What's the latest runbook for the payment-service incident?",
-          "query_id": "b07fc7a03305",
+          "query_id": "dadaeaca6868",
           "answer": "Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 3: If certificate expiry is suspected, run the cert-check job and page the payments lead. [S1]\nStep 4: Post status updates in #payments-oncall every 15 minutes. [S1]\nStep 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway. [S1]\nPAY-101 [Done] Root cause: payment outage (Q2). [S2]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S2]\nFollow-up tickets created: PAY-102 and PAY-103. [S2]\nPostmortem for the Q2 payment outage. [S3]\nImpact: card payments failed for 47 minutes. [S3]\n@ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S4]\n@ravi: Found it: gateway certificate expired. [S4]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nAdd expiry alerting. [S5]\nPAY-103 [Done] Make cert renewal job fail loudly. [S6]\nFollow-up to PAY-101. [S6]\nRenewal job now pages on failure. [S6]",
           "citations": [
             {
@@ -309,9 +316,9 @@
               "title": "Runbook: payment-service incident",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101",
               "container": "payment-gateway",
-              "updated_iso": "2026-09-28 18:48 UTC",
+              "updated_iso": "2026-09-29 11:46 UTC",
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
               "ref": "S2",
@@ -319,9 +326,9 @@
               "title": "PAY-101: Root cause: payment outage (Q2)",
               "url": "https://companya.atlassian.net/browse/PAY-101",
               "container": "PAY",
-              "updated_iso": "2026-06-10 18:48 UTC",
+              "updated_iso": "2026-06-11 11:46 UTC",
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
               "ref": "S3",
@@ -329,9 +336,9 @@
               "title": "Postmortem: Q2 payment outage",
               "url": "https://drive.google.com/file/d/DRV-1",
               "container": "fld-post",
-              "updated_iso": "2026-06-15 18:48 UTC",
+              "updated_iso": "2026-06-16 11:46 UTC",
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
               "ref": "S4",
@@ -339,9 +346,9 @@
               "title": "#payments-oncall thread by @ravi",
               "url": "https://companya.slack.com/archives/payments-oncall/p3001",
               "container": "payments-oncall",
-              "updated_iso": "2026-06-08 19:18 UTC",
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "updated_iso": "2026-06-09 12:16 UTC",
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
               "ref": "S5",
@@ -349,9 +356,9 @@
               "title": "PAY-102: Alert when any certificate expires within 14 days",
               "url": "https://companya.atlassian.net/browse/PAY-102",
               "container": "PAY",
-              "updated_iso": "2026-08-29 18:48 UTC",
+              "updated_iso": "2026-08-30 11:46 UTC",
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
               "ref": "S6",
@@ -359,9 +366,9 @@
               "title": "PAY-103: Make cert renewal job fail loudly",
               "url": "https://companya.atlassian.net/browse/PAY-103",
               "container": "PAY",
-              "updated_iso": "2026-07-30 18:48 UTC",
+              "updated_iso": "2026-07-31 11:46 UTC",
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ],
           "blocked": false,
@@ -382,67 +389,67 @@
           },
           "authorized_context": [
             {
-              "fingerprint": "7f29dfd097f7838033ca6bc0c4ab05cbdf567d34e59dd9f41780859740b00528",
+              "fingerprint": "881da1e147e7be7b875e00ae738d3d9ee1857ba2d9a1e06ec9d51df4f1ff0e12",
               "passage_ids": [
-                "p-b556b2197868ee9d",
-                "p-14f595546439fda6",
-                "p-6be0b03b0d40a19a",
-                "p-c44d3295f2a43c7a",
-                "p-4410e145d9cc2a2e"
+                "p-9020162d02e349d0",
+                "p-7b927687018eb13a",
+                "p-e91bc88dca60a346",
+                "p-98da9f2c8dccb895",
+                "p-6188ec39d5a282c9"
               ],
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
-              "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+              "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
               "passage_ids": [
-                "p-b9b6c50117fc9f30",
-                "p-8467228232a7a71e",
-                "p-0fbd734a6c95713a"
+                "p-28f38d8431db8bde",
+                "p-4353db84d366593f",
+                "p-6cace71937587ae0"
               ],
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
-              "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+              "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
               "passage_ids": [
-                "p-e3d959002bbfd04a",
-                "p-a9493ac16c175e8e",
-                "p-f34f0e4e0d85f07a",
-                "p-d24ae2ecc488ac55"
+                "p-f712ca15c4937011",
+                "p-3a7bcd95f19b30e8",
+                "p-5c2d75788378b147",
+                "p-4f9aebaffd3f8646"
               ],
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
-              "fingerprint": "182515c84f2deade4c830abeb056219fcf066799a48ae80ea82612af15d07148",
+              "fingerprint": "5811f4504e350ec6caa08f7745ab4f9e4690d0c150b5a2580f39e8e4d92eb638",
               "passage_ids": [
-                "p-351fa5e758445f29",
-                "p-571ccad16d7bd749",
-                "p-ab8f6393ba769147"
+                "p-20e2fa792145c9a0",
+                "p-ef830480ca6ee9cc",
+                "p-34a584c7d1505277"
               ],
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
-              "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+              "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
               "passage_ids": [
-                "p-b864ba9a00552851",
-                "p-0da1fb618bf7841f",
-                "p-1caa1d9ac104870f"
+                "p-5ad4016152b13cf5",
+                "p-b5c364f2460d5720",
+                "p-9ebec83abae5d60e"
               ],
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
-              "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+              "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
               "passage_ids": [
-                "p-b5122bcbb5602f3a",
-                "p-2749fe12a8d80209",
-                "p-e805523d0ab5560b"
+                "p-4af9a210de3e90e4",
+                "p-61021e907b9c1bc0",
+                "p-2b5620197dbfb45d"
               ],
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ]
         }
@@ -456,7 +463,7 @@
         {
           "user": "kim",
           "question": "Show me the security incident report from the Q3 breach.",
-          "query_id": "82f752a62044",
+          "query_id": "9ab5873f1a8d",
           "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
           "citations": [],
           "blocked": false,
@@ -480,7 +487,7 @@
         {
           "user": "kim",
           "question": "Show me the unicorn migration to Mars report.",
-          "query_id": "90e9ce544bf6",
+          "query_id": "54d5fe412984",
           "answer": "I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.",
           "citations": [],
           "blocked": false,
@@ -510,7 +517,7 @@
         {
           "user": "ravi",
           "question": "What did payments-oncall say about the gateway certificate?",
-          "query_id": "2da7cf81e0f8",
+          "query_id": "d686b5c714fa",
           "answer": "@ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S1]\n@ravi: Found it: gateway certificate expired. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S2]\nStep 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway. [S2]\nPostmortem for the Q2 payment outage. [S3]\nRoot cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S3]\nPAY-101 [Done] Root cause: payment outage (Q2). [S4]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S4]\nFollow-up tickets created: PAY-102 and PAY-103. [S4]\npayment-service calls the card network gateway over mutual TLS. [S5]\nCertificates are renewed by a nightly job. [S5]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S6]\nFollow-up to PAY-101. [S6]\nAdd expiry alerting. [S6]\nPAY-103 [Done] Make cert renewal job fail loudly. [S7]\nFollow-up to PAY-101. [S7]\nRenewal job now pages on failure. [S7]",
           "citations": [
             {
@@ -519,9 +526,9 @@
               "title": "#payments-oncall thread by @ravi",
               "url": "https://companya.slack.com/archives/payments-oncall/p3001",
               "container": "payments-oncall",
-              "updated_iso": "2026-06-08 19:18 UTC",
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "updated_iso": "2026-06-09 12:16 UTC",
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
               "ref": "S2",
@@ -529,9 +536,9 @@
               "title": "Runbook: payment-service incident",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101",
               "container": "payment-gateway",
-              "updated_iso": "2026-09-28 18:48 UTC",
+              "updated_iso": "2026-09-29 11:46 UTC",
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
               "ref": "S3",
@@ -539,9 +546,9 @@
               "title": "Postmortem: Q2 payment outage",
               "url": "https://drive.google.com/file/d/DRV-1",
               "container": "fld-post",
-              "updated_iso": "2026-06-15 18:48 UTC",
+              "updated_iso": "2026-06-16 11:46 UTC",
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
               "ref": "S4",
@@ -549,9 +556,9 @@
               "title": "PAY-101: Root cause: payment outage (Q2)",
               "url": "https://companya.atlassian.net/browse/PAY-101",
               "container": "PAY",
-              "updated_iso": "2026-06-10 18:48 UTC",
+              "updated_iso": "2026-06-11 11:46 UTC",
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
               "ref": "S5",
@@ -559,9 +566,9 @@
               "title": "Payment gateway architecture",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106",
               "container": "payment-gateway",
-              "updated_iso": "2026-08-19 18:48 UTC",
+              "updated_iso": "2026-08-20 11:46 UTC",
               "uid": "confluence:CONF-106",
-              "version": "1787165322.119788"
+              "version": "1787226381.553977"
             },
             {
               "ref": "S6",
@@ -569,9 +576,9 @@
               "title": "PAY-102: Alert when any certificate expires within 14 days",
               "url": "https://companya.atlassian.net/browse/PAY-102",
               "container": "PAY",
-              "updated_iso": "2026-08-29 18:48 UTC",
+              "updated_iso": "2026-08-30 11:46 UTC",
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
               "ref": "S7",
@@ -579,9 +586,9 @@
               "title": "PAY-103: Make cert renewal job fail loudly",
               "url": "https://companya.atlassian.net/browse/PAY-103",
               "container": "PAY",
-              "updated_iso": "2026-07-30 18:48 UTC",
+              "updated_iso": "2026-07-31 11:46 UTC",
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ],
           "blocked": false,
@@ -602,83 +609,83 @@
           },
           "authorized_context": [
             {
-              "fingerprint": "182515c84f2deade4c830abeb056219fcf066799a48ae80ea82612af15d07148",
+              "fingerprint": "5811f4504e350ec6caa08f7745ab4f9e4690d0c150b5a2580f39e8e4d92eb638",
               "passage_ids": [
-                "p-351fa5e758445f29",
-                "p-571ccad16d7bd749",
-                "p-ab8f6393ba769147"
+                "p-20e2fa792145c9a0",
+                "p-ef830480ca6ee9cc",
+                "p-34a584c7d1505277"
               ],
-              "uid": "slack:payments-oncall/3001",
-              "version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859"
+              "uid": "slack:T0COMPANYA/payments-oncall/3001",
+              "version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f"
             },
             {
-              "fingerprint": "7f29dfd097f7838033ca6bc0c4ab05cbdf567d34e59dd9f41780859740b00528",
+              "fingerprint": "881da1e147e7be7b875e00ae738d3d9ee1857ba2d9a1e06ec9d51df4f1ff0e12",
               "passage_ids": [
-                "p-b556b2197868ee9d",
-                "p-14f595546439fda6",
-                "p-6be0b03b0d40a19a",
-                "p-c44d3295f2a43c7a",
-                "p-4410e145d9cc2a2e"
+                "p-9020162d02e349d0",
+                "p-7b927687018eb13a",
+                "p-e91bc88dca60a346",
+                "p-98da9f2c8dccb895",
+                "p-6188ec39d5a282c9"
               ],
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
-              "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+              "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
               "passage_ids": [
-                "p-e3d959002bbfd04a",
-                "p-a9493ac16c175e8e",
-                "p-f34f0e4e0d85f07a",
-                "p-d24ae2ecc488ac55"
+                "p-f712ca15c4937011",
+                "p-3a7bcd95f19b30e8",
+                "p-5c2d75788378b147",
+                "p-4f9aebaffd3f8646"
               ],
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
-              "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+              "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
               "passage_ids": [
-                "p-b9b6c50117fc9f30",
-                "p-8467228232a7a71e",
-                "p-0fbd734a6c95713a"
+                "p-28f38d8431db8bde",
+                "p-4353db84d366593f",
+                "p-6cace71937587ae0"
               ],
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
-              "fingerprint": "1680fa8dfe33ccc304472d217aa46a2edbf4133161753f11658e9bd8acb021e6",
+              "fingerprint": "dfea8495c7dfa82d15c434a56381badb6d6bb60f610be5151a9d73e3c89a51a1",
               "passage_ids": [
-                "p-d6c838c3c71be99d",
-                "p-0c7d4c4a3e3b839a"
+                "p-a0106eb4ed39e98b",
+                "p-65b63fd1de8e48b4"
               ],
               "uid": "confluence:CONF-106",
-              "version": "1787165322.119788"
+              "version": "1787226381.553977"
             },
             {
-              "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+              "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
               "passage_ids": [
-                "p-b864ba9a00552851",
-                "p-0da1fb618bf7841f",
-                "p-1caa1d9ac104870f"
+                "p-5ad4016152b13cf5",
+                "p-b5c364f2460d5720",
+                "p-9ebec83abae5d60e"
               ],
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
-              "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+              "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
               "passage_ids": [
-                "p-b5122bcbb5602f3a",
-                "p-2749fe12a8d80209",
-                "p-e805523d0ab5560b"
+                "p-4af9a210de3e90e4",
+                "p-61021e907b9c1bc0",
+                "p-2b5620197dbfb45d"
               ],
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ]
         },
         {
           "user": "ravi",
           "question": "What did payments-oncall say about the gateway certificate?",
-          "query_id": "06cdb40fb4f6",
+          "query_id": "f26ca5f9ab00",
           "answer": "Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway. [S1]\nPostmortem for the Q2 payment outage. [S2]\nRoot cause: expired TLS certificate on the card network gateway after the renewal job failed silently. [S2]\nPAY-101 [Done] Root cause: payment outage (Q2). [S3]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\npayment-service calls the card network gateway over mutual TLS. [S4]\nCertificates are renewed by a nightly job. [S4]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nAdd expiry alerting. [S5]\nPAY-103 [Done] Make cert renewal job fail loudly. [S6]\nFollow-up to PAY-101. [S6]\nRenewal job now pages on failure. [S6]",
           "citations": [
             {
@@ -687,9 +694,9 @@
               "title": "Runbook: payment-service incident",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101",
               "container": "payment-gateway",
-              "updated_iso": "2026-09-28 18:48 UTC",
+              "updated_iso": "2026-09-29 11:46 UTC",
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
               "ref": "S2",
@@ -697,9 +704,9 @@
               "title": "Postmortem: Q2 payment outage",
               "url": "https://drive.google.com/file/d/DRV-1",
               "container": "fld-post",
-              "updated_iso": "2026-06-15 18:48 UTC",
+              "updated_iso": "2026-06-16 11:46 UTC",
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
               "ref": "S3",
@@ -707,9 +714,9 @@
               "title": "PAY-101: Root cause: payment outage (Q2)",
               "url": "https://companya.atlassian.net/browse/PAY-101",
               "container": "PAY",
-              "updated_iso": "2026-06-10 18:48 UTC",
+              "updated_iso": "2026-06-11 11:46 UTC",
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
               "ref": "S4",
@@ -717,9 +724,9 @@
               "title": "Payment gateway architecture",
               "url": "https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106",
               "container": "payment-gateway",
-              "updated_iso": "2026-08-19 18:48 UTC",
+              "updated_iso": "2026-08-20 11:46 UTC",
               "uid": "confluence:CONF-106",
-              "version": "1787165322.119788"
+              "version": "1787226381.553977"
             },
             {
               "ref": "S5",
@@ -727,9 +734,9 @@
               "title": "PAY-102: Alert when any certificate expires within 14 days",
               "url": "https://companya.atlassian.net/browse/PAY-102",
               "container": "PAY",
-              "updated_iso": "2026-08-29 18:48 UTC",
+              "updated_iso": "2026-08-30 11:46 UTC",
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
               "ref": "S6",
@@ -737,9 +744,9 @@
               "title": "PAY-103: Make cert renewal job fail loudly",
               "url": "https://companya.atlassian.net/browse/PAY-103",
               "container": "PAY",
-              "updated_iso": "2026-07-30 18:48 UTC",
+              "updated_iso": "2026-07-31 11:46 UTC",
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ],
           "blocked": false,
@@ -760,66 +767,66 @@
           },
           "authorized_context": [
             {
-              "fingerprint": "7f29dfd097f7838033ca6bc0c4ab05cbdf567d34e59dd9f41780859740b00528",
+              "fingerprint": "881da1e147e7be7b875e00ae738d3d9ee1857ba2d9a1e06ec9d51df4f1ff0e12",
               "passage_ids": [
-                "p-b556b2197868ee9d",
-                "p-14f595546439fda6",
-                "p-6be0b03b0d40a19a",
-                "p-c44d3295f2a43c7a",
-                "p-4410e145d9cc2a2e"
+                "p-9020162d02e349d0",
+                "p-7b927687018eb13a",
+                "p-e91bc88dca60a346",
+                "p-98da9f2c8dccb895",
+                "p-6188ec39d5a282c9"
               ],
               "uid": "confluence:CONF-101",
-              "version": "1790621322.153960"
+              "version": "1790682381.622682"
             },
             {
-              "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+              "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
               "passage_ids": [
-                "p-e3d959002bbfd04a",
-                "p-a9493ac16c175e8e",
-                "p-f34f0e4e0d85f07a",
-                "p-d24ae2ecc488ac55"
+                "p-f712ca15c4937011",
+                "p-3a7bcd95f19b30e8",
+                "p-5c2d75788378b147",
+                "p-4f9aebaffd3f8646"
               ],
               "uid": "gdrive:DRV-1",
-              "version": "1781549322.119788"
+              "version": "1781610381.553977"
             },
             {
-              "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+              "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
               "passage_ids": [
-                "p-b9b6c50117fc9f30",
-                "p-8467228232a7a71e",
-                "p-0fbd734a6c95713a"
+                "p-28f38d8431db8bde",
+                "p-4353db84d366593f",
+                "p-6cace71937587ae0"
               ],
               "uid": "jira:PAY-101",
-              "version": "1781117322.119788"
+              "version": "1781178381.553977"
             },
             {
-              "fingerprint": "1680fa8dfe33ccc304472d217aa46a2edbf4133161753f11658e9bd8acb021e6",
+              "fingerprint": "dfea8495c7dfa82d15c434a56381badb6d6bb60f610be5151a9d73e3c89a51a1",
               "passage_ids": [
-                "p-d6c838c3c71be99d",
-                "p-0c7d4c4a3e3b839a"
+                "p-a0106eb4ed39e98b",
+                "p-65b63fd1de8e48b4"
               ],
               "uid": "confluence:CONF-106",
-              "version": "1787165322.119788"
+              "version": "1787226381.553977"
             },
             {
-              "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+              "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
               "passage_ids": [
-                "p-b864ba9a00552851",
-                "p-0da1fb618bf7841f",
-                "p-1caa1d9ac104870f"
+                "p-5ad4016152b13cf5",
+                "p-b5c364f2460d5720",
+                "p-9ebec83abae5d60e"
               ],
               "uid": "jira:PAY-102",
-              "version": "1788029322.119788"
+              "version": "1788090381.553977"
             },
             {
-              "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+              "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
               "passage_ids": [
-                "p-b5122bcbb5602f3a",
-                "p-2749fe12a8d80209",
-                "p-e805523d0ab5560b"
+                "p-4af9a210de3e90e4",
+                "p-61021e907b9c1bc0",
+                "p-2b5620197dbfb45d"
               ],
               "uid": "jira:PAY-103",
-              "version": "1785437322.119788"
+              "version": "1785498381.553977"
             }
           ]
         }
@@ -835,13 +842,14 @@
         "actor": "jdoe",
         "platform": "confluence",
         "container": "payment-gateway",
-        "since": 1788029322.221579,
+        "since": 1788090381.7339141,
         "decision": "allowed"
       },
       "stories": [
         {
-          "query_id": "82a7a37093fc",
-          "ts": 1790621322.208452,
+          "query_id": "c4016fc696fe",
+          "request_id": "",
+          "ts": 1790682381.713382,
           "actor": "jdoe",
           "question": "What's the payment gateway architecture?",
           "matched": [
@@ -901,11 +909,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1787165322.119788",
+              "resource_version": "1787226381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.209337
+              "checked_at": 1790682381.7144608
             },
             {
               "doc_uid": "confluence:CONF-106",
@@ -913,11 +923,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1787165322.119788",
+              "resource_version": "1787226381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.209688
+              "checked_at": 1790682381.715001
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -925,11 +937,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.210175
+              "checked_at": 1790682381.715602
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -937,11 +951,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.210548
+              "checked_at": 1790682381.716225
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -949,11 +965,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.21095
+              "checked_at": 1790682381.716815
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -961,11 +979,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.211301
+              "checked_at": 1790682381.7173529
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -973,11 +993,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2117188
+              "checked_at": 1790682381.718226
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -985,23 +1007,27 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2121012
+              "checked_at": 1790682381.718755
             },
             {
-              "doc_uid": "slack:payments-oncall/3001",
+              "doc_uid": "slack:T0COMPANYA/payments-oncall/3001",
               "platform": "slack",
               "container": "payments-oncall",
               "decision": "denied",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "not_in_conversation",
               "reason": "mapped account cannot read conversation",
-              "resource_version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859",
+              "resource_version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f",
               "platform_account": "T0COMPANYA/U0JDOE",
-              "checked_at": 1790621322.212502
+              "checked_at": 1790682381.719373
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1009,11 +1035,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.213045
+              "checked_at": 1790682381.720441
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1021,11 +1049,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.213415
+              "checked_at": 1790682381.721077
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1033,11 +1063,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.213794
+              "checked_at": 1790682381.721736
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1045,11 +1077,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.214147
+              "checked_at": 1790682381.722295
             },
             {
               "doc_uid": "confluence:CONF-106",
@@ -1057,11 +1091,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1787165322.119788",
+              "resource_version": "1787226381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.215928
+              "checked_at": 1790682381.7247202
             },
             {
               "doc_uid": "confluence:CONF-106",
@@ -1069,11 +1105,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1787165322.119788",
+              "resource_version": "1787226381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.216386
+              "checked_at": 1790682381.7252831
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1081,11 +1119,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.216803
+              "checked_at": 1790682381.7258759
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1093,11 +1133,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.217203
+              "checked_at": 1790682381.726454
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1105,11 +1147,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.217546
+              "checked_at": 1790682381.727048
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1117,11 +1161,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2178938
+              "checked_at": 1790682381.7276568
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -1129,11 +1175,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.21824
+              "checked_at": 1790682381.728249
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -1141,11 +1189,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2186508
+              "checked_at": 1790682381.7289028
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1153,11 +1203,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.219156
+              "checked_at": 1790682381.729493
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1165,11 +1217,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2195861
+              "checked_at": 1790682381.730077
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1177,11 +1231,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.219983
+              "checked_at": 1790682381.7306619
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1189,11 +1245,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.220381
+              "checked_at": 1790682381.7316182
             }
           ],
           "context_sent": [
@@ -1201,70 +1259,71 @@
               "attempt": 1,
               "docs": [
                 {
-                  "fingerprint": "1680fa8dfe33ccc304472d217aa46a2edbf4133161753f11658e9bd8acb021e6",
+                  "fingerprint": "dfea8495c7dfa82d15c434a56381badb6d6bb60f610be5151a9d73e3c89a51a1",
                   "passage_ids": [
-                    "p-d6c838c3c71be99d",
-                    "p-0c7d4c4a3e3b839a"
+                    "p-a0106eb4ed39e98b",
+                    "p-65b63fd1de8e48b4"
                   ],
                   "uid": "confluence:CONF-106",
-                  "version": "1787165322.119788"
+                  "version": "1787226381.553977"
                 },
                 {
-                  "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+                  "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
                   "passage_ids": [
-                    "p-e3d959002bbfd04a",
-                    "p-a9493ac16c175e8e",
-                    "p-f34f0e4e0d85f07a",
-                    "p-d24ae2ecc488ac55"
+                    "p-f712ca15c4937011",
+                    "p-3a7bcd95f19b30e8",
+                    "p-5c2d75788378b147",
+                    "p-4f9aebaffd3f8646"
                   ],
                   "uid": "gdrive:DRV-1",
-                  "version": "1781549322.119788"
+                  "version": "1781610381.553977"
                 },
                 {
-                  "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+                  "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
                   "passage_ids": [
-                    "p-b9b6c50117fc9f30",
-                    "p-8467228232a7a71e",
-                    "p-0fbd734a6c95713a"
+                    "p-28f38d8431db8bde",
+                    "p-4353db84d366593f",
+                    "p-6cace71937587ae0"
                   ],
                   "uid": "jira:PAY-101",
-                  "version": "1781117322.119788"
+                  "version": "1781178381.553977"
                 },
                 {
-                  "fingerprint": "7f29dfd097f7838033ca6bc0c4ab05cbdf567d34e59dd9f41780859740b00528",
+                  "fingerprint": "881da1e147e7be7b875e00ae738d3d9ee1857ba2d9a1e06ec9d51df4f1ff0e12",
                   "passage_ids": [
-                    "p-b556b2197868ee9d",
-                    "p-14f595546439fda6",
-                    "p-6be0b03b0d40a19a",
-                    "p-c44d3295f2a43c7a",
-                    "p-4410e145d9cc2a2e"
+                    "p-9020162d02e349d0",
+                    "p-7b927687018eb13a",
+                    "p-e91bc88dca60a346",
+                    "p-98da9f2c8dccb895",
+                    "p-6188ec39d5a282c9"
                   ],
                   "uid": "confluence:CONF-101",
-                  "version": "1790621322.153960"
+                  "version": "1790682381.622682"
                 },
                 {
-                  "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+                  "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
                   "passage_ids": [
-                    "p-b864ba9a00552851",
-                    "p-0da1fb618bf7841f",
-                    "p-1caa1d9ac104870f"
+                    "p-5ad4016152b13cf5",
+                    "p-b5c364f2460d5720",
+                    "p-9ebec83abae5d60e"
                   ],
                   "uid": "jira:PAY-102",
-                  "version": "1788029322.119788"
+                  "version": "1788090381.553977"
                 },
                 {
-                  "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+                  "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
                   "passage_ids": [
-                    "p-b5122bcbb5602f3a",
-                    "p-2749fe12a8d80209",
-                    "p-e805523d0ab5560b"
+                    "p-4af9a210de3e90e4",
+                    "p-61021e907b9c1bc0",
+                    "p-2b5620197dbfb45d"
                   ],
                   "uid": "jira:PAY-103",
-                  "version": "1785437322.119788"
+                  "version": "1785498381.553977"
                 }
               ]
             }
           ],
+          "permitted_not_sent": [],
           "discarded": [],
           "release": "released",
           "answer": "payment-service calls the card network gateway over mutual TLS. [S1]\nCertificates are renewed by a nightly job. [S1]\nPostmortem for the Q2 payment outage. [S2]\nImpact: card payments failed for 47 minutes. [S2]\nPAY-101 [Done] Root cause: payment outage (Q2). [S3]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nStep 1: Check the payments dashboard for elevated card authorisation errors. [S4]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S4]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nAdd expiry alerting. [S5]\nPAY-103 [Done] Make cert renewal job fail loudly. [S6]\nFollow-up to PAY-101. [S6]\nRenewal job now pages on failure. [S6]",
@@ -1275,11 +1334,19 @@
             "confluence:CONF-101",
             "jira:PAY-102",
             "jira:PAY-103"
-          ]
+          ],
+          "generation": {
+            "grounding": "complete_source_passages",
+            "mode": "extractive",
+            "rejected_claims": 0
+          },
+          "terminal": "answer_returned",
+          "delivery": "unconfirmed"
         },
         {
-          "query_id": "0cf8cf1d4755",
-          "ts": 1790621322.197598,
+          "query_id": "0adc7ab606b0",
+          "request_id": "",
+          "ts": 1790682381.696336,
           "actor": "jdoe",
           "question": "What's the latest runbook for the payment-service incident?",
           "matched": [
@@ -1315,11 +1382,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.1984131
+              "checked_at": 1790682381.697273
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -1327,11 +1396,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.198755
+              "checked_at": 1790682381.697797
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1339,11 +1410,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.1991959
+              "checked_at": 1790682381.6984582
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1351,11 +1424,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.199557
+              "checked_at": 1790682381.699003
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1363,11 +1438,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.199966
+              "checked_at": 1790682381.69962
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1375,11 +1452,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.200323
+              "checked_at": 1790682381.700136
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1387,11 +1466,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.200761
+              "checked_at": 1790682381.700704
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1399,11 +1480,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.201222
+              "checked_at": 1790682381.701215
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1411,11 +1494,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.201556
+              "checked_at": 1790682381.7017589
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1423,23 +1508,27 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "live",
+              "phase": "after_read",
+              "attempt": null,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.201889
+              "checked_at": 1790682381.7022989
             },
             {
-              "doc_uid": "slack:payments-oncall/3001",
+              "doc_uid": "slack:T0COMPANYA/payments-oncall/3001",
               "platform": "slack",
               "container": "payments-oncall",
               "decision": "denied",
               "stage": "live",
+              "phase": "before_read",
+              "attempt": null,
               "reason_code": "not_in_conversation",
               "reason": "mapped account cannot read conversation",
-              "resource_version": "eb7759d216e52ee037a9079fc09e4c580463e94923085843318c2eb7a4768859",
+              "resource_version": "6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f",
               "platform_account": "T0COMPANYA/U0JDOE",
-              "checked_at": 1790621322.202254
+              "checked_at": 1790682381.702827
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -1447,11 +1536,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.203985
+              "checked_at": 1790682381.705894
             },
             {
               "doc_uid": "confluence:CONF-101",
@@ -1459,11 +1550,13 @@
               "container": "payment-gateway",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "space_view_and_restrictions_ok",
               "reason": "space 'payment-gateway' view, restrictions pass",
-              "resource_version": "1790621322.153960",
+              "resource_version": "1790682381.622682",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.204385
+              "checked_at": 1790682381.706469
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1471,11 +1564,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2047539
+              "checked_at": 1790682381.7070138
             },
             {
               "doc_uid": "jira:PAY-101",
@@ -1483,11 +1578,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1781117322.119788",
+              "resource_version": "1781178381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.205142
+              "checked_at": 1790682381.707556
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1495,11 +1592,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.205628
+              "checked_at": 1790682381.70809
             },
             {
               "doc_uid": "gdrive:DRV-1",
@@ -1507,11 +1606,13 @@
               "container": "fld-post",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "shared",
               "reason": "shared via group:eng (view)",
-              "resource_version": "1781549322.119788",
+              "resource_version": "1781610381.553977",
               "platform_account": "jdoe@companya.example",
-              "checked_at": 1790621322.206025
+              "checked_at": 1790682381.708669
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1519,11 +1620,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2063801
+              "checked_at": 1790682381.709217
             },
             {
               "doc_uid": "jira:PAY-102",
@@ -1531,11 +1634,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1788029322.119788",
+              "resource_version": "1788090381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.206775
+              "checked_at": 1790682381.7097769
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1543,11 +1648,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "before_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.207129
+              "checked_at": 1790682381.710337
             },
             {
               "doc_uid": "jira:PAY-103",
@@ -1555,11 +1662,13 @@
               "container": "PAY",
               "decision": "allowed",
               "stage": "release",
+              "phase": "after_read",
+              "attempt": 1,
               "reason_code": "browse_via_project_role",
               "reason": "browse on PAY",
-              "resource_version": "1785437322.119788",
+              "resource_version": "1785498381.553977",
               "platform_account": "atl-557058:jdoe",
-              "checked_at": 1790621322.2075038
+              "checked_at": 1790682381.7109802
             }
           ],
           "context_sent": [
@@ -1567,61 +1676,62 @@
               "attempt": 1,
               "docs": [
                 {
-                  "fingerprint": "7f29dfd097f7838033ca6bc0c4ab05cbdf567d34e59dd9f41780859740b00528",
+                  "fingerprint": "881da1e147e7be7b875e00ae738d3d9ee1857ba2d9a1e06ec9d51df4f1ff0e12",
                   "passage_ids": [
-                    "p-b556b2197868ee9d",
-                    "p-14f595546439fda6",
-                    "p-6be0b03b0d40a19a",
-                    "p-c44d3295f2a43c7a",
-                    "p-4410e145d9cc2a2e"
+                    "p-9020162d02e349d0",
+                    "p-7b927687018eb13a",
+                    "p-e91bc88dca60a346",
+                    "p-98da9f2c8dccb895",
+                    "p-6188ec39d5a282c9"
                   ],
                   "uid": "confluence:CONF-101",
-                  "version": "1790621322.153960"
+                  "version": "1790682381.622682"
                 },
                 {
-                  "fingerprint": "36fb5960d5dc69562ad7707ac06017100a3cbd36982780cfb309221724709016",
+                  "fingerprint": "232ffa98f4398a626cf55e51d57c94db2f67fcafac941f7dc0738626cc501437",
                   "passage_ids": [
-                    "p-b9b6c50117fc9f30",
-                    "p-8467228232a7a71e",
-                    "p-0fbd734a6c95713a"
+                    "p-28f38d8431db8bde",
+                    "p-4353db84d366593f",
+                    "p-6cace71937587ae0"
                   ],
                   "uid": "jira:PAY-101",
-                  "version": "1781117322.119788"
+                  "version": "1781178381.553977"
                 },
                 {
-                  "fingerprint": "b6a680a826f8dca9b9077a52bc1916c28a4f7cfdb731582d9eb3a76a293db91a",
+                  "fingerprint": "f6c4df458453bfd0936078865d4411c8010a318046c09f066db25b2127ddd8dc",
                   "passage_ids": [
-                    "p-e3d959002bbfd04a",
-                    "p-a9493ac16c175e8e",
-                    "p-f34f0e4e0d85f07a",
-                    "p-d24ae2ecc488ac55"
+                    "p-f712ca15c4937011",
+                    "p-3a7bcd95f19b30e8",
+                    "p-5c2d75788378b147",
+                    "p-4f9aebaffd3f8646"
                   ],
                   "uid": "gdrive:DRV-1",
-                  "version": "1781549322.119788"
+                  "version": "1781610381.553977"
                 },
                 {
-                  "fingerprint": "0f4b6c288a17ea575a54601edc59bdd4e3b3566537d9f893285947598cbf6661",
+                  "fingerprint": "5eb37444420ee6c5760c40408e5d1dda92ae97bae2f44f2672cd422038dd543b",
                   "passage_ids": [
-                    "p-b864ba9a00552851",
-                    "p-0da1fb618bf7841f",
-                    "p-1caa1d9ac104870f"
+                    "p-5ad4016152b13cf5",
+                    "p-b5c364f2460d5720",
+                    "p-9ebec83abae5d60e"
                   ],
                   "uid": "jira:PAY-102",
-                  "version": "1788029322.119788"
+                  "version": "1788090381.553977"
                 },
                 {
-                  "fingerprint": "de0699b96c2f44ea4ac2947a4c8e0346d12541819b86d087d9e138413f94e7a9",
+                  "fingerprint": "420c7e562606909e500dd1cc11f95497c9ba3ae24117b33264cec8500ca10816",
                   "passage_ids": [
-                    "p-b5122bcbb5602f3a",
-                    "p-2749fe12a8d80209",
-                    "p-e805523d0ab5560b"
+                    "p-4af9a210de3e90e4",
+                    "p-61021e907b9c1bc0",
+                    "p-2b5620197dbfb45d"
                   ],
                   "uid": "jira:PAY-103",
-                  "version": "1785437322.119788"
+                  "version": "1785498381.553977"
                 }
               ]
             }
           ],
+          "permitted_not_sent": [],
           "discarded": [],
           "release": "released",
           "answer": "Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]\nStep 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]\nStep 3: If certificate expiry is suspected, run the cert-check job and page the payments lead. [S1]\nStep 4: Post status updates in #payments-oncall every 15 minutes. [S1]\nStep 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway. [S1]\nPAY-101 [Done] Root cause: payment outage (Q2). [S2]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S2]\nFollow-up tickets created: PAY-102 and PAY-103. [S2]\nPostmortem for the Q2 payment outage. [S3]\nImpact: card payments failed for 47 minutes. [S3]\nPAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nFollow-up to PAY-101. [S4]\nAdd expiry alerting. [S4]\nPAY-103 [Done] Make cert renewal job fail loudly. [S5]\nFollow-up to PAY-101. [S5]\nRenewal job now pages on failure. [S5]",
@@ -1631,7 +1741,14 @@
             "gdrive:DRV-1",
             "jira:PAY-102",
             "jira:PAY-103"
-          ]
+          ],
+          "generation": {
+            "grounding": "complete_source_passages",
+            "mode": "extractive",
+            "rejected_claims": 0
+          },
+          "terminal": "answer_returned",
+          "delivery": "unconfirmed"
         }
       ]
     }

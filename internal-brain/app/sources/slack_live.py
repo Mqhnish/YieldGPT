@@ -10,12 +10,13 @@ import hashlib
 import json
 import re
 import time
+from dataclasses import replace
 from collections.abc import Callable
 
 import httpx
 
 from ..identity import User, account_for
-from .base import Connector, Decision, SourceDoc, SourceUnavailable
+from .base import Connector, Decision, SourceDoc, SourceUnavailable, ChangePage
 from .slack_events import SlackEventStore, native_id, split_native
 from .slack_content import SlackSourceDoc, thread_text
 
@@ -58,6 +59,12 @@ class SlackLiveConnector(Connector):
         self.client = client or httpx.Client(follow_redirects=False)
         self.page_limit, self.max_pages = page_limit, max_pages
         self.request_timeout, self._sleep = request_timeout, sleep
+
+    def check(self, user, native_id):
+        account = account_for(user, 'slack', self.tenant)
+        scoped = replace(user, accounts=tuple((p,a) for p,a in user.accounts if p != 'slack') +
+                         ((('slack',account),) if account else ()))
+        return super().check(scoped, native_id)
 
     def _api(self, token: str, method: str, params=None, *, retries: bool = False):
         attempts = 3 if retries else 1
@@ -115,7 +122,7 @@ class SlackLiveConnector(Connector):
         return channel, ts
 
     def _user_token(self, user: User) -> str | None:
-        account = account_for(user, "slack")
+        account = account_for(user, "slack", self.tenant)
         if not account:
             return None
         parts = account.split("/")
@@ -230,7 +237,9 @@ class SlackLiveConnector(Connector):
         return self.store.head()
 
     def changes_since(self, cursor: str, page_size: int = 100):
-        return self.store.changes_since(cursor, page_size)
+        page = self.store.changes_since(cursor, page_size)
+        return ChangePage([ch for ch in page.changes if ch.native_id.startswith(self.tenant + '/')],
+                          page.next_cursor, page.has_more)
 
     def _history_ids(self, channel: str):
         ids = set()

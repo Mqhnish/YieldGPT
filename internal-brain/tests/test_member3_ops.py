@@ -127,7 +127,7 @@ def test_compliance_filters_reconstruct_the_right_requests(client):
     stories = find(actor="jdoe", platform="slack", decision="allowed", since=t0, until=time.time() + 5)
     assert [s["query_id"] for s in stories] == [jane["query_id"]]
     assert find(actor="jdoe", until=t0 - 60) == []
-    assert find(doc_uid="slack:mig-leads/2101", decision="denied")[0]["actor"] == "jdoe"
+    assert find(doc_uid="slack:T0COMPANYA/mig-leads/2101", decision="denied")[0]["actor"] == "jdoe"
     story = find(query_id=jane["query_id"])[0]
     assert {c["uid"] for c in jane["citations"]} <= {d["uid"] for a in story["context_sent"] for d in a["docs"]}
 

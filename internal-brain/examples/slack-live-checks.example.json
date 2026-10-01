@@ -1,0 +1,12 @@
+{
+  "instructions": "Replace with disposable workspace IDs and mapped fixture actors. Manually edit/revoke/delete/expire the fixture between matching phases. The verifier is read-only. Add cases for each configured workspace and a DM.",
+  "checks": [
+    {"id":"team-one-thread-lifecycle","user":"jdoe","native_id":"TTEAMONE/CPUBLIC/1700000000.000001","phases":{
+      "initial":{"allowed":true,"contains":["Migration is not approved."]},
+      "edited":{"allowed":true,"contains":["Migration is approved."],"absent":["not approved"]},
+      "revoked":{"allowed":false},"deleted":{"allowed":false},"expired":{"allowed":false}}},
+    {"id":"team-one-dm","user":"jdoe","native_id":"TTEAMONE/DDIRECT/1700000000.000002","phases":{"initial":{"allowed":true}}},
+    {"id":"team-two-thread","user":"jdoe","native_id":"TTEAMTWO/CPUBLIC/1700000000.000003","phases":{"initial":{"allowed":true}}},
+    {"id":"contractor-denied","user":"kim","native_id":"TTEAMONE/CPUBLIC/1700000000.000001","phases":{"initial":{"allowed":false}}}
+  ]
+}

@@ -9,6 +9,7 @@ import json
 import time
 
 from ..identity import USERS, account_for
+from dataclasses import replace
 from .base import Decision
 from .sim import SimulatedConnector
 from .base import SourceUnavailable
@@ -18,13 +19,21 @@ from .slack_content import SlackSourceDoc, thread_text
 class SlackConnector(SimulatedConnector):
     platform = "slack"
 
+    def check(self, user, native_id):
+        ch = self.w.channels.get(self._channel(native_id), {})
+        tenant = {"companya":"T0COMPANYA", "vendor-connect":"T0VENDOR"}.get(ch.get('workspace'), ch.get('workspace'))
+        account = account_for(user, 'slack', tenant)
+        scoped = replace(user, accounts=tuple((p,a) for p,a in user.accounts if p != 'slack') +
+                         ((('slack',account),) if account else ()))
+        return super().check(scoped, native_id)
+
     def _ids(self):
         return list(self.w.threads)
 
     def _channel(self, tid):
         # A new fixture may set channel explicitly and use TEAM/CHANNEL/TS IDs.
         thread = self.w.threads.get(tid, {})
-        return thread.get("channel", tid.rsplit("/", 1)[0])
+        return thread.get("channel", tid.rsplit("/", 2)[-2] if "/" in tid else tid)
 
     def _live_msgs(self, tid):
         ch = self.w.channels.get(self._channel(tid))
@@ -56,7 +65,7 @@ class SlackConnector(SimulatedConnector):
         accounts = set(ch.get("member_accounts", ()))
         for member in ch.get("members", ()):
             if member in USERS:
-                linked = account_for(USERS[member], "slack")
+                linked = account_for(USERS[member], "slack", {"companya":"T0COMPANYA","vendor-connect":"T0VENDOR"}.get(ch["workspace"], ch["workspace"]))
                 if linked:
                     accounts.add(linked)
             elif "/" in member:

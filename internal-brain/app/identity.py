@@ -4,12 +4,14 @@ In production this comes from the IdP (Okta / Google Workspace / Azure AD)
 via SSO, and each platform account is linked by email. Here it's a fixed
 demo directory.
 """
+import os
 import hashlib
 import hmac
 import time
 from dataclasses import dataclass, field
 
 from .config import SECRET_KEY
+from . import config
 
 
 @dataclass(frozen=True)
@@ -29,6 +31,8 @@ class User:
 
 
 def _u(username, name, title, kind, groups, roles, accounts):
+    if username in {"jdoe", "dana"}:
+        accounts["slack:T0VENDOR"] = f"T0VENDOR/U0{username.upper()}"
     return User(username, name, title, kind, frozenset(groups), frozenset(roles), tuple(sorted(accounts.items())))
 
 
@@ -59,8 +63,21 @@ DEMO_PASSWORD = "demo"
 TOKEN_TTL = 8 * 3600
 
 
-def account_for(user: User, platform: str) -> str | None:
-    return dict(user.accounts).get(platform)
+def account_for(user: User, platform: str, tenant: str | None = None) -> str | None:
+    accounts = dict(user.accounts)
+    if tenant is None:
+        return accounts.get(platform)
+    if platform == 'slack':
+        from . import slack_oauth
+        if slack_oauth.RUNTIME is not None:
+            stored = slack_oauth.RUNTIME.store.account(user.username, tenant)
+            if stored:
+                return stored
+    explicit = accounts.get(f'{platform}:{tenant}')
+    if explicit:
+        return explicit if explicit.startswith(tenant + '/') else None
+    primary = accounts.get(platform)
+    return primary if primary and primary.startswith(tenant + '/') else None
 
 
 def principals(user: User) -> set[str]:
@@ -77,6 +94,8 @@ def _sign(payload: str) -> str:
 
 
 def login(username: str, password: str) -> str | None:
+    if not config.DEMO_MODE or os.getenv('IB_SLACK_CONFIG', '').strip():
+        return None
     if username not in USERS or not hmac.compare_digest(password, DEMO_PASSWORD):
         return None
     payload = f"{username}.{int(time.time()) + TOKEN_TTL}"
@@ -84,10 +103,14 @@ def login(username: str, password: str) -> str | None:
 
 
 def verify(token: str) -> User | None:
+    # This verifier is exclusively the fictional demo identity provider. Member 1
+    # must replace login/verify with trusted SSO before enabling real source access.
+    if not config.DEMO_MODE or os.getenv('IB_SLACK_CONFIG', '').strip():
+        return None
     try:
         username, expiry, sig = token.rsplit(".", 2)
     except ValueError:
         return None
-    if not hmac.compare_digest(sig, _sign(f"{username}.{expiry}")) or int(expiry) < time.time():
+    if len(expiry)>12 or not expiry.isascii() or not expiry.isdigit() or not hmac.compare_digest(sig, _sign(f"{username}.{expiry}")) or int(expiry) < time.time():
         return None
     return USERS.get(username)

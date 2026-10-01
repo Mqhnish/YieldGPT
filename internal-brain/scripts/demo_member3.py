@@ -39,6 +39,9 @@ def main() -> int:
     scratch = Path(tempfile.mkdtemp(prefix="member3-demo-"))
     os.environ.update(IB_DATA_DIR=str(scratch), IB_AUDIT_DB=str(scratch / "audit.db"),
                       IB_ANCHOR_PATH=str(scratch / "anchors.jsonl"), IB_LLM_PROVIDER="stub")
+    os.environ['IB_ENV_FILE'] = str(scratch / '.env')
+    os.environ['IB_LLM_REQUIRE_LIVE'] = '0'
+    os.environ['IB_SLACK_CONFIG'] = ''
     if os.getenv("IB_CHECKPOINT_S3_ENDPOINT"):
         os.environ["IB_CHECKPOINT_S3_PREFIX"] = f"demo-{int(time.time())}/"
     from fastapi.testclient import TestClient

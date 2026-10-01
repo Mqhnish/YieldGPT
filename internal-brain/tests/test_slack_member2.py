@@ -72,9 +72,9 @@ def adapter(tmp_path, fake=None, resolver=None, **kwargs):
 def test_simulated_account_mapping_not_corporate_username():
     c = SlackConnector(World())
     renamed = dataclasses.replace(USERS["jdoe"], username="renamed")
-    assert c.check(renamed, "db-migration/2001").allowed
+    assert c.check(renamed, "T0COMPANYA/db-migration/2001").allowed
     impersonator = dataclasses.replace(USERS["kim"], username="jdoe")
-    assert not c.check(impersonator, "db-migration/2001").allowed
+    assert not c.check(impersonator, "T0COMPANYA/db-migration/2001").allowed
 
 
 def test_simulated_dm_retention_and_public_scope():
@@ -91,14 +91,14 @@ def test_simulated_dm_retention_and_public_scope():
     assert c.fetch("dm-demo/1") is None
     assert not c.check(USERS["jdoe"], "dm-demo/1").allowed
     world.channels["db-migration"].update(public_read=True, workspace_accounts={"T0COMPANYA/U0PRIYA"})
-    assert c.check(USERS["priya"], "db-migration/2001").allowed
-    assert not c.check(USERS["kim"], "db-migration/2001").allowed
+    assert c.check(USERS["priya"], "T0COMPANYA/db-migration/2001").allowed
+    assert not c.check(USERS["kim"], "T0COMPANYA/db-migration/2001").allowed
 
 
 def test_simulated_edit_delete_changes_version_and_feed():
     world = World()
     c = SlackConnector(world)
-    nid = "db-migration/2001"
+    nid = "T0COMPANYA/db-migration/2001"
     before = c.fetch(nid)
     cursor = c.start_cursor()
     world.slack_edit_message(nid, 0, "Migration is not approved", push=False)
@@ -294,8 +294,8 @@ def test_message_spans_preserve_creation_time_and_exact_offsets(tmp_path):
     assert edited.message_spans[0]["ts"] == first["ts"]
     world = World()
     sim = SlackConnector(world)
-    thread = sim.fetch("db-migration/2001")
-    assert thread.message_spans[0]["ts"] == world.threads["db-migration/2001"]["msgs"][0][1]
+    thread = sim.fetch("T0COMPANYA/db-migration/2001")
+    assert thread.message_spans[0]["ts"] == world.threads["T0COMPANYA/db-migration/2001"]["msgs"][0][1]
     for span in thread.message_spans:
         assert thread.text[span["start"]:span["end"]].startswith("@")
 

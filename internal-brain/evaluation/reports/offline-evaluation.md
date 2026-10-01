@@ -1,8 +1,8 @@
-# Company A offline evaluation
+# Company A stub evaluation (current)
 
-Generated: 2026-09-28T18:48:42.759176+00:00
+Generated: 2026-09-29T11:49:35.998091+00:00
 
-These are measured results on fictional fixtures with the offline extractive provider. They do not establish production authorization, semantic entailment, or live-model quality.
+These are measured results on fictional fixtures. The provider mode is recorded above. They do not establish production authorization, semantic entailment, or live-model quality.
 
 - Cases passed: **65/65**
 - Required citation obligations met: **56/56** (100.0%)
@@ -16,10 +16,16 @@ These are measured results on fictional fixtures with the offline extractive pro
 |---|---:|---:|
 | cross_source | 5 | 5 |
 | exact_identifier | 10 | 10 |
+| grounding | 28 | 28 |
 | no_evidence | 5 | 5 |
 | paraphrase | 22 | 22 |
 | security | 17 | 17 |
 | time | 6 | 6 |
+
+Grounding decision accuracy: 28/28; false accepts: 0; false rejects: 0.
+
+Model measurements (each attempt, token counts, configured price estimates) and separate retrieval/authorization/generation phases are in the JSON report. Unknown prices and failed-call usage remain null. Phase timings overlap and must not be added together. Baseline phase metrics are unavailable; its total elapsed time is measured.
+
 
 ## Individual results
 

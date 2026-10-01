@@ -1,0 +1,11 @@
+{
+  "schema": "internal-brain.evaluation/2",
+  "status": "not_run_missing_credentials",
+  "generated_at": "2026-09-29T11:52:15.979039+00:00",
+  "provider": "live_requested",
+  "reasons": [
+    "provider_not_live"
+  ],
+  "cases_requested": 78,
+  "cases": []
+}

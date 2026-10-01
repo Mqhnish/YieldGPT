@@ -41,7 +41,8 @@ class AuditedDelivery:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] != "http" or scope["path"] not in self.PATHS:
+        if scope["type"] != "http" or not (scope["path"] in self.PATHS or scope["path"].startswith("/api/evidence/")
+                or (scope["path"].startswith("/api/history/") and scope["path"].endswith("/replay"))):
             return await self.app(scope, receive, send)
         auth = dict(scope["headers"]).get(b"authorization", b"").decode("latin-1")
         user = identity.verify(auth.removeprefix("Bearer ").strip())
@@ -89,7 +90,7 @@ class AuditedDelivery:
             raise
         if start["status"] == 200:
             # Observable precision: bytes handed to the HTTP server transport, not client receipt.
-            await _log(actor, "response_delivered", query_id=qid, request_id=rid, bytes=len(body),
+            await _log(actor, "response_delivered", query_id=qid, request_id=rid, bytes=len(body), route=scope["path"],
                        observed="handed_to_server_transport")
 
 

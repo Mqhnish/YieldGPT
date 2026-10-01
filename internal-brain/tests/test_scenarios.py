@@ -14,16 +14,16 @@ NEW_STEP = "Step 5: If the certificate cannot be renewed within 10 minutes, fail
 def test_s1_unified_query_across_platforms_with_citations(ask):
     r = ask("jdoe", MIGRATION_Q)
     c = cited(r)
-    assert "jira:MIG-1" in c and "slack:db-migration/2001" in c
+    assert "jira:MIG-1" in c and "slack:T0COMPANYA/db-migration/2001" in c
     assert len({uid.split(":")[0] for uid in c}) >= 2          # genuinely cross-platform
     assert all(ci["url"].startswith("https://") for ci in r["citations"])
 
 
 def test_s1_private_channel_the_engineer_is_not_in_is_omitted(ask):
     r = ask("jdoe", MIGRATION_Q)
-    assert "slack:mig-leads/2101" not in cited(r)
+    assert "slack:T0COMPANYA/mig-leads/2101" not in cited(r)
     assert "licence" not in r["answer"].lower()
-    denied = audit.search(actor="jdoe", doc_uid="slack:mig-leads/2101", decision="denied")
+    denied = audit.search(actor="jdoe", doc_uid="slack:T0COMPANYA/mig-leads/2101", decision="denied")
     assert denied, "the denial must still be recorded in the audit trail"
 
 
@@ -88,11 +88,11 @@ def test_s3_page_restrictions_are_inherited(brain):
 
 # ---------------------------------------------------------------- Scenario 4
 def test_s4_slack_removal_takes_effect_even_without_webhook(brain, ask):
-    assert "slack:db-migration/2001" in cited(ask("jdoe", MIGRATION_Q))
+    assert "slack:T0COMPANYA/db-migration/2001" in cited(ask("jdoe", MIGRATION_Q))
     brain.world.slack_remove_member("db-migration", "jdoe", push=False)   # index ACL now stale
     r = ask("jdoe", MIGRATION_Q)
-    assert "slack:db-migration/2001" not in cited(r)
-    d = audit.search(actor="jdoe", doc_uid="slack:db-migration/2001", decision="denied")
+    assert "slack:T0COMPANYA/db-migration/2001" not in cited(r)
+    d = audit.search(actor="jdoe", doc_uid="slack:T0COMPANYA/db-migration/2001", decision="denied")
     assert d and d[0]["detail"]["stage"] == "live"
 
 

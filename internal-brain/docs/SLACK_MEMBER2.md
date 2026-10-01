@@ -93,7 +93,7 @@ receiver = SlackEventReceiver(
 
 These names represent deployment values and your credential-store implementation; this snippet is an integration example, not a second application entry point. Keep `IB_DEMO_MODE=0` when connecting real data. Replace the demo login/account directory with Member 1's trusted identity mapping before exposing a real-data deployment. The default configuration remains an offline demo. The application owner can opt into this injection through `IB_SLACK_CONFIG` and the runtime factory.
 
-The credential resolver gets the account from the authenticated `User`; it must never take a submitted Slack user ID or token. Obtain user OAuth consent and appropriate scopes. Store/rotate credentials in the deployment's secret store. The adapter supports `xoxp-` and rotated `xoxe.xoxp-` user access tokens, but does not implement OAuth installation or refresh-token storage.
+The credential resolver gets the account from the authenticated `User`; it must never take a submitted Slack user ID or token. Obtain user OAuth consent and appropriate scopes. Store/rotate credentials in the deployment's secret store. The adapter supports `xoxp-` and rotated `xoxe.xoxp-` user access tokens. The integrated `app/slack_oauth.py` now stores encrypted installations, binds the authenticated actor to a Slack-verified TEAM/USER, uses expiring single-use OAuth state, and rotates refresh tokens before expiry. See the multi-workspace setup below.
 
 ### Events endpoint
 
@@ -146,7 +146,7 @@ For a small demo estate, reconcile every 15 minutes. Measure actual API work aga
 
 ## Scope and practical limits
 
-- One adapter instance represents one configured workspace and conversation allowlist. The current registry has one `slack` slot and `User.accounts` has one Slack account. Multi-workspace account mapping/dispatch is a coordinated Member 1 contract extension, **not implemented by pretending that one workspace token grants another workspace's access**.
+- Each adapter instance represents one workspace and explicit conversation allowlist. `SlackWorkspaces` dispatches multiple instances through the existing `slack` registry slot. `account_for(user, "slack", tenant)` resolves only that workspace's verified account. Colliding channel/thread IDs in different workspaces remain distinct. Slack Connect identity equivalence is still outside scope.
 - Configured channels, private groups, DMs and group DMs can be read only when the selected credentials/scopes allow it. The system does not auto-discover every private channel or employee DM. A central integration cannot ingest arbitrary private DMs simply because it is an admin or bot.
 - Use a credential able to retrieve the intended channel threads for ingestion. Bot token capabilities differ by conversation type; granting a bot broad scopes does not make it a delegated human token. Missing capability fails closed.
 - Current message text and thread context are supported. Attachments, binary files, reactions, rich block-only payloads, canvases and cross-workspace Slack Connect identity equivalence are outside this adapter's tested scope. Original Slack links remain accessible for richer context.
@@ -174,3 +174,26 @@ The added suite exercises native-account aliases, corporate-name impersonation, 
 - [Message deletion events](https://docs.slack.dev/reference/events/message/message_deleted/)
 
 Slack's current method pages distinguish internal customer-built/Marketplace applications from newly commercially distributed non-Marketplace applications. Treat the actual app installation's rate limits as configuration constraints; a generic “Slack free tier” assumption is insufficient.
+
+
+## Integrated multi-workspace and OAuth setup
+
+Copy `examples/slack-workspaces.example.json` to a private configuration file, replace workspace/conversation IDs, and point `IB_SLACK_CONFIG` at it. Its credential fields are arbitrary **environment-variable names**; `.env.example` shows matching placeholder names. All tokens stay out of JSON and browser responses. Legacy one-workspace configuration remains supported.
+
+Manual delegated credentials require trusted `User.accounts` entries such as `("slack:TTEAMONE", "TTEAMONE/UJANE")`. Alternatively enable the encrypted OAuth store using `IB_SLACK_TOKEN_KEY` (base64-encoded random 32-byte key), `IB_SLACK_CLIENT_ID`, `IB_SLACK_CLIENT_SECRET`, `IB_SLACK_REDIRECT_URI`, and optionally `IB_SLACK_INSTALL_DB`. With OAuth configured, `user_token_envs` may be `{}`. The ingestion credential and per-installation signing secret are still required.
+
+The authenticated frontend/client calls `POST /api/slack/oauth/start` with `{"team":"TTEAMONE"}` and opens the returned authorization URL. The server consumes the callback state once, checks the returned workspace and `auth.test` delegated user identity, and encrypts access/refresh credentials. Disconnect deletes usable token material but keeps a revoked binding so a configured environment token cannot silently reconnect it. OAuth consent requires the workspace user's authorization; no consent was performed in this delivery. Run one worker, matching the in-process index and refresh lock. Use HTTPS in deployment and disable access logs to avoid recording OAuth callback codes.
+
+Official references: [Slack tokens](https://docs.slack.dev/authentication/tokens/), [OAuth token exchange](https://docs.slack.dev/reference/methods/oauth.v2.access/), [token rotation](https://docs.slack.dev/authentication/using-token-rotation/). Requested delegated scopes cover channel/private-group/DM/group-DM history. Workspace/app distribution policies and rate limits still apply.
+
+## Live acceptance evidence
+
+Prepare a disposable fixture and trusted identities; copy and edit `examples/slack-live-checks.example.json`. Run:
+
+```sh
+python scripts/verify_live_slack.py --manifest your-live-fixtures.json --phase initial --json evaluation/reports/live-slack-initial.json
+```
+
+A workspace owner then performs the fixture edit, membership removal, deletion and retention transition. Run the corresponding `edited`, `revoked`, `deleted` and `expired` phases and save separate reports. The script only reads and never performs these mutations. Include each configured workspace and DM/public/private scopes. Placeholder/missing credentials produce NOT RUN (exit 2); failed assertions exit 1. Simulated and mocked HTTP tests are separate evidence. The current saved live report is NOT RUN.
+
+Security integration note: seeded demo login and demo-token verification are disabled outside demo mode or when live Slack configuration is present. Member 1 must supply the trusted identity provider before real-source employee access or OAuth linking. This guard prevents the public `demo` password from opening real company data.

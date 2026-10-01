@@ -33,7 +33,10 @@ def percentile(values: list[float], probability: float) -> float:
 
 
 def run(size: str, rounds: int, top_k: int, scratch: Path) -> dict:
+    os.environ["IB_DATA_DIR"] = str(scratch)
     os.environ["IB_LLM_PROVIDER"] = "stub"
+    os.environ["IB_LLM_REQUIRE_LIVE"] = "0"
+    os.environ["IB_ENV_FILE"] = str(scratch / ".env")
     os.environ["IB_AUDIT_DB"] = str(scratch / "audit.db")
     os.environ["IB_ANCHOR_PATH"] = str(scratch / "anchors.jsonl")
     os.environ["IB_SYNC_DB"] = str(scratch / "sync.db")

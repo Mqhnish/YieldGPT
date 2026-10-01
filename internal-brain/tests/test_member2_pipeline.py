@@ -8,6 +8,7 @@ from unittest.mock import Mock
 import httpx
 import pytest
 from fastapi.testclient import TestClient
+from app import server
 
 from app import audit, grounding, llm, main, planner
 from app.evidence import EvidenceCache, EvidenceUnavailable, assemble, model_source, passages
@@ -178,7 +179,7 @@ def test_grounding_keeps_contradictions_attributed_instead_of_reconciling():
 
 def test_evidence_actor_scope_revocation_and_version_recheck(brain):
     result = brain.ask(USERS['jdoe'], Q)
-    ref = next(c['ref'] for c in result['citations'] if c['uid'] == 'slack:db-migration/2001')
+    ref = next(c['ref'] for c in result['citations'] if c['uid'] == 'slack:T0COMPANYA/db-migration/2001')
     assert brain.evidence(USERS['jdoe'],result['query_id'],ref)['passages']
     with pytest.raises(EvidenceUnavailable):
         brain.evidence(USERS['kim'],result['query_id'],ref)
@@ -258,7 +259,7 @@ def test_invalid_model_response_cannot_invent_claims(monkeypatch,content):
 
 
 def test_api_limits_session_evidence_and_cache_headers():
-    with TestClient(main.app) as client:
+    with TestClient(server.app) as client:
         token = client.post('/api/login',json={'username':'jdoe','password':'demo'}).json()['token']
         headers = {'Authorization':'Bearer '+token}
         for question in (' ', 'a'*2001):

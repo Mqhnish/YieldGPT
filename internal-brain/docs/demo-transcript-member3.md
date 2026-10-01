@@ -8,7 +8,7 @@ Result: all scenes behaved as expected.
 
 - `jdoe` asks: “What's the status of the database migration project and were there any blockers raised in Slack last week?”
 - HTTP 200, request `9583f230b06a452c`, query `58fa69f2f5da`
-- Cited: `jira:MIG-1`, `gdrive:DRV-2`, `slack:db-migration/2001`, `jira:MIG-7`
+- Cited: `jira:MIG-1`, `gdrive:DRV-2`, `slack:T0COMPANYA/db-migration/2001`, `jira:MIG-7`
 - The response left the server only after this request's audit rows were covered by a committed checkpoint.
 
 ## 2. A contractor asks for restricted material
@@ -19,7 +19,7 @@ Result: all scenes behaved as expected.
 
 - Question: “What's the status of the database migration project and were there any blockers raised in Slack last week?”
 - Release `released`, terminal `answer_returned`, delivery `delivered`, generation `extractive`
-- Versions actually sent to the model: `jira:MIG-1@1790457241.690402`, `gdrive:DRV-2@1790111641.690402`, `slack:db-migration/2001@7fa290e71cf4f35312e204ab9225db3c728e7357b8493b9108e97d6636c46801`, `jira:MIG-7@1790284441.690402`
+- Versions actually sent to the model: `jira:MIG-1@1790457241.690402`, `gdrive:DRV-2@1790111641.690402`, `slack:T0COMPANYA/db-migration/2001@7fa290e71cf4f35312e204ab9225db3c728e7357b8493b9108e97d6636c46801`, `jira:MIG-7@1790284441.690402`
 - Permitted but not sent: none
 - Decisions: live:allowed ×8, live:denied ×1, release:allowed ×8
 

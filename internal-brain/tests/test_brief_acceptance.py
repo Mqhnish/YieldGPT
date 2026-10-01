@@ -13,12 +13,12 @@ def test_three_link_hops_stitch_all_four_platforms(brain, monkeypatch):
     # Only the seed mentions MIG-1. Each additional item requires another hop.
     brain.world.issues['MIG-1']['links'] = ['confluence:CONF-102']
     brain.world.pages['CONF-102']['links'] = ['gdrive:DRV-3']
-    brain.world.files['DRV-3']['links'] = ['slack:vendor-collab/5001']
+    brain.world.files['DRV-3']['links'] = ['slack:T0VENDOR/vendor-collab/5001']
     brain.syncer.full_load()
     response = brain.ask(USERS['jdoe'], 'MIG-1')
     contexts = audit.search(query_id=response['query_id'], event='context_assembled')
     uids = {s['uid'] for e in contexts for s in e['detail']['context']}
-    assert {'jira:MIG-1','confluence:CONF-102','gdrive:DRV-3','slack:vendor-collab/5001'} <= uids
+    assert {'jira:MIG-1','confluence:CONF-102','gdrive:DRV-3','slack:T0VENDOR/vendor-collab/5001'} <= uids
     assert {c['platform'] for c in response['citations']} == {'jira','confluence','gdrive','slack'}
 
 
@@ -26,12 +26,12 @@ def test_denied_intermediate_stops_link_traversal(brain):
     brain.world.issues['MIG-1']['links'] = ['confluence:CONF-102']
     brain.world.pages['CONF-102']['links'] = ['gdrive:DRV-3']
     brain.world.pages['CONF-102']['restrict'] = {'user:asha'}
-    brain.world.files['DRV-3']['links'] = ['slack:vendor-collab/5001']
+    brain.world.files['DRV-3']['links'] = ['slack:T0VENDOR/vendor-collab/5001']
     brain.syncer.full_load()
     response = brain.ask(USERS['jdoe'], 'MIG-1')
     contexts = audit.search(query_id=response['query_id'], event='context_assembled')
     uids = {s['uid'] for e in contexts for s in e['detail']['context']}
-    assert not uids & {'confluence:CONF-102','gdrive:DRV-3','slack:vendor-collab/5001'}
+    assert not uids & {'confluence:CONF-102','gdrive:DRV-3','slack:T0VENDOR/vendor-collab/5001'}
 
 
 def extended_runbook(brain):
