@@ -216,3 +216,34 @@ def test_maintenance_checkpoints_new_rows(monkeypatch):
     reliability.Maintenance().tick()
     assert audit.STATE["last_checkpoint"]["row_id"] == audit.head()[0]
     assert audit.verify_report()["status"] == "verified"
+
+
+# ---------------------------------------------------------------- per-platform webhook signatures
+def test_webhooks_use_each_platforms_signature_scheme(client, monkeypatch):
+    import hashlib
+    import hmac
+    monkeypatch.setitem(config.WEBHOOK_SECRETS, "jira", "jira-secret")
+    monkeypatch.setitem(config.WEBHOOK_SECRETS, "gdrive", "drive-token")
+    raw = b'{"native_id": "MIG-1", "kind": "upsert"}'
+    sig = "sha256=" + hmac.new(b"jira-secret", raw, hashlib.sha256).hexdigest()
+    post = lambda p, body, h: client.post(f"/api/webhooks/{p}", content=body, headers=h).status_code  # noqa: E731
+
+    assert post("jira", raw, {"x-hub-signature": sig}) == 200
+    assert post("jira", raw.replace(b"MIG-1", b"MIG-2"), {"x-hub-signature": sig}) == 401   # body tampered
+    assert post("jira", raw, {"x-webhook-secret": config.WEBHOOK_SECRET}) == 401           # old shared header
+    assert post("gdrive", raw, {"x-goog-channel-token": "drive-token"}) == 200
+    assert post("gdrive", raw, {"x-goog-channel-token": "jira-secret"}) == 401             # no cross-platform reuse
+    assert post("nope", raw, {}) == 404
+    assert audit.search(event="webhook_rejected", limit=10)
+
+
+def test_shared_webhook_secret_is_flagged_and_unused_default_is_not(monkeypatch):
+    monkeypatch.setattr(config, "WEBHOOK_SECRET", reliability.DEV_SECRETS["WEBHOOK_SECRET"])
+    for p in config.WEBHOOK_SECRETS:
+        monkeypatch.setitem(config.WEBHOOK_SECRETS, p, config.WEBHOOK_SECRET)
+    codes = {p["code"] for p in reliability.config_problems()}
+    assert {"shared_webhook_secret", "dev_webhook_secret"} <= codes
+    for p in config.WEBHOOK_SECRETS:
+        monkeypatch.setitem(config.WEBHOOK_SECRETS, p, f"own-{p}")
+    codes = {p["code"] for p in reliability.config_problems()}
+    assert not {"shared_webhook_secret", "dev_webhook_secret"} & codes

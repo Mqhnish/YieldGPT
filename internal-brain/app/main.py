@@ -2,6 +2,7 @@
 
 Run:  uvicorn app.server:app --reload     then open http://localhost:8000
 """
+import hashlib
 import hmac
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -12,11 +13,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 from dataclasses import asdict
+from functools import partial
+
+import anyio
 
 from . import audit, audit_policy, identity, llm
 from .brain import Brain
 from .evidence import EvidenceUnavailable
-from .config import DATA_DIR, DEMO_MODE, POLL_INTERVAL_S, WEBHOOK_SECRET
+from .config import DATA_DIR, DEMO_MODE, POLL_INTERVAL_S, WEBHOOK_SECRET, WEBHOOK_SECRETS
 from .identity import User
 from .sync_state import SqliteSyncStateStore
 from .slack_runtime import create_live_slack_from_env
@@ -264,15 +268,33 @@ async def slack_event(request: Request):
     return result
 
 
+def webhook_verified(platform: str, raw: bytes, headers) -> bool:
+    """Each platform's own scheme. Replays are harmless: a webhook only triggers a re-fetch,
+    and sync confirms the change against the source before applying it."""
+    secret = WEBHOOK_SECRETS[platform]
+    if platform == "gdrive":  # Drive push channel: the token set in files.watch / changes.watch
+        return hmac.compare_digest(headers.get("x-goog-channel-token", ""), secret)
+    # Jira / Confluence Cloud webhooks with a secret: X-Hub-Signature: sha256=<HMAC of raw body>
+    expected = "sha256=" + hmac.new(secret.encode(), raw, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(headers.get("x-hub-signature", ""), expected)
+
+
 @app.post("/api/webhooks/{platform}")
-def webhook(platform: str, body: WebhookIn, x_webhook_secret: str = Header(default="")):
-    # Real platforms sign payloads (Slack signing secret, Atlassian JWT, Drive channel token).
+async def webhook(platform: str, request: Request):
     if platform == 'slack' and state.get('slack_receiver') is not None:
         raise HTTPException(404, 'Use the signed Slack Events endpoint.')
-    if not hmac.compare_digest(x_webhook_secret, WEBHOOK_SECRET):
-        audit.log("webhook", "webhook_rejected", severity="alert", platform=platform)
+    if platform not in WEBHOOK_SECRETS:
+        raise HTTPException(404, 'Unknown platform.')
+    raw = await request.body()
+    if not webhook_verified(platform, raw, request.headers):
+        await anyio.to_thread.run_sync(partial(audit.log, "webhook", "webhook_rejected",
+                                               severity="alert", platform=platform))
         raise HTTPException(401, "bad webhook signature")
-    brain().syncer.on_webhook(platform, body.native_id, body.kind)
+    try:
+        body = WebhookIn.model_validate_json(raw)
+    except ValueError:
+        raise HTTPException(422, "invalid webhook body") from None
+    await anyio.to_thread.run_sync(brain().syncer.on_webhook, platform, body.native_id, body.kind)
     return {"ok": True}
 
 

@@ -10,7 +10,9 @@ if target.exists():
 token = lambda: secrets.token_urlsafe(24)  # noqa: E731
 values = {
     "IB_DEMO_MODE": "1",
-    "IB_SECRET_KEY": token(), "IB_WEBHOOK_SECRET": token(), "IB_AUDIT_PSEUDONYM_KEY": token(),
+    "IB_SECRET_KEY": token(), "IB_WEBHOOK_SECRET": token(),
+    "IB_WEBHOOK_SECRET_CONFLUENCE": token(), "IB_WEBHOOK_SECRET_JIRA": token(), "IB_WEBHOOK_SECRET_GDRIVE": token(),
+    "IB_AUDIT_PSEUDONYM_KEY": token(),
     "IB_AUDIT_CONTENT_KEY": base64.b64encode(secrets.token_bytes(32)).decode(),
     "MINIO_ROOT_USER": "storage-admin", "MINIO_ROOT_PASSWORD": token(),
     "CHECKPOINT_BUCKET": "audit-checkpoints", "CHECKPOINT_RETENTION_DAYS": "30",

@@ -17,6 +17,10 @@ ANCHOR_EVERY = int(os.getenv("IB_ANCHOR_EVERY", "20"))
 
 SECRET_KEY = os.getenv("IB_SECRET_KEY", "dev-only-change-me")
 WEBHOOK_SECRET = os.getenv("IB_WEBHOOK_SECRET", "dev-webhook-secret")
+# One secret per platform so a leaked Jira secret can't forge Drive changes. Falls back to the
+# shared secret for the demo; reliability.config_problems warns when that happens.
+WEBHOOK_SECRETS = {p: os.getenv(f"IB_WEBHOOK_SECRET_{p.upper()}") or WEBHOOK_SECRET
+                   for p in ("confluence", "jira", "gdrive")}
 # Separate key for audit pseudonyms. Never reuse the token-signing key for another purpose.
 AUDIT_PSEUDONYM_KEY = os.getenv("IB_AUDIT_PSEUDONYM_KEY", "dev-pseudonym-key-change-me")
 

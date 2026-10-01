@@ -101,9 +101,13 @@ def config_problems() -> list[dict]:
     def add(level, code, message):
         out.append({"level": level, "code": code, "message": message})
 
+    shared = [p for p, s in config.WEBHOOK_SECRETS.items() if s == config.WEBHOOK_SECRET]
     for name, dev in DEV_SECRETS.items():
-        if getattr(config, name) == dev:
+        if getattr(config, name) == dev and (name != "WEBHOOK_SECRET" or shared):
             add("error", f"dev_{name.lower()}", f"IB_{name} still has its development default")
+    if shared:
+        add("warning", "shared_webhook_secret", "webhooks for " + ", ".join(shared) + " use the shared "
+            "IB_WEBHOOK_SECRET; set IB_WEBHOOK_SECRET_<PLATFORM> per platform")
     if not checkpoints.s3_configured():
         add("error", "local_checkpoints", "audit checkpoints are in a local file the app can rewrite; "
                                           "set IB_CHECKPOINT_S3_* (Object Lock bucket)")

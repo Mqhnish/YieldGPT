@@ -169,5 +169,5 @@ All five cases from handoff §5.4 are contract `extra` cases in `tests/contract/
 - **Single host for the audit DB.** Ordering relies on SQLite locking, so multiple hosts would need Postgres or a sequencer.
 - **Delivery precision.** "Delivered" means handed to the HTTP server. Client receipt isn't observable, and a delivered answer can't be recalled.
 - **Tail window.** Up to 30 s of non-answer events can sit in the uncheckpointed tail, and it's labeled as such.
-- **The shared `/api/webhooks/{platform}` route** still uses one shared secret. Per-platform signatures are an open item for each connector owner, alongside the routes.
+- **Webhook payload shape is still simulated.** `/api/webhooks/{platform}` now checks each platform's own scheme with its own secret (`IB_WEBHOOK_SECRET_<PLATFORM>`): Jira and Confluence `X-Hub-Signature: sha256=<HMAC-SHA256 of the raw body>`, Drive `X-Goog-Channel-Token`. Slack keeps its signed Events endpoint. The body is still `{native_id, kind}`; live adapters must map the native payload (Jira `issue.key`, Drive `changes.list` after a notification). Atlassian Connect apps sign with JWT instead and would need that check. Replays only trigger a re-fetch that sync confirms against the source.
 - **Canonical entrypoint.** Direct `app.main` startup is rejected. Deploy with `app.server:app`, as the Dockerfile does.
