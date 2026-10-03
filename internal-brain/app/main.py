@@ -25,6 +25,7 @@ from .identity import User
 from .sync_state import SqliteSyncStateStore
 from .slack_runtime import create_live_slack_from_env
 from .slack_worker import SlackMaintenance
+from .sources import gdrive_live
 from .sources.registry import build_connectors
 from .sources.world import World
 
@@ -42,11 +43,14 @@ async def lifespan(_app):
     connectors = build_connectors(world)
     if live:
         connectors['slack'] = live[0]
+    drive = gdrive_live.from_env()
+    if drive:
+        connectors['gdrive'] = drive
     service = Brain(world, sync_store=SqliteSyncStateStore(DATA_DIR / "sync_state.db"), connectors=connectors)
     worker = SlackMaintenance(service.syncer, live[0], poll_interval_s=POLL_INTERVAL_S,
                               reconcile_interval_s=900, event_sink=audit.log) if live else None
     state.update(brain=service, slack_receiver=live[1] if live else None, slack_worker=worker,
-                 demo_mode=DEMO_MODE and not bool(live), source_mode='mixed' if live else 'simulated')
+                 demo_mode=DEMO_MODE and not bool(live), source_mode='mixed' if live or drive else 'simulated')
     try:
         audit.log("system", "startup", indexed_docs=len(service.index), source_mode=state['source_mode'])
         if worker:
@@ -57,6 +61,8 @@ async def lifespan(_app):
     finally:
         stopped = worker.stop() if worker else True
         service.syncer.stop()
+        if drive:
+            drive.client.close()
         if live and stopped:
             live[0].client.close()
             from . import slack_oauth

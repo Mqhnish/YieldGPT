@@ -171,3 +171,17 @@ All five cases from handoff §5.4 are contract `extra` cases in `tests/contract/
 - **Tail window.** Up to 30 s of non-answer events can sit in the uncheckpointed tail, and it's labeled as such.
 - **Webhook payload shape is still simulated.** `/api/webhooks/{platform}` now checks each platform's own scheme with its own secret (`IB_WEBHOOK_SECRET_<PLATFORM>`): Jira and Confluence `X-Hub-Signature: sha256=<HMAC-SHA256 of the raw body>`, Drive `X-Goog-Channel-Token`. Slack keeps its signed Events endpoint. The body is still `{native_id, kind}`; live adapters must map the native payload (Jira `issue.key`, Drive `changes.list` after a notification). Atlassian Connect apps sign with JWT instead and would need that check. Replays only trigger a re-fetch that sync confirms against the source.
 - **Canonical entrypoint.** Direct `app.main` startup is rejected. Deploy with `app.server:app`, as the Dockerfile does.
+
+## Live Drive
+
+`app/sources/gdrive_live.py` talks to Drive API v3. It replaces the simulator when `IB_DRIVE_CONFIG` points at a JSON file:
+
+```json
+{"domain": "yourco.com", "ingestion_token_env": "DRIVE_BOT_TOKEN",
+ "user_token_envs": {"jane@yourco.com": "DRIVE_TOKEN_JANE"}}
+```
+
+- The ingestion token (read-only scope) lists, fetches and reads permissions. Each asker's own token, checked with `about.get` to belong to the linked account, answers `check()` and `read_authorized()`, so Drive applies its own rules for shared drives, limited-access folders, domain shares and groups.
+- Tokens are short-lived OAuth access tokens. Minting them from a service-account key is not built.
+- Not yet run against a real Drive. `tests/test_drive_live.py` uses a fake Drive API (13 tests). Run `scripts/verify_live_slack.py`-style conformance once a Drive test account exists.
+- Drive reports permission and move changes as plain file changes, so the connector emits `upsert` and sync recomputes `acl_hint`.
