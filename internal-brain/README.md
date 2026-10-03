@@ -31,7 +31,7 @@ Open http://127.0.0.1:8000. On Windows use `.venv\Scripts\activate`. Choose a de
 
 Ask about migration progress and Slack blockers, payment-outage follow-up tickets, or ADR-17. Open a citation. Use **Previous questions** to rerun a prior question with current permissions and current content. The history list exposes timestamps and query IDs, never old answers or source titles. It survives server restart and is separate from the five-minute citation-preview cache. Audit-content retention limits replay availability.
 
-Operations are at `/console`; the integrated compliance screen is `/compliance`.
+Operations are at `/console`; the integrated compliance screen is `/compliance`. `python scripts/show_index.py [uid]` lists what the index holds (or prints a document's text) on isolated data.
 
 ## Verification and measured results
 
@@ -45,7 +45,7 @@ python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluat
 
 The controlled comparison runs the original Member 1 lexical pipeline and the current pipeline on the **same** current fixtures and 65 question expectations. It measures **50/65 → 65/65** passing questions and **85.7% → 100%** required-source recall. The separate 28-case grounding category measures **15/28 → 28/28**, with false accepts falling from 13 to zero. Neither pipeline exposed unauthorized citations/context in this fixture set. This is a reconstructed offline comparison, not historical production evidence.
 
-The integrated automated suite passes **311 tests**, with four real-S3 checks skipped because no endpoint is configured.
+The integrated automated suite passes **326 tests**, with four real-S3 checks skipped because no endpoint is configured.
 
 See [the comparison](evaluation/reports/comparison.md), [current per-case measurements](evaluation/reports/current.json), [integration review](docs/INTEGRATION_REVIEW.md) and [evaluation methods](docs/EVALUATION.md). The 19,700-object synthetic benchmark measures the local index only.
 
@@ -70,7 +70,7 @@ Member 3’s independent S3 Object Lock checkpoint implementation is included. D
 ## Boundaries
 
 - Production SSO is still a teammate integration. The seeded demo identity directory must be replaced before connecting real employees or sensitive company data.
-- Confluence, Jira and Drive remain simulated. Real Slack/model/OAuth/WORM deployments have not been verified in this integration session.
+- Confluence and Jira remain simulated. Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Slack/Drive/model/OAuth/WORM deployments have not been verified.
 - Conversation allowlists intentionally bound ingestion; multi-workspace support does not grant access to every private channel or DM. Slack itself authorizes every delegated read.
 - Search uses controlled lexical expansion and authorized link traversal, without embeddings. Broad queries can require many native permission calls; measure live throughput before scaling.
 - Grounding proves exact passage support, not source truth, complete answers, semantic entailment or perfect contradiction handling. Source dates remain visible.

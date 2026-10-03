@@ -3,8 +3,8 @@
 Member 3 owns event persistence, checkpoint storage, the verifier, the Drive adapter, the compliance UI, deployment, recovery and submission assembly. The original Member 3 delivery built on `internal-brain-member2.zip`. This integrated revision changes shared files as recorded in CHANGES_INTEGRATED.md.
 
 - **Entrypoint.** Use `uvicorn app.server:app` in place of `app.main:app`. The shared app is mounted under Member 3's layer; ask, previews and replay are protected.
-- **Files Member 3 edits:** `app/audit.py`, `app/audit_policy.py`, `app/sync_state.py` (storage only), `app/sources/gdrive.py`, and the gdrive entry in `tests/contract/specs.py`.
-- **New files:** `app/checkpoints.py`, `app/reliability.py`, `app/server.py`, `app/static/compliance.html`, `deploy/`, `scripts/{verify_audit,reset_demo,demo_member3}.py`, and `tests/test_member3_*.py`.
+- **Files Member 3 edits:** `app/audit.py`, `app/audit_policy.py`, `app/sync_state.py` (storage only), `app/sources/gdrive.py`, `app/sources/gdrive_live.py`, and the gdrive entry in `tests/contract/specs.py`.
+- **New files:** `app/checkpoints.py`, `app/reliability.py`, `app/server.py`, `app/static/compliance.html`, `deploy/`, `scripts/{verify_audit,reset_demo,demo_member3,show_index}.py`, and `tests/test_member3_*.py`.
 
 ## Run it
 
@@ -160,7 +160,7 @@ The adapter is simulated but contract-complete, and it passes the shared contrac
 All five cases from handoff §5.4 are contract `extra` cases in `tests/contract/specs.py`. Removal of either access path, change kinds and sync effects are covered in `tests/test_member3_drive.py`.
 
 **Limits:**
-- There's no live Google Workspace adapter. The production mapping (permissions.list with supportsAllDrives, drives membership, changes.list with includeRemoved) is documented in the module docstring.
+- This simulated adapter is the default. The live connector is described under [Live Drive](#live-drive); it has not been run against a real Workspace.
 - The index prefilter uses corporate principals, so a contractor whose Drive account is on the company domain would be hidden by the prefilter. That fails closed.
 - Link-only sharing ("anyone with the link") isn't modelled.
 
@@ -183,5 +183,5 @@ All five cases from handoff §5.4 are contract `extra` cases in `tests/contract/
 
 - The ingestion token (read-only scope) lists, fetches and reads permissions. Each asker's own token, checked with `about.get` to belong to the linked account, answers `check()` and `read_authorized()`, so Drive applies its own rules for shared drives, limited-access folders, domain shares and groups.
 - Tokens are short-lived OAuth access tokens. Minting them from a service-account key is not built.
-- Not yet run against a real Drive. `tests/test_drive_live.py` uses a fake Drive API (13 tests). Run `scripts/verify_live_slack.py`-style conformance once a Drive test account exists.
+- Not yet run against a real Drive. `tests/test_drive_live.py` uses a fake Drive API (13 tests; suite total 326 passed, 4 skipped). Run `scripts/verify_live_slack.py`-style conformance once a Drive test account exists.
 - Drive reports permission and move changes as plain file changes, so the connector emits `upsert` and sync recomputes `acl_hint`.

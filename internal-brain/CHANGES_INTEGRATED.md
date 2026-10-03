@@ -4,7 +4,7 @@ Base: `Tencent---YieldGPT-main.zip`; SHA-256 `d3c05cb39591331f3067136477f66fc938
 
 Use the full ZIP for the complete runnable project. The companion text patch targets the `internal-brain/` folder from the supplied archive; check it on an integration branch before applying it to newer teammate changes. Binary screenshots are supplied in the full ZIP. Never overwrite real `.env` files or runtime databases.
 
-Verified locally: 311 automated tests passed, 4 live S3 tests skipped; 65/65 offline question cases; 28/28 grounding cases. Real model/Slack runs remain NOT RUN with placeholder credentials. Exact mandatory Tencent service minima still need organizer confirmation.
+Verified locally: 326 automated tests passed, 4 live S3 tests skipped; 65/65 offline question cases; 28/28 grounding cases. Real model/Slack runs remain NOT RUN with placeholder credentials. Exact mandatory Tencent service minima still need organizer confirmation.
 
 | Status | File |
 |---|---|
