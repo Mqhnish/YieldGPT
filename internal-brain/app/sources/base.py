@@ -51,6 +51,9 @@ from .. import config
 from ..identity import User, account_for, principals
 
 _CHECK_POOL = ThreadPoolExecutor(max_workers=16, thread_name_prefix="authz")
+# Separate pool for check_many's per-id dispatch to connectors that override check(): those
+# calls themselves wait on _CHECK_POOL, so sharing one pool could starve it under load.
+_DISPATCH_POOL = ThreadPoolExecutor(max_workers=16, thread_name_prefix="authz-dispatch")
 
 
 def safe_error(e: Exception) -> str:
@@ -143,22 +146,76 @@ class Connector(ABC):
         """Platform-specific rule evaluation. Return (decision, reason_code, reason, version).
         May raise; check() converts any exception into UNAVAILABLE."""
 
+    # Optional: platforms with a native bulk permission API override this and set
+    # supports_batch = True. Return {native_id: (decision, reason_code, reason, version)}.
+    supports_batch = False
+
+    def _check_batch(self, user: User, account: str, native_ids: list[str]) -> dict:
+        raise NotImplementedError
+
     def check(self, user: User, native_id: str) -> PermissionResult:
-        """Public entry point. Enforces R1 and R3; subclasses implement _check."""
+        """Public entry point for one document. Same rules as check_many."""
+        return self._check_native(user, [native_id])[native_id]
+
+    def check_many(self, user: User, native_ids: list[str]) -> dict[str, PermissionResult]:
+        """Check several documents for one user. Enforces R1, R3 and R11 for every id:
+        runs checks in parallel (or one bulk call if the platform supports it), all under a
+        single CHECK_TIMEOUT_S deadline. Anything not answered in time is UNAVAILABLE."""
         now = time.time()
+        ids = list(dict.fromkeys(native_ids))
+        if type(self).check is not Connector.check:
+            # The connector customises check() (e.g. Slack workspace/user scoping). Batching must
+            # never route around that logic: run ITS check() per id, in parallel, same deadline.
+            futs = {nid: _DISPATCH_POOL.submit(self.check, user, nid) for nid in ids}
+            deadline = now + config.CHECK_TIMEOUT_S
+            out = {}
+            for nid, f in futs.items():
+                try:
+                    out[nid] = f.result(timeout=max(0.0, deadline - time.time()))
+                except FutureTimeout:
+                    out[nid] = PermissionResult(Decision.UNAVAILABLE, "timeout",
+                                                f"permission check exceeded {config.CHECK_TIMEOUT_S}s", now,
+                                                account_for(user, self.platform) or "")
+                except Exception as e:  # noqa: BLE001  (fail closed)
+                    out[nid] = PermissionResult(Decision.UNAVAILABLE, "source_error", safe_error(e), now,
+                                                account_for(user, self.platform) or "")
+            return out
+        return self._check_native(user, ids)
+
+    def _check_native(self, user: User, ids: list[str]) -> dict[str, PermissionResult]:
+        """The rule engine behind check() and check_many(): R1, R3, R11, bulk or parallel."""
+        now = time.time()
+        ids = list(dict.fromkeys(ids))
         account = account_for(user, self.platform)
         if not account:
-            return PermissionResult(Decision.DENIED, "no_linked_account",
-                                    f"{user.username} has no {self.platform} account", now, "")
-        fut = _CHECK_POOL.submit(self._check, user, account, native_id)
-        try:
-            decision, code, reason, version = fut.result(timeout=config.CHECK_TIMEOUT_S)   # R11
-            return PermissionResult(decision, code, reason, now, account, version)
-        except FutureTimeout:
-            return PermissionResult(Decision.UNAVAILABLE, "timeout",
-                                    f"permission check exceeded {config.CHECK_TIMEOUT_S}s", now, account)
-        except Exception as e:  # noqa: BLE001  (R1: anything unexpected fails closed)
+            return {nid: PermissionResult(Decision.DENIED, "no_linked_account",
+                                          f"{user.username} has no {self.platform} account", now, "") for nid in ids}
+
+        def failed(e: Exception) -> PermissionResult:
+            if isinstance(e, FutureTimeout):
+                return PermissionResult(Decision.UNAVAILABLE, "timeout",
+                                        f"permission check exceeded {config.CHECK_TIMEOUT_S}s", now, account)
             return PermissionResult(Decision.UNAVAILABLE, "source_error", safe_error(e), now, account)
+
+        def res(fn) -> PermissionResult:
+            try:
+                decision, code, reason, version = fn()
+                return PermissionResult(decision, code, reason, now, account, version)
+            except Exception as e:  # noqa: BLE001  (R1: anything unexpected fails closed)
+                return failed(e)
+
+        deadline = now + config.CHECK_TIMEOUT_S
+        if self.supports_batch and len(ids) > 1:
+            fut = _CHECK_POOL.submit(self._check_batch, user, account, ids)
+            try:
+                batch = fut.result(timeout=max(0.0, deadline - time.time()))
+            except Exception as e:  # noqa: BLE001  (timeout or error: every id fails closed)
+                return {nid: failed(e) for nid in ids}
+            return {nid: res(lambda nid=nid: batch[nid]) if nid in batch else
+                    PermissionResult(Decision.UNAVAILABLE, "no_decision", "bulk check returned no decision", now, account)
+                    for nid in ids}
+        futs = {nid: _CHECK_POOL.submit(self._check, user, account, nid) for nid in ids}
+        return {nid: res(lambda f=f: f.result(timeout=max(0.0, deadline - time.time()))) for nid, f in futs.items()}
 
     def ping(self) -> None:
         """R13: raise SourceUnavailable if the platform is unreachable. Default: cheap cursor call."""
