@@ -95,6 +95,10 @@ A document can have several records in one request (e.g. `live: allowed`, then `
 | `source_error` | unavailable | any | platform error |
 | `prefilter_acl_hint` | denied | any | not in ACL snapshot at last sync |
 | `fetch_failed` | unavailable | any | content couldn't be fetched |
+| `confluence_read_allowed` / `confluence_read_denied` | allowed / denied | Confluence (HTTP connector) | Confluence's own permission check answered |
+| `jira_browse_allowed` / `jira_browse_denied` | allowed / denied | Jira (HTTP connector) | Jira bulk permission check answered |
+| `unexpected_response` | unavailable | Confluence (HTTP connector) | API answered without a decision |
+| `no_decision` | unavailable | any bulk-checking connector | bulk check didn't mention this document |
 
 New codes may be **added** without a schema bump. Renaming or removing a code requires `authz_decision/2`.
 
