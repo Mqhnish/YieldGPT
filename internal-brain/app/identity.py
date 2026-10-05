@@ -7,8 +7,10 @@ demo directory.
 import os
 import hashlib
 import hmac
+import json
+import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from .config import SECRET_KEY
 from . import config
@@ -21,7 +23,7 @@ class User:
     title: str
     kind: str                      # "employee" | "contractor"
     groups: frozenset = field(default_factory=frozenset)
-    app_roles: frozenset = field(default_factory=frozenset)  # rights inside the Internal Brain itself
+    app_roles: frozenset = field(default_factory=frozenset)  # rights inside YieldGPT itself
     # Explicit per-platform account ids. Never assume the username is the same
     # everywhere: in production these come from SCIM / the IdP's app links.
     accounts: tuple = ()   # ((platform, account_id), ...)
@@ -59,6 +61,27 @@ USERS = {
     "priya": _u("priya", "Priya Nair", "Compliance officer", "employee", {"all-employees", "compliance"}, {"ask", "audit"}, _emp("priya")),
     "dana":  _u("dana", "Dana Koh", "Platform admin", "employee", {"all-employees", "it"}, {"ask", "admin", "audit_meta"}, _emp("dana")),
 }
+
+
+def _apply_account_map():
+    """Live mode: map demo personas to REAL platform account ids without editing code.
+    IB_ACCOUNT_MAP points to a JSON file like
+      {"jdoe": {"confluence": "557058:abc...", "jira": "557058:abc..."}, "kim": {}}
+    Listed platforms replace the demo ids. An empty object removes all Atlassian access
+    for that persona (e.g. the contractor). The file holds ids, not secrets."""
+    path = os.getenv("IB_ACCOUNT_MAP")
+    if not path:
+        return
+    with open(path) as f:
+        mapping = json.load(f)
+    for username, accounts in mapping.items():
+        if username in USERS:
+            merged = {k: v for k, v in USERS[username].accounts if k not in ("confluence", "jira")}
+            merged.update({k: v for k, v in accounts.items() if v})
+            USERS[username] = replace(USERS[username], accounts=tuple(sorted(merged.items())))
+
+
+_apply_account_map()
 DEMO_PASSWORD = "demo"
 TOKEN_TTL = 8 * 3600
 

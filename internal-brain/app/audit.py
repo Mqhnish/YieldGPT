@@ -407,7 +407,12 @@ def _open_content(rows) -> dict[int, dict]:
 def search(actor=None, event=None, platform=None, container=None, doc_uid=None, decision=None,
            query_id=None, since=None, until=None, severity=None, request_id=None, limit=500) -> list[dict]:
     where, args = [], []
-    for col, val in [("actor", actor), ("event", event), ("platform", platform), ("container", container),
+    if container:
+        # Space keys on a real Confluence site can't contain '-' or '_' and are upper case
+        # ("payment-gateway" is PAYMENTGATEWAY), so containers match ignoring case and separators.
+        where.append("LOWER(REPLACE(REPLACE(container, '-', ''), '_', '')) = ?")
+        args.append(container.lower().replace("-", "").replace("_", ""))
+    for col, val in [("actor", actor), ("event", event), ("platform", platform),
                      ("doc_uid", doc_uid), ("decision", decision), ("query_id", query_id), ("severity", severity),
                      ("request_id", request_id)]:
         if val:

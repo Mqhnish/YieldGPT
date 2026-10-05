@@ -44,7 +44,8 @@ class PlatformSyncState:
         return {**asdict(self),
                 "seconds_since_success": round(age) if age is not None else None,
                 "overdue": overdue,
-                "health": "failing" if self.consecutive_failures else ("stale" if overdue else "ok")}
+                "health": ("failing" if self.consecutive_failures else "stale" if overdue
+                           else "degraded" if self.last_error else "ok")}
 
 
 @dataclass

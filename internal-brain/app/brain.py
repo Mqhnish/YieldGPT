@@ -8,6 +8,7 @@ approved parents. Citation previews are separately authorized on every request.
 from __future__ import annotations
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
 from . import audit, grounding, guard, llm, planner
@@ -24,6 +25,7 @@ from .sync_state import SyncStateStore
 
 LINK_DECAY = 0.6
 MAX_LINK_HOPS = 3
+_FETCH_POOL = ThreadPoolExecutor(max_workers=16, thread_name_prefix="fetch")
 BLOCKED = "This request was blocked by a security policy and has been logged."
 
 
@@ -184,26 +186,65 @@ class Brain:
         reader = getattr(conn, 'read_authorized', None)
         return reader(user, native_id) if reader else conn.fetch(native_id)
 
+    def _check_batch(self, user, items):
+        """items: list of (platform, native_id). One check_many per platform (bulk / parallel under one deadline)."""
+        by_platform = {}
+        for platform, nid in items:
+            by_platform.setdefault(platform, []).append(nid)
+        out = {}
+        for platform, nids in by_platform.items():
+            results = self.connectors[platform].check_many(user, nids)
+            for nid in nids:
+                out[(platform, nid)] = results[nid]
+        return out
+
+    def _fetch_all(self, user, items):
+        """items: list of (conn, native_id). Returns list of (fresh_or_None, exception_or_None), same order."""
+        def one(conn, nid):
+            try:
+                return self._fetch(conn, user, nid), None
+            except Exception as err:  # handled by caller, never surfaced
+                return None, err
+        if len(items) <= 1:
+            return [one(c, n) for c, n in items]
+        return list(_FETCH_POOL.map(lambda it: one(*it), items))
+
     @timed('authorization_and_read_ms')
     def _authorize_and_refresh(self, user, qid, candidates, question=None, plan=None):
         output = []
-        for uid, (score, entry) in candidates.items():
-            doc = entry.doc
-            conn = self.connectors[doc.platform]
-            result = conn.check(user, doc.native_id)
+        cands = [(uid, score, entry.doc) for uid, (score, entry) in candidates.items()]
+        # Phase 1: live check before read, batched per platform.
+        before = self._check_batch(user, [(doc.platform, doc.native_id) for _, _, doc in cands])
+        allowed = []
+        for uid, score, doc in cands:
+            result = before[(doc.platform, doc.native_id)]
             self._record(user, qid, doc, 'live', result, phase='before_read')
-            if not result.allowed:
+            if result.allowed:
+                allowed.append((uid, score, doc))
+        # Phase 2: read the allowed docs in parallel.
+        fetched = self._fetch_all(user, [(self.connectors[doc.platform], doc.native_id) for _, _, doc in allowed])
+        reads = []
+        for (uid, score, doc), (fresh, err) in zip(allowed, fetched):
+            conn = self.connectors[doc.platform]
+            if err is None and fresh is None:
+                # A user-scoped miss needn't mean global deletion; sync owns tombstones.
+                if not hasattr(conn, 'read_authorized'):
+                    self.index.remove(uid)
                 continue
+            if err is None and (fresh.uid != uid or fresh.platform != doc.platform or fresh.tenant != doc.tenant):
+                err = SourceUnavailable('source identity mismatch')
+            if err is not None:
+                # Connector errors are private. Never expose raw exception text, tokens or object existence.
+                self._record(user, qid, doc, 'fetch', None, decision=Decision.UNAVAILABLE,
+                             code='fetch_failed', reason=type(err).__name__)
+                continue
+            reads.append((uid, score, doc, fresh))
+        # Phase 3: live check again after read, batched per platform.
+        after = self._check_batch(user, [(doc.platform, doc.native_id) for _, _, doc, _ in reads])
+        for uid, score, doc, fresh in reads:
+            conn = self.connectors[doc.platform]
             try:
-                fresh = self._fetch(conn, user, doc.native_id)
-                if fresh is None:
-                    # A user-scoped miss needn't mean global deletion; sync owns tombstones.
-                    if not hasattr(conn, 'read_authorized'):
-                        self.index.remove(uid)
-                    continue
-                if fresh.uid != uid or fresh.platform != doc.platform or fresh.tenant != doc.tenant:
-                    raise SourceUnavailable('source identity mismatch')
-                final = conn.check(user, doc.native_id)
+                final = after[(doc.platform, doc.native_id)]
                 self._record(user, qid, fresh, 'live', final, phase='after_read')
                 if not final.allowed or (final.resource_version and final.resource_version != fresh.version):
                     continue
@@ -216,7 +257,6 @@ class Brain:
                               container=doc.container, doc_uid=uid, indexed_version=doc.version, live_version=fresh.version)
                 doc = fresh
             except Exception as err:
-                # Connector errors are private. Never expose raw exception text, tokens or object existence.
                 self._record(user, qid, doc, 'fetch', None, decision=Decision.UNAVAILABLE,
                              code='fetch_failed', reason=type(err).__name__)
                 continue
@@ -241,23 +281,27 @@ class Brain:
     @timed('release_authorization_ms')
     def _release_check(self, user, qid, sources, attempt):
         revoked = []
+        before = self._check_batch(user, [(s['platform'], s['native_id']) for s in sources])
+        allowed = []
         for source in sources:
-            conn = self.connectors[source['platform']]
-            res = conn.check(user, source['native_id'])
+            res = before[(source['platform'], source['native_id'])]
             self._record(user, qid, source['doc'], 'release', res, attempt=attempt, phase='before_read')
-            if not res.allowed:
+            if res.allowed:
+                allowed.append(source)
+            else:
                 revoked.append(source['uid'])
-                continue
-            try:
-                fresh = self._fetch(conn, user, source['native_id'])
-                if fresh is None or fingerprint(fresh) != source['fingerprint']:
-                    revoked.append(source['uid'])
-                    continue
-                final = conn.check(user, source['native_id'])
-                self._record(user, qid, source['doc'], 'release', final, attempt=attempt, phase='after_read')
-                if not final.allowed or (final.resource_version and final.resource_version != fresh.version):
-                    revoked.append(source['uid'])
-            except Exception:
+        fetched = self._fetch_all(user, [(self.connectors[s['platform']], s['native_id']) for s in allowed])
+        reads = []
+        for source, (fresh, err) in zip(allowed, fetched):
+            if err is not None or fresh is None or fingerprint(fresh) != source['fingerprint']:
+                revoked.append(source['uid'])
+            else:
+                reads.append((source, fresh))
+        after = self._check_batch(user, [(s['platform'], s['native_id']) for s, _ in reads])
+        for source, fresh in reads:
+            final = after[(source['platform'], source['native_id'])]
+            self._record(user, qid, source['doc'], 'release', final, attempt=attempt, phase='after_read')
+            if not final.allowed or (final.resource_version and final.resource_version != fresh.version):
                 revoked.append(source['uid'])
         return revoked
 
