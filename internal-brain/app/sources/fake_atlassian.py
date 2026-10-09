@@ -332,6 +332,10 @@ def _confluence_write(self, method, parts, q, body):
         store(pid, body.get("body"), body.get("title", p["title"]), p["space"], p["parent"])
         w._changed("confluence", pid, False)
         return self._json(200, self._page(pid))
+    if len(parts) == 4 and parts[:3] == ["api", "v2", "pages"] and method == "DELETE":
+        w.pages[parts[3]]
+        w.delete("confluence", parts[3], push=False)       # real site: moves to trash, GET is 404
+        return self._json(204)
     if len(parts) == 5 and parts[:3] == ["rest", "api", "content"] and parts[4] == "restriction" and method == "PUT":
         pid = parts[3]
         w.pages[pid]
@@ -397,8 +401,14 @@ def _jira_write(self, method, rest, q, body):
             issue["level"] = name
         if "description" in f:
             issue["desc"], _ = adf_to_text(f["description"])
+        if "summary" in f:
+            issue["summary"] = f["summary"]
         issue["updated"] = time.time()
         w._changed("jira", rest[1], False)
+        return self._json(204)
+    if len(rest) == 2 and rest[0] == "issue" and method == "DELETE":
+        w.issues[rest[1]]
+        w.delete("jira", rest[1], push=False)
         return self._json(204)
     if rest == ["issueLink"] and method == "POST":
         out, inn = body["outwardIssue"]["key"], body["inwardIssue"]["key"]
