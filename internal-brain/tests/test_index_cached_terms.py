@@ -80,3 +80,15 @@ def test_cached_terms_follow_upserts():
     assert [e.doc.uid for _, e in index.search("zebracorn settlement", PLATFORMS)] == [d.uid]
     index.remove(d.uid)
     assert index.search("zebracorn settlement", PLATFORMS) == []
+
+
+def test_search_results_are_isolated_copies():
+    docs = _corpus()[:50]
+    index = Index()
+    for d in docs:
+        index.upsert(d, {"anyone"})
+    q = docs[0].title
+    (_, e), *_ = [x for x in index.search(q, PLATFORMS) if x[1].doc.uid == docs[0].uid]
+    e.doc.text = "tampered"
+    assert index.get(docs[0].uid).doc.text != "tampered"
+    assert set(e.tokens) == set(tokenize(docs[0].title + " " + docs[0].native_id + " " + docs[0].text))

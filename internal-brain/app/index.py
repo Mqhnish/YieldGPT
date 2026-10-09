@@ -84,7 +84,7 @@ class _Query:
 
 @dataclass(frozen=True)
 class _DocTerms:
-    """Document-side terms, computed once at upsert."""
+    """Document-side terms, computed once at upsert. Never mutated, so copies share it."""
     body: Counter
     head: frozenset
     ids: frozenset
@@ -93,6 +93,9 @@ class _DocTerms:
     def of(cls, title: str, text: str, native_id: str = '') -> '_DocTerms':
         return cls(Counter(tokenize(text)), frozenset(tokenize(title + ' ' + native_id)),
                    frozenset(_IDENT.findall((title + ' ' + native_id).casefold())))
+
+    def __deepcopy__(self, memo):
+        return self
 
 
 def _score(q: _Query, d: _DocTerms) -> float:
@@ -123,8 +126,12 @@ class Entry:
     doc: SourceDoc
     acl_hint: frozenset[str]
     indexed_at: float
-    tokens: Counter
     terms: _DocTerms
+
+    @property
+    def tokens(self):
+        """Every indexed term (the postings keys)."""
+        return self.terms.body.keys() | self.terms.head
 
 
 class Index:
@@ -135,13 +142,12 @@ class Index:
 
     def upsert(self, doc: SourceDoc, acl_hint: set[str]):
         snapshot = copy.deepcopy(doc)
-        toks = Counter(tokenize(snapshot.title + ' ' + snapshot.native_id + ' ' + snapshot.text))
-        entry = Entry(snapshot, frozenset(acl_hint), time.time(), toks,
+        entry = Entry(snapshot, frozenset(acl_hint), time.time(),
                       _DocTerms.of(snapshot.title, snapshot.text, snapshot.native_id))
         with self._lock:
             self._remove_locked(doc.uid)
             self._docs[doc.uid] = entry
-            for term in toks:
+            for term in entry.tokens:
                 self._postings[term].add(doc.uid)
 
     def _remove_locked(self, uid):
