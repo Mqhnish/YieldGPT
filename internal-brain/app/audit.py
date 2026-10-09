@@ -199,6 +199,39 @@ def log(actor: str, event: str, *, severity: str = "info", query_id: str = "", p
     return new_id
 
 
+def log_many(entries: list[tuple[str, str, dict]]) -> list[int]:
+    """Append several (actor, event, fields) rows in ONE transaction, in order. Same rows,
+    sealing and hash chain as calling log() for each; all or none commit (callers fail closed).
+    Checkpoint and probing checks run once per batch instead of once per row."""
+    if not entries:
+        return []
+    ctx = REQUEST.get()
+    ids = []
+    with closing(_conn()) as c:
+        c.execute("BEGIN IMMEDIATE")
+        try:
+            for actor, event, fields in entries:
+                f = dict(fields)
+                cols = {k: f.pop(k, "") for k in ("query_id", "platform", "container", "doc_uid", "decision")}
+                severity = f.pop("severity", "info")
+                request_id = f.pop("request_id", None)
+                if ctx is not None and cols["query_id"]:
+                    ctx["query_id"] = cols["query_id"]
+                if request_id is None:
+                    request_id = ctx["request_id"] if ctx else ""
+                ids.append(_append(c, actor, event, severity, cols["query_id"], cols["platform"], cols["container"],
+                                   cols["doc_uid"], cols["decision"], request_id, f))
+            c.execute("COMMIT")
+        except BaseException:
+            c.execute("ROLLBACK")
+            raise
+    if ids[-1] // ANCHOR_EVERY > (ids[0] - 1) // ANCHOR_EVERY:
+        try_checkpoint()
+    for actor in dict.fromkeys(a for a, _, f in entries if f.get("decision") == "denied"):
+        _probe_check(actor)
+    return ids
+
+
 def _probe_check(actor: str):
     """Security signal: many denials in a short window looks like someone probing."""
     since = f"{time.time() - 600:.6f}"

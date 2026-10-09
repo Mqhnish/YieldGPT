@@ -6,6 +6,8 @@ cannot set a global rank cutoff; cross-platform links are expanded only from
 approved parents. Citation previews are separately authorized on every request.
 """
 from __future__ import annotations
+import contextvars
+import functools
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -27,6 +29,27 @@ LINK_DECAY = 0.6
 MAX_LINK_HOPS = 3
 _FETCH_POOL = ThreadPoolExecutor(max_workers=16, thread_name_prefix="fetch")
 BLOCKED = "This request was blocked by a security policy and has been logged."
+# Audit rows of the permission phase running in this request, written as one transaction.
+_PHASE_ROWS: contextvars.ContextVar = contextvars.ContextVar("brain_phase_rows", default=None)
+
+
+def _audit_phase(method):
+    """Buffer a permission phase's audit rows and append them, in order, in one transaction
+    when the phase ends (also on error). A broad question decides thousands of candidates;
+    one commit per row dominated question latency at brief scale. Nothing is released before
+    the phase returns, and a failed write still raises, so the question fails closed."""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if _PHASE_ROWS.get() is not None:
+            return method(self, *args, **kwargs)
+        rows = []
+        token = _PHASE_ROWS.set(rows)
+        try:
+            return method(self, *args, **kwargs)
+        finally:
+            _PHASE_ROWS.reset(token)
+            self._flush(rows)
+    return wrapper
 
 
 class Brain:
@@ -35,11 +58,27 @@ class Brain:
         self.world = world or World()
         self.connectors = connectors if connectors is not None else build_connectors(self.world)
         self.index = index if index is not None else Index()
-        self._log = event_sink if event_sink is not None else audit.log
+        self._sink = event_sink if event_sink is not None else audit.log
         self.evidence_cache = EvidenceCache()
         self.syncer = Syncer(self.connectors, self.index, sync_store)
         self.world.listeners.append(self.syncer.on_webhook)
         self.syncer.full_load()
+
+    def _log(self, actor, event, **fields):
+        rows = _PHASE_ROWS.get()
+        if rows is None:
+            return self._sink(actor, event, **fields)
+        rows.append((actor, event, fields))
+        return 0
+
+    def _flush(self, rows):
+        if not rows:
+            return
+        if self._sink is audit.log:
+            audit.log_many(rows)
+        else:
+            for actor, event, fields in rows:
+                self._sink(actor, event, **fields)
 
     def ask(self, user: User, question: str) -> dict:
         try:
@@ -150,6 +189,7 @@ class Brain:
                                                 'grounding': 'complete_source_passages'}
 
     @timed('retrieval_ms')
+    @_audit_phase
     def _retrieve(self, user, qid, question, plan):
         mine, candidates = principals(user), {}
         # No top-k/relative cutoff before live authorization. Hidden candidates cannot crowd out visible ones.
@@ -161,6 +201,7 @@ class Brain:
             candidates[entry.doc.uid] = (score, entry)
         return candidates
 
+    @_audit_phase
     def _linked_candidates(self, user, qid, authorized, plan):
         candidates, mine, per_source = {}, principals(user), {}
         for score, doc in sorted(authorized, key=lambda item:(-item[0], item[1].uid)):
@@ -210,6 +251,7 @@ class Brain:
         return list(_FETCH_POOL.map(lambda it: one(*it), items))
 
     @timed('authorization_and_read_ms')
+    @_audit_phase
     def _authorize_and_refresh(self, user, qid, candidates, question=None, plan=None):
         output = []
         cands = [(uid, score, entry.doc) for uid, (score, entry) in candidates.items()]
@@ -279,6 +321,7 @@ class Brain:
         return output
 
     @timed('release_authorization_ms')
+    @_audit_phase
     def _release_check(self, user, qid, sources, attempt):
         revoked = []
         before = self._check_batch(user, [(s['platform'], s['native_id']) for s in sources])
