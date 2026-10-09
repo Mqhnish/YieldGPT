@@ -67,28 +67,55 @@ def tokenize(text: str) -> list[str]:
     return result
 
 
-def relevance(query: str, title: str, text: str, native_id: str = '') -> float:
-    """Bounded term frequency + title coverage + exact identifiers; no corpus statistics."""
-    q = set(tokenize(query))
-    if not q:
+@dataclass(frozen=True)
+class _Query:
+    """Query-side terms, computed once per search instead of once per candidate."""
+    terms: frozenset
+    significant: frozenset
+    exact: frozenset
+    compound: tuple
+
+    @classmethod
+    def of(cls, query: str) -> '_Query':
+        q = frozenset(tokenize(query))
+        return cls(q, q - GENERIC, frozenset(_IDENT.findall(query.casefold())),
+                   tuple(w for w in q if '-' in w))
+
+
+@dataclass(frozen=True)
+class _DocTerms:
+    """Document-side terms, computed once at upsert."""
+    body: Counter
+    head: frozenset
+    ids: frozenset
+
+    @classmethod
+    def of(cls, title: str, text: str, native_id: str = '') -> '_DocTerms':
+        return cls(Counter(tokenize(text)), frozenset(tokenize(title + ' ' + native_id)),
+                   frozenset(_IDENT.findall((title + ' ' + native_id).casefold())))
+
+
+def _score(q: _Query, d: _DocTerms) -> float:
+    if not q.terms:
         return 0.0
-    body = Counter(tokenize(text))
-    head = set(tokenize(title + ' ' + native_id))
-    matched = q & (head | set(body))
-    significant = q - GENERIC
-    exact = set(_IDENT.findall(query.casefold()))
-    doc_ids = set(_IDENT.findall((title + ' ' + native_id).casefold()))
-    exact_hit = bool(exact & doc_ids)
-    compound_hit = any('-' in word and word in head for word in q)
+    body, head = d.body, d.head
+    matched = q.terms & (head | body.keys())
+    exact_hit = bool(q.exact & d.ids)
+    compound_hit = any(word in head for word in q.compound)
     # A single distinctive concept is sufficient; incidental platform words aren't.
-    need = min(2, len(significant))
-    if not exact_hit and not compound_hit and (not significant or len(matched & significant) < need):
+    need = min(2, len(q.significant))
+    if not exact_hit and not compound_hit and (not q.significant or len(matched & q.significant) < need):
         return 0.0
     score = sum((0.35 if w in GENERIC else 1.0) *
                 (1.0 + 0.35 * math.log1p(min(body[w], 8)) + (1.6 if w in head else 0))
                 for w in matched)
-    coverage = len(matched & significant) / max(len(significant), 1)
+    coverage = len(matched & q.significant) / max(len(q.significant), 1)
     return score * (0.65 + 0.35 * coverage) + (16.0 if exact_hit else 0)
+
+
+def relevance(query: str, title: str, text: str, native_id: str = '') -> float:
+    """Bounded term frequency + title coverage + exact identifiers; no corpus statistics."""
+    return _score(_Query.of(query), _DocTerms.of(title, text, native_id))
 
 
 @dataclass(frozen=True)
@@ -97,6 +124,7 @@ class Entry:
     acl_hint: frozenset[str]
     indexed_at: float
     tokens: Counter
+    terms: _DocTerms
 
 
 class Index:
@@ -108,7 +136,8 @@ class Index:
     def upsert(self, doc: SourceDoc, acl_hint: set[str]):
         snapshot = copy.deepcopy(doc)
         toks = Counter(tokenize(snapshot.title + ' ' + snapshot.native_id + ' ' + snapshot.text))
-        entry = Entry(snapshot, frozenset(acl_hint), time.time(), toks)
+        entry = Entry(snapshot, frozenset(acl_hint), time.time(), toks,
+                      _DocTerms.of(snapshot.title, snapshot.text, snapshot.native_id))
         with self._lock:
             self._remove_locked(doc.uid)
             self._docs[doc.uid] = entry
@@ -137,15 +166,15 @@ class Index:
             return len(self._docs)
 
     def search(self, query: str, platforms: set[str], since: dict[str, float] | None = None):
-        terms = set(tokenize(query))
+        q = _Query.of(query)
         with self._lock:
-            ids = set().union(*(self._postings.get(t, set()) for t in terms)) if terms else set()
+            ids = set().union(*(self._postings.get(t, set()) for t in q.terms)) if q.terms else set()
             entries = [self._docs[uid] for uid in ids if self._docs[uid].doc.platform in platforms]
         results = []
         for e in entries:
             if since and e.doc.updated_at < since.get(e.doc.platform, float('-inf')):
                 continue
-            score = relevance(query, e.doc.title, e.doc.text, e.doc.native_id)
+            score = _score(q, e.terms)
             if score > 0:
                 results.append((score, copy.deepcopy(e)))
         return sorted(results, key=lambda item: (-item[0], item[1].doc.uid))
