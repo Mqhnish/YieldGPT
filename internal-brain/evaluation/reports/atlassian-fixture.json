@@ -1,0 +1,115 @@
+{
+  "mode": "fixture",
+  "date": "2026-10-09T21:51:08+00:00",
+  "commit": "b683447500933f035390713b43b79cf867a586af",
+  "dirty": false,
+  "config": {
+    "space_key": "eng",
+    "project_key": "MIG",
+    "viewer": "ravi",
+    "insider": "asha",
+    "security_level": "security-only"
+  },
+  "steps": [
+    {
+      "platform": "confluence",
+      "step": "create: retrievable by viewer",
+      "ok": true,
+      "seconds": 0.012,
+      "detail": "write 0.00s, then 1 poll+ask round(s)"
+    },
+    {
+      "platform": "confluence",
+      "step": "edit: new version served, old text not served",
+      "ok": true,
+      "seconds": 0.006,
+      "detail": "1 poll+ask round(s); old version or text served: False"
+    },
+    {
+      "platform": "confluence",
+      "step": "revoke: viewer denied on next query (no reindex)",
+      "ok": true,
+      "seconds": 0.004,
+      "detail": "revoke write 0.00s, next query 0.00s, check=confluence_read_denied"
+    },
+    {
+      "platform": "confluence",
+      "step": "revoke: denial identical to a nonexistent document",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": ""
+    },
+    {
+      "platform": "confluence",
+      "step": "revoke: insider still served",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": ""
+    },
+    {
+      "platform": "confluence",
+      "step": "delete: not served on next query (no reindex)",
+      "ok": true,
+      "seconds": 0.004,
+      "detail": "delete write 0.00s, next query 0.00s"
+    },
+    {
+      "platform": "confluence",
+      "step": "delete: removed from index by reconciliation, still not served",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "1 poll round(s)"
+    },
+    {
+      "platform": "jira",
+      "step": "create: retrievable by viewer",
+      "ok": true,
+      "seconds": 0.006,
+      "detail": "write 0.00s, then 1 poll+ask round(s)"
+    },
+    {
+      "platform": "jira",
+      "step": "edit: new version served, old text not served",
+      "ok": true,
+      "seconds": 0.006,
+      "detail": "1 poll+ask round(s); old version or text served: False"
+    },
+    {
+      "platform": "jira",
+      "step": "revoke: viewer denied on next query (no reindex)",
+      "ok": true,
+      "seconds": 0.005,
+      "detail": "revoke write 0.00s, next query 0.00s, check=jira_browse_denied"
+    },
+    {
+      "platform": "jira",
+      "step": "revoke: denial identical to a nonexistent document",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": ""
+    },
+    {
+      "platform": "jira",
+      "step": "revoke: insider still served",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": ""
+    },
+    {
+      "platform": "jira",
+      "step": "delete: not served on next query (no reindex)",
+      "ok": true,
+      "seconds": 0.004,
+      "detail": "delete write 0.00s, next query 0.00s"
+    },
+    {
+      "platform": "jira",
+      "step": "delete: removed from index by reconciliation, still not served",
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "1 poll round(s)"
+    }
+  ],
+  "passed": 14,
+  "all_pass": true
+}
