@@ -75,7 +75,7 @@ def main():
             t = time.perf_counter()
             r = brain.ask(USERS[u], q)
             lat.setdefault(u, []).append((time.perf_counter() - t) * 1000)
-            checks.append(len(audit.search(query_id=r["query_id"], event="authz_decision")))
+            checks.append(len(audit.search(query_id=r["query_id"], event="authz_decision", limit=1_000_000)))
     all_lat = [x for v in lat.values() for x in v]
 
     # permission matrix: what each persona SHOULD be able to see (simulator ground truth)

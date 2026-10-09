@@ -75,11 +75,11 @@ Latency must be measured with at least 100 warmed requests and reported as p50, 
 | ID | Metric | Submission target | Notes |
 |---|---|---:|---|
 | P01 | Indexed workload | **≥19,700 objects** | At least 12,500 Confluence pages, 3,200 Jira issues, 2,200 Slack thread objects across 3 workspaces, and 1,800 Drive files |
-| P02 | Synthetic corpus build time | **≤5 seconds** on the named demo machine | Current local baseline: 0.69 s; excludes network ingestion |
-| P03 | Local retrieval p50 | **≤75 ms** | Current local baseline: 42.6 ms |
-| P04 | Local retrieval p95 | **≤500 ms** | Current local baseline: 737.0 ms, so this target is not yet met |
+| P02 | Synthetic corpus build time | **≤5 seconds** on the named demo machine | Baseline 10 Oct 2026 (Apple M5, synthetic): 0.76 s; excludes network ingestion |
+| P03 | Local retrieval p50 | **≤75 ms** | Baseline 10 Oct 2026 (Apple M5, synthetic): 4.5 ms |
+| P04 | Local retrieval p95 | **≤500 ms** | Baseline 10 Oct 2026 (Apple M5, synthetic): 262 ms, met (was 769 ms on the same machine before the index fix) |
 | P05 | Expected evidence in top 10, synthetic sanity set | **8/8** | Current baseline: 8/8; this is a sanity check, not a quality evaluation |
-| P06 | Peak process memory at 19,700 objects | **≤512 MiB** | Current whole-process baseline: 237.8 MiB |
+| P06 | Peak process memory at 19,700 objects | **≤512 MiB** | Baseline 10 Oct 2026 (Apple M5, synthetic): 239 MiB whole process |
 | P07 | End-to-end answer latency p50 | **≤4 seconds** | Includes authorization, model, grounding, audit, and release |
 | P08 | End-to-end answer latency p95 | **≤8 seconds** | Report by answerable/no-answer and by source mix |
 | P09 | Authorization/read phase p95 | **≤2 seconds** | Report separately from model time |
