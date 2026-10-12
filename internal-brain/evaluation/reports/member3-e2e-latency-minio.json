@@ -1,0 +1,141 @@
+{
+  "metrics": "P07 P08 P09 P12 P13",
+  "label": "fixture, stub model",
+  "date_utc": "2026-10-12T11:04:30+00:00",
+  "commit": "8c75bf1",
+  "machine": "macOS-27.0-arm64-arm-64bit-Mach-O / arm64 / Python 3.13.15",
+  "path": "TestClient(app.server:app), in-process ASGI with AuditedDelivery",
+  "checkpoint_store": "s3_object_lock",
+  "warmup": 20,
+  "measured_requests": 120,
+  "citation_previews": 80,
+  "P07_P08_end_to_end_client": {
+    "n": 120,
+    "p50_ms": 37.5,
+    "p95_ms": 50.9,
+    "max_ms": 58.6
+  },
+  "end_to_end_by_status": {
+    "answered": {
+      "n": 80,
+      "p50_ms": 41.8,
+      "p95_ms": 51.9,
+      "max_ms": 58.6
+    },
+    "no_answer": {
+      "n": 40,
+      "p50_ms": 26.0,
+      "p95_ms": 35.4,
+      "max_ms": 37.9
+    }
+  },
+  "end_to_end_by_source_mix": {
+    "confluence+gdrive+jira": {
+      "n": 10,
+      "p50_ms": 48.5,
+      "p95_ms": 55.7,
+      "max_ms": 56.0
+    },
+    "confluence+gdrive+jira+slack": {
+      "n": 30,
+      "p50_ms": 44.5,
+      "p95_ms": 51.4,
+      "max_ms": 58.6
+    },
+    "confluence+jira": {
+      "n": 10,
+      "p50_ms": 37.7,
+      "p95_ms": 44.2,
+      "max_ms": 44.9
+    },
+    "gdrive+jira+slack": {
+      "n": 10,
+      "p50_ms": 41.4,
+      "p95_ms": 47.0,
+      "max_ms": 47.4
+    },
+    "gdrive+slack": {
+      "n": 10,
+      "p50_ms": 32.4,
+      "p95_ms": 38.1,
+      "max_ms": 39.7
+    },
+    "jira": {
+      "n": 10,
+      "p50_ms": 44.0,
+      "p95_ms": 48.8,
+      "max_ms": 48.9
+    },
+    "none": {
+      "n": 40,
+      "p50_ms": 26.0,
+      "p95_ms": 35.4,
+      "max_ms": 37.9
+    }
+  },
+  "phases": {
+    "retrieval_ms": {
+      "n": 120,
+      "p50_ms": 0.1,
+      "p95_ms": 2.4,
+      "max_ms": 3.6
+    },
+    "authorization_and_read_ms": {
+      "n": 120,
+      "p50_ms": 6.4,
+      "p95_ms": 17.1,
+      "max_ms": 18.9
+    },
+    "generation_and_grounding_ms": {
+      "n": 120,
+      "p50_ms": 1.6,
+      "p95_ms": 8.7,
+      "max_ms": 10.3
+    },
+    "release_authorization_ms": {
+      "n": 120,
+      "p50_ms": 3.1,
+      "p95_ms": 12.6,
+      "max_ms": 14.7
+    },
+    "checkpoint_and_delivery_ms": {
+      "n": 120,
+      "p50_ms": 11.9,
+      "p95_ms": 18.8,
+      "max_ms": 22.3
+    },
+    "total_ms": {
+      "n": 120,
+      "p50_ms": 23.5,
+      "p95_ms": 36.2,
+      "max_ms": 42.4
+    }
+  },
+  "P09_authorization_and_read": {
+    "n": 120,
+    "p50_ms": 6.4,
+    "p95_ms": 17.1,
+    "max_ms": 18.9
+  },
+  "P12_audit_release": {
+    "n": 120,
+    "p50_ms": 15.5,
+    "p95_ms": 26.2,
+    "max_ms": 34.2
+  },
+  "P13_citation_preview": {
+    "n": 80,
+    "p50_ms": 17.0,
+    "p95_ms": 28.2,
+    "max_ms": 32.2
+  },
+  "preview_status_codes": [
+    200
+  ],
+  "pass": {
+    "P07_P08_end_to_end_client": true,
+    "P09_authorization_and_read": true,
+    "P12_audit_release": true,
+    "P13_citation_preview": true
+  }
+}
