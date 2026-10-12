@@ -54,7 +54,7 @@ def test_probe_cleans_up_when_a_step_crashes(monkeypatch):
     w, probe = _probe()
     monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_ for _ in ()).throw(RuntimeError("boom")))
     steps = probe.run(("confluence",))
-    assert any(s.step == "error" and not s.ok for s in steps)
+    assert any(s.step == "error" and not s.ok and s.detail.startswith("during revoke") for s in steps)
     assert any(s.step == "cleanup: probe object deleted" and s.ok for s in steps)
     assert not _probe_objects(w)
 

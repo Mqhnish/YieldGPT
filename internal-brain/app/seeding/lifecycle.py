@@ -53,6 +53,7 @@ class LifecycleProbe:
     sleep: callable = time.sleep
     steps: list[Step] = field(default_factory=list)
     created: dict = field(default_factory=dict)   # platform -> native id, for cleanup
+    stage: str = ""                               # current step, named in error reports
 
     # ------------------------------------------------------------------ helpers
     @property
@@ -147,6 +148,7 @@ class LifecycleProbe:
         tok1, tok2 = "zq" + secrets.token_hex(4), "zq" + secrets.token_hex(4)
 
         # 1. create -> retrievable
+        self.stage = "create"
         t = time.perf_counter()
         nid = create(tok1)
         self.created[platform] = nid
@@ -159,6 +161,7 @@ class LifecycleProbe:
             return
 
         # 2. edit -> new version served, old text gone
+        self.stage = "edit"
         t = time.perf_counter()
         edit(nid, tok2)
         write_s = time.perf_counter() - t
@@ -176,6 +179,7 @@ class LifecycleProbe:
                      f"{tries} poll+ask round(s); old version or text served: {not old_gone}")
 
         # 3. revoke -> denied on the very next query, no reindex, looks like "no results"
+        self.stage = "revoke"
         t = time.perf_counter()
         revoke(nid)
         write_s = time.perf_counter() - t
@@ -212,6 +216,7 @@ class LifecycleProbe:
         self._record(platform, "revoke: insider still served", insider_ok, s)
 
         # 4. delete -> never served again
+        self.stage = "delete"
         t = time.perf_counter()
         delete(nid)
         write_s = time.perf_counter() - t
@@ -245,7 +250,7 @@ class LifecycleProbe:
                 try:
                     self.run_platform(p)
                 except Exception as e:  # noqa: BLE001  (record and move on; cleanup below)
-                    self._record(p, "error", False, 0.0, type(e).__name__)
+                    self._record(p, "error", False, 0.0, f"during {self.stage or 'setup'}: {type(e).__name__}: {e}")
         finally:
             self.cleanup()
         return self.steps
