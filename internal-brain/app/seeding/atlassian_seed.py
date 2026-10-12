@@ -196,15 +196,13 @@ class AtlassianSeeder:
             self.note(f"page '{p['title']}': created")
 
     def finish_pages(self):
-        """pass 2 (after Jira issues exist): real bodies with rewritten ids and links, then restrictions."""
+        """pass 2 (after Jira issues exist): restrictions, then real bodies with rewritten ids and links.
+        Restrictions go first and cover view AND edit (like Confluence's "only specific people can
+        view or edit"). On a live site a view-only restriction also stopped the listed bot editing the
+        page, so a re-run could never update its body."""
         bot = self.api.get("/wiki/rest/api/user/current").get("accountId")
         for pid, real in self.m.pages.items():
             p = self.demo.pages[pid]
-            cur = self.api.get(f"/wiki/api/v2/pages/{quote(real, safe='')}")
-            self.api.request("PUT", f"/wiki/api/v2/pages/{quote(real, safe='')}", json={
-                "id": real, "status": "current", "title": p["title"],
-                "body": {"representation": "storage", "value": self._storage(pid)},
-                "version": {"number": cur["version"]["number"] + 1, "message": "YieldGPT demo seed"}})
             if p["restrict"]:
                 # personas without a real account can't be named in a restriction (they see nothing anyway)
                 accts = [account_for(USERS[x.split(":", 1)[1]], "confluence")
@@ -213,8 +211,13 @@ class AtlassianSeeder:
                 users.append({"type": "known", "accountId": bot})  # never lock the integration out
                 groups = [{"type": "group", "name": x.split(":", 1)[1]} for x in sorted(p["restrict"]) if x.startswith("group:")]
                 self.api.request("PUT", f"/wiki/rest/api/content/{quote(real, safe='')}/restriction", json=[
-                    {"operation": "read", "restrictions": {"user": users, "group": groups}}])
+                    {"operation": op, "restrictions": {"user": users, "group": groups}} for op in ("read", "update")])
                 self.note(f"page '{p['title']}': read restricted to {sorted(p['restrict'])}")
+            cur = self.api.get(f"/wiki/api/v2/pages/{quote(real, safe='')}")
+            self.api.request("PUT", f"/wiki/api/v2/pages/{quote(real, safe='')}", json={
+                "id": real, "status": "current", "title": p["title"],
+                "body": {"representation": "storage", "value": self._storage(pid)},
+                "version": {"number": cur["version"]["number"] + 1, "message": "YieldGPT demo seed"}})
 
     # ------------------------------------------------------------------ Jira
     def seed_projects(self):

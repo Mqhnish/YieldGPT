@@ -115,3 +115,26 @@ def test_briefs_audit_query_works_on_real_space_keys(seeded):
     stories = audit.reconstruct(**f)
     assert stories and all(m["doc_uid"].startswith("confluence:") for st in stories for m in st["matched"])
     assert f"confluence:{s.m.pages['CONF-101']}" in {m["doc_uid"] for st in stories for m in st["matched"]}
+
+
+def test_restrictions_cover_view_and_edit_and_come_before_the_body():
+    # Live site: a view-only restriction stopped the listed bot editing the page, so the
+    # re-run's body update got 404. Restrict view AND edit, and do it before the body.
+    target = empty_atlassian_world()
+    fake = FakeAtlassian(target)
+    client = AtlassianClient(SITE, transport=fake.transport())
+    seen = []
+    real = client.request
+    def spy(method, path, **kw):
+        if method == "PUT":
+            seen.append((path, [r["operation"] for r in kw["json"]] if path.endswith("/restriction") else "body"))
+        return real(method, path, **kw)
+    client.request = spy
+    AtlassianSeeder(client).run()
+    restricted = [p for p, ops in seen if ops != "body"]
+    assert restricted and all(ops == ["read", "update"] for p, ops in seen if ops != "body")
+    for path in restricted:
+        pid = path.split("/")[-2]
+        order = [i for i, (p, ops) in enumerate(seen) if pid in p and p.split("/")[-1] in (pid, "restriction")]
+        kinds = [seen[i][1] for i in order]
+        assert kinds.index(["read", "update"]) < kinds.index("body")

@@ -102,8 +102,9 @@ class LifecycleProbe:
         bot = self.api.get("/wiki/rest/api/user/current").get("accountId")
         users = [{"type": "known", "accountId": a} for a in
                  (self._account(self.cfg.insider, "confluence"), bot) if a]   # never lock the integration out
+        # view AND edit, as the Confluence UI does: a view-only restriction can stop the bot deleting it
         self.api.request("PUT", f"/wiki/rest/api/content/{quote(pid, safe='')}/restriction", json=[
-            {"operation": "read", "restrictions": {"user": users, "group": []}}])
+            {"operation": op, "restrictions": {"user": users, "group": []}} for op in ("read", "update")])
 
     def _c_delete(self, pid):
         self.api.request("DELETE", f"/wiki/api/v2/pages/{quote(pid, safe='')}")
