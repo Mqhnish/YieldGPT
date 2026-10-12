@@ -72,3 +72,55 @@ def test_report_redacts_token_email_site_and_account_ids(monkeypatch):
     for leaked in ("secret-token", "bot@example.org", "yieldgpt-demo", acct):
         assert leaked not in text
     assert text.endswith("ok")
+
+
+def test_probe_reports_a_revocation_that_lags(monkeypatch):
+    # Seen live: Atlassian's permission check can keep answering the old way for a moment.
+    w, probe = _probe()
+    jira = probe.brain.connectors["jira"]
+    real = jira._check_batch
+    stale = {"left": 0}
+    real_revoke = probe._j_revoke
+
+    def revoke(key):
+        real_revoke(key)
+        # Long enough to outlast one whole question. (With only 2 stale answers the pipeline's
+        # release re-check already denies it, so the issue is never cited.)
+        stale["left"] = 8
+
+    def lagging(user, account, keys):
+        out = real(user, account, keys)
+        if stale["left"] > 0 and user.username == "ravi":
+            stale["left"] -= 1
+            return {k: (Decision.ALLOWED, "jira_browse_allowed", "stale", "") for k in out}
+        return out
+    monkeypatch.setattr(probe, "_j_revoke", revoke)
+    monkeypatch.setattr(jira, "_check_batch", lagging)
+    steps = {s.step: s for s in probe.run(("jira",))}
+    assert not steps["revoke: viewer denied on next query (no reindex)"].ok      # caught, not hidden
+    assert steps["revoke: denial holds within 5 s of the revoke"].ok              # and it settles
+    assert not _probe_objects(w)
+
+
+def test_short_stale_allow_is_stopped_by_the_release_recheck(monkeypatch):
+    # Defense in depth: if Atlassian still says "allowed" for the before-read and after-read
+    # checks right after a revoke, the release re-check denies it and nothing is cited.
+    w, probe = _probe()
+    jira = probe.brain.connectors["jira"]
+    real, stale, real_revoke = jira._check_batch, {"left": 0}, probe._j_revoke
+
+    def revoke(key):
+        real_revoke(key)
+        stale["left"] = 2
+
+    def lagging(user, account, keys):
+        out = real(user, account, keys)
+        if stale["left"] > 0 and user.username == "ravi":
+            stale["left"] -= 1
+            return {k: (Decision.ALLOWED, "jira_browse_allowed", "stale", "") for k in out}
+        return out
+    monkeypatch.setattr(probe, "_j_revoke", revoke)
+    monkeypatch.setattr(jira, "_check_batch", lagging)
+    steps = {s.step: s for s in probe.run(("jira",))}
+    assert steps["revoke: viewer denied on next query (no reindex)"].ok
+    assert not _probe_objects(w)

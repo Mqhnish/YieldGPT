@@ -184,15 +184,32 @@ class LifecycleProbe:
         next_q_s = time.perf_counter() - t
         denied_now = not self._cites(resp, uid)
         check = conn.check(USERS[self.cfg.viewer], nid)
-        missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
-        same_as_missing = (resp["answer"], resp["citations"], resp["status"]) == \
-                          (missing["answer"], missing["citations"], missing["status"])
-        insider_ok = self._cites(self._ask(self.cfg.insider, tok2), uid)
         self._record(platform, "revoke: viewer denied on next query (no reindex)", denied_now and
                      check.decision.value == "denied", write_s + next_q_s,
                      f"revoke write {write_s:.2f}s, next query {next_q_s:.2f}s, check={check.reason_code}")
+        # Atlassian's permission engine can take a moment to apply a change everywhere (seen live:
+        # the same bulk check flipped between calls seconds apart). Measure how long until the
+        # denial holds: 3 denied queries in a row. F04's bar is 5 s after the source confirms.
+        t, streak, flips = time.perf_counter(), 0, 0
+        while True:
+            resp = self._ask(self.cfg.viewer, tok2)
+            if self._cites(resp, uid):
+                flips += streak > 0
+                streak = 0
+            else:
+                streak += 1
+            if streak >= 3 or time.perf_counter() - t > self.cfg.timeout_s:
+                break
+            self.sleep(min(self.cfg.poll_every_s, 1.0))
+        held_s = write_s + time.perf_counter() - t
+        self._record(platform, "revoke: denial holds within 5 s of the revoke", streak >= 3 and held_s <= 5.0,
+                     held_s, f"3 denied queries in a row; allowed again after a denial: {flips} time(s)")
+        missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
+        same_as_missing = (resp["answer"], resp["citations"], resp["status"]) == \
+                          (missing["answer"], missing["citations"], missing["status"])
         self._record(platform, "revoke: denial identical to a nonexistent document", same_as_missing, 0.0)
-        self._record(platform, "revoke: insider still served", insider_ok, 0.0)
+        insider_ok, s, _ = self._until(platform, lambda: self._cites(self._ask(self.cfg.insider, tok2), uid))
+        self._record(platform, "revoke: insider still served", insider_ok, s)
 
         # 4. delete -> never served again
         t = time.perf_counter()
