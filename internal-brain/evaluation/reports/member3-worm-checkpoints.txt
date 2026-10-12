@@ -1,0 +1,37 @@
+# Live WORM checkpoint tests (live: local MinIO in Docker, two independent instances)
+# Date (UTC): 2026-10-12T11:31:17Z  Branch base commit: d4d7b35 + this PR's working tree
+# Anchor 1: http://127.0.0.1:9000 (service minio), anchor 2: http://127.0.0.1:9100 (service minio-b, --profile second-anchor)
+# Images: chainguard/minio@sha256:6a1d0b45... pinned in deploy/docker-compose.yml; buckets: Object Lock COMPLIANCE 30 days
+============================= test session starts ==============================
+platform darwin -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- internal-brain/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: internal-brain
+plugins: anyio-4.15.1
+collecting ... collected 18 items
+
+tests/test_member3_s3.py::test_sigv4_matches_aws_published_examples[https://examplebucket.s3.amazonaws.com/test.txt-headers0-f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41] PASSED [  5%]
+tests/test_member3_s3.py::test_sigv4_matches_aws_published_examples[https://examplebucket.s3.amazonaws.com/?lifecycle-headers1-fea454ca298b7da1c68078a5d1bdbfbbe0d65c699e0f91ac7a200a0136783543] PASSED [ 11%]
+tests/test_member3_s3.py::test_sigv4_matches_aws_published_examples[https://examplebucket.s3.amazonaws.com/?max-keys=2&prefix=J-headers2-34b48302e7b5fa45bde8084f4b7868a86f0a534bc59db6670ed5711ef69dc6f7] PASSED [ 16%]
+tests/test_member3_s3.py::test_listing_counts_versions_hidden_by_delete_markers_and_pages PASSED [ 22%]
+tests/test_member3_s3.py::test_lock_config_without_xml_namespace_is_understood PASSED [ 27%]
+tests/test_member3_s3.py::test_bucket_without_compliance_lock_is_not_independent PASSED [ 33%]
+tests/test_member3_s3.py::test_store_errors_never_carry_credentials PASSED [ 38%]
+tests/test_member3_s3.py::test_live_bucket_enforces_compliance_mode PASSED [ 44%]
+tests/test_member3_s3.py::test_live_writer_cannot_delete_or_replace_checkpoints PASSED [ 50%]
+tests/test_member3_s3.py::test_live_even_root_cannot_delete_a_locked_version PASSED [ 55%]
+tests/test_member3_s3.py::test_live_tampering_is_detected_end_to_end PASSED [ 61%]
+tests/test_member3_anchors.py::test_every_checkpoint_lands_in_both_anchors PASSED [ 66%]
+tests/test_member3_anchors.py::test_replacing_one_anchor_is_detected_as_equivocation PASSED [ 72%]
+tests/test_member3_anchors.py::test_rewriting_chain_and_one_anchor_still_fails PASSED [ 77%]
+tests/test_member3_anchors.py::test_one_anchor_refusing_a_write_fails_the_checkpoint PASSED [ 83%]
+tests/test_member3_anchors.py::test_local_anchors_are_never_reported_independent PASSED [ 88%]
+tests/test_member3_anchors.py::test_from_env_builds_one_store_per_numbered_endpoint PASSED [ 94%]
+tests/test_member3_anchors.py::test_live_two_anchors_survive_full_compromise_of_one PASSED [100%]
+
+============================== 18 passed in 0.27s ==============================
+
+# App end to end with both anchors (2026-10-12T11:31:44Z): scripts/bench_e2e.py, 20 warm-up + 120 asks through
+# app.server:app with IB_CHECKPOINT_*  (anchor 1) and IB_CHECKPOINT_*_2 (anchor 2) set; then the standalone verifier:
+# python scripts/verify_audit.py  ->
+{'status': 'verified', 'checkpoint_store': 'multi(s3_object_lock,s3_object_lock)', 'assurance': 'independent_worm', 'anchors_checked': 377, 'verified_through': 3290, 'rows': 3290, 'fully_verified': True}
+# Latency report: evaluation/reports/member3-e2e-latency-2anchors.md (P12 audit/release p95 24.5 ms)

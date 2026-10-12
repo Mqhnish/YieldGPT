@@ -29,6 +29,37 @@ services:
     depends_on: [minio]
     restart: "no"
 
+  # Second, independently administered anchor (A09). Own root credential and volume; start with
+  # `docker compose --profile second-anchor up -d`. In production point anchor 2 at a different
+  # provider/account (e.g. AWS S3 or another Tencent COS account) instead.
+  minio-b:
+    profiles: [second-anchor]
+    image: chainguard/minio@sha256:6a1d0b45c8669726bba580ced0bfa4cb9fdeed1ed636dfabd81d1577beb6937b
+    command: ["server", "/data", "--address", ":9000"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_B_ROOT_USER:-anchor-b-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_B_ROOT_PASSWORD:?run deploy/make_env.py}
+    volumes: [minio-b-data:/data]
+    ports: ["127.0.0.1:9100:9000"]
+
+  checkpoint-init-b:
+    profiles: [second-anchor]
+    image: chainguard/minio-client@sha256:fdb40d819ca51969c86fa76f45a67bb841759daf85d4c6ce9aa86d27f6e47ae9
+    entrypoint: ["/bin/sh", "/init/minio-init.sh"]
+    volumes: ["./minio-init.sh:/init/minio-init.sh:ro"]
+    environment:
+      MINIO_URL: http://minio-b:9000
+      MINIO_ROOT_USER: ${MINIO_B_ROOT_USER:-anchor-b-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_B_ROOT_PASSWORD}
+      BUCKET: ${CHECKPOINT_BUCKET:-audit-checkpoints}
+      RETENTION_DAYS: ${CHECKPOINT_RETENTION_DAYS:-30}
+      WRITER_KEY: ${CHECKPOINT_B_WRITER_KEY:-brain-checkpoint-writer}
+      WRITER_SECRET: ${CHECKPOINT_B_WRITER_SECRET}
+      READER_KEY: ${CHECKPOINT_B_READER_KEY:-audit-verifier}
+      READER_SECRET: ${CHECKPOINT_B_READER_SECRET}
+    depends_on: [minio-b]
+    restart: "no"
+
   app:
     build: {context: .., dockerfile: deploy/Dockerfile}
     environment:
@@ -46,6 +77,13 @@ services:
       IB_CHECKPOINT_WRITER_SECRET: ${CHECKPOINT_WRITER_SECRET}
       IB_CHECKPOINT_READER_KEY: ${CHECKPOINT_READER_KEY}
       IB_CHECKPOINT_READER_SECRET: ${CHECKPOINT_READER_SECRET}
+      # Anchor 2 (empty = single anchor). With --profile second-anchor set CHECKPOINT_B_ENDPOINT=http://minio-b:9000.
+      IB_CHECKPOINT_S3_ENDPOINT_2: ${CHECKPOINT_B_ENDPOINT:-}
+      IB_CHECKPOINT_S3_BUCKET_2: ${CHECKPOINT_BUCKET:-audit-checkpoints}
+      IB_CHECKPOINT_WRITER_KEY_2: ${CHECKPOINT_B_WRITER_KEY:-brain-checkpoint-writer}
+      IB_CHECKPOINT_WRITER_SECRET_2: ${CHECKPOINT_B_WRITER_SECRET:-}
+      IB_CHECKPOINT_READER_KEY_2: ${CHECKPOINT_B_READER_KEY:-audit-verifier}
+      IB_CHECKPOINT_READER_SECRET_2: ${CHECKPOINT_B_READER_SECRET:-}
       IB_LLM_PROVIDER: ${IB_LLM_PROVIDER:-stub}
       IB_LLM_BASE_URL: ${IB_LLM_BASE_URL:-}
       IB_LLM_MODEL: ${IB_LLM_MODEL:-}
@@ -57,4 +95,5 @@ services:
 
 volumes:
   minio-data:
+  minio-b-data:
   app-data:
