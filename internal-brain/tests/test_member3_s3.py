@@ -60,7 +60,7 @@ def test_listing_counts_versions_hidden_by_delete_markers_and_pages(monkeypatch)
             return httpx.Response(200, content=LOCK.encode())
         return httpx.Response(200, content=PAGES[len(seen) - 1].encode())
 
-    monkeypatch.setattr(httpx, "request", fake)
+    monkeypatch.setattr(checkpoints._HTTP, "request", fake)
     store = S3ObjectLockStore("http://s3.test", "b", "c/", "us-east-1", ("w", "w"), ("r", "r"))
     assert [(c["row_id"], c["hash"]) for c in store.checkpoints()] == [(20, H1), (40, H2)]
     assert "key-marker=" in seen[1] and "version-id-marker=v1" in seen[1]
@@ -69,14 +69,14 @@ def test_listing_counts_versions_hidden_by_delete_markers_and_pages(monkeypatch)
 
 def test_lock_config_without_xml_namespace_is_understood(monkeypatch):
     bare = LOCK.replace(f" {NS}", "")                    # MinIO omits the namespace here
-    monkeypatch.setattr(httpx, "request", lambda *a, **k: httpx.Response(200, content=bare.encode()))
+    monkeypatch.setattr(checkpoints._HTTP, "request", lambda *a, **k: httpx.Response(200, content=bare.encode()))
     assert S3ObjectLockStore("http://s3.test", "b", "c/", "us-east-1", ("w", "w"), ("r", "r")).assurance() \
         == "independent_worm"
 
 
 def test_bucket_without_compliance_lock_is_not_independent(monkeypatch):
     governance = LOCK.replace("COMPLIANCE", "GOVERNANCE")
-    monkeypatch.setattr(httpx, "request", lambda *a, **k: httpx.Response(200, content=governance.encode()))
+    monkeypatch.setattr(checkpoints._HTTP, "request", lambda *a, **k: httpx.Response(200, content=governance.encode()))
     assert S3ObjectLockStore("http://s3.test", "b", "c/", "us-east-1", ("w", "w"), ("r", "r")).assurance() \
         == "unprotected_bucket"
 
@@ -84,7 +84,7 @@ def test_bucket_without_compliance_lock_is_not_independent(monkeypatch):
 def test_store_errors_never_carry_credentials(monkeypatch):
     def refuse(*a, **k):
         raise httpx.ConnectError("boom secret-key-123")
-    monkeypatch.setattr(httpx, "request", refuse)
+    monkeypatch.setattr(checkpoints._HTTP, "request", refuse)
     store = S3ObjectLockStore("http://s3.test", "b", "c/", "us-east-1", ("w", "secret-key-123"), ("r", "r"))
     with pytest.raises(checkpoints.CheckpointError) as err:
         store.append(1, H1)

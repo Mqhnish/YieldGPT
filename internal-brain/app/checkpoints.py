@@ -34,6 +34,8 @@ from urllib.parse import parse_qsl, quote, urlsplit
 import httpx
 
 EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
+# One pooled, thread-safe client: a new TCP connection per checkpoint exhausts ports under load.
+_HTTP = httpx.Client(limits=httpx.Limits(max_connections=64, max_keepalive_connections=32))
 
 
 def _xml(content: bytes) -> ET.Element:
@@ -105,7 +107,7 @@ class S3ObjectLockStore:
         url = f"{self.endpoint}/{self.bucket}{path_query}"
         signed = sigv4_headers(method, url, headers or {}, hashlib.sha256(body).hexdigest(), *creds, self.region)
         try:
-            return httpx.request(method, url, content=body, headers=signed, timeout=self.timeout)
+            return _HTTP.request(method, url, content=body, headers=signed, timeout=self.timeout)
         except httpx.HTTPError as e:
             raise CheckpointError(f"checkpoint store unreachable ({type(e).__name__})") from None
 

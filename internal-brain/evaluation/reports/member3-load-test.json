@@ -1,0 +1,59 @@
+{
+  "metrics": "P14 P15",
+  "label": "fixture, stub model",
+  "date_utc": "2026-10-12T11:28:37+00:00",
+  "commit": "f12a7e4",
+  "machine": "macOS-27.0-arm64-arm-64bit-Mach-O / arm64 / 15 CPUs / Python 3.13.15",
+  "server": "uvicorn app.server:app, 1 process, 127.0.0.1 (real HTTP)",
+  "checkpoint_store": "s3_object_lock",
+  "users": 25,
+  "personas": [
+    "jdoe",
+    "ravi",
+    "asha",
+    "kim",
+    "priya",
+    "dana"
+  ],
+  "duration_s": 300.7,
+  "requests": {
+    "ask": 19223,
+    "own_evidence": 2808,
+    "cross_user_evidence": 1937
+  },
+  "ask_status_codes": {
+    "200": 19223
+  },
+  "ask_success_rate": 1.0,
+  "own_evidence_success_rate": 1.0,
+  "completed_answers_per_s": 63.93,
+  "answers_with_citations_per_s": 31.24,
+  "ask_latency": {
+    "n": 19223,
+    "p50_ms": 234.4,
+    "p95_ms": 1099.8,
+    "max_ms": 4573.1
+  },
+  "permission_leaks": 0,
+  "leak_examples": [],
+  "audit_gaps": 0,
+  "gap_examples": [],
+  "cross_user_cache_hits": 0,
+  "duplicate_query_ids": 0,
+  "checkpoints_written": 39489,
+  "audit_verify": {
+    "status": "verified",
+    "rows": 348936,
+    "verified_through": 348936,
+    "uncheckpointed_rows": 0,
+    "assurance": "independent_worm",
+    "problem": null
+  },
+  "pass": {
+    "P14 success >= 99%": true,
+    "P14 zero leaks": true,
+    "P14 zero audit gaps": true,
+    "P14 zero cross-user cache hits": true,
+    "P15 >= 5 answers/s": true
+  }
+}
