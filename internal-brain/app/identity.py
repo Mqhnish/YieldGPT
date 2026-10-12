@@ -63,22 +63,26 @@ USERS = {
 }
 
 
-def _apply_account_map():
-    """Live mode: map demo personas to REAL platform account ids without editing code.
-    IB_ACCOUNT_MAP points to a JSON file like
+def apply_account_map(mapping: dict, users: dict | None = None) -> None:
+    """Live mode: map demo personas to REAL Atlassian account ids without editing code.
       {"jdoe": {"confluence": "557058:abc...", "jira": "557058:abc..."}, "kim": {}}
-    Listed platforms replace the demo ids. An empty object removes all Atlassian access
-    for that persona (e.g. the contractor). The file holds ids, not secrets."""
+    Listed platforms replace the demo ids. A persona that is missing from the map, or maps to
+    {}, has NO Atlassian account on the live site: its demo placeholder ids are dropped, so they
+    are never sent to Atlassian (they'd be rejected, or worse, collide). The file holds ids, not secrets."""
+    users = USERS if users is None else users
+    for username, user in list(users.items()):
+        merged = {k: v for k, v in user.accounts if k not in ("confluence", "jira")}
+        merged.update({k: v for k, v in (mapping.get(username) or {}).items()
+                       if v and k in ("confluence", "jira")})
+        users[username] = replace(user, accounts=tuple(sorted(merged.items())))
+
+
+def _apply_account_map():
     path = os.getenv("IB_ACCOUNT_MAP")
     if not path:
         return
     with open(path) as f:
-        mapping = json.load(f)
-    for username, accounts in mapping.items():
-        if username in USERS:
-            merged = {k: v for k, v in USERS[username].accounts if k not in ("confluence", "jira")}
-            merged.update({k: v for k, v in accounts.items() if v})
-            USERS[username] = replace(USERS[username], accounts=tuple(sorted(merged.items())))
+        apply_account_map(json.load(f))
 
 
 _apply_account_map()

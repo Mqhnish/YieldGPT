@@ -32,3 +32,16 @@ def test_writes_map_and_prints_no_ids_or_emails(tmp_path, monkeypatch, capsys):
     assert m["kim"] == {} and m["asha"] == {}
     printed = capsys.readouterr().out
     assert "557058" not in printed and "@x.org" not in printed
+
+
+def test_account_map_drops_placeholder_ids_for_unlisted_personas():
+    # Live bug: dana wasn't in accounts.json, kept "atl-557058:dana", and Atlassian rejected the
+    # seeder's page restriction with HTTP 400. Unlisted personas have no Atlassian account.
+    from app.identity import USERS, account_for, apply_account_map
+    users = dict(USERS)
+    apply_account_map({"ravi": {"confluence": "557058:r", "jira": "557058:r"}, "kim": {}}, users)
+    assert account_for(users["ravi"], "jira") == "557058:r"
+    for name in ("dana", "jdoe", "kim"):
+        assert account_for(users[name], "confluence") is None and account_for(users[name], "jira") is None
+    assert account_for(users["dana"], "slack") == account_for(USERS["dana"], "slack")   # other platforms untouched
+    assert USERS["dana"] is not users["dana"]                                            # caller's dict only

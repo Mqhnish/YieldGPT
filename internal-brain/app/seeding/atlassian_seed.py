@@ -147,7 +147,10 @@ class AtlassianSeeder:
                             "subject": {"type": "group", "identifier": p.split(":", 1)[1]},
                             "operation": {"key": "read", "target": "space"}})
                     except SourceUnavailable:
-                        self.note(f"space {key}: could not grant read to {p} (already granted?)")
+                        # Sites in Confluence "roles-only" mode refuse this API for everyone (HTTP 400):
+                        # access then comes from space roles, set by hand (manual step).
+                        self.note(f"space {key}: could not grant read to {p} by API "
+                                  f"(already granted, or the site uses space roles: set it in the manual step)")
 
     def _page_order(self) -> list[str]:
         order, seen = [], set()
@@ -203,8 +206,10 @@ class AtlassianSeeder:
                 "body": {"representation": "storage", "value": self._storage(pid)},
                 "version": {"number": cur["version"]["number"] + 1, "message": "YieldGPT demo seed"}})
             if p["restrict"]:
-                users = [{"type": "known", "accountId": account_for(USERS[x.split(":", 1)[1]], "confluence")}
+                # personas without a real account can't be named in a restriction (they see nothing anyway)
+                accts = [account_for(USERS[x.split(":", 1)[1]], "confluence")
                          for x in sorted(p["restrict"]) if x.startswith("user:") and x.split(":", 1)[1] in USERS]
+                users = [{"type": "known", "accountId": a} for a in accts if a]
                 users.append({"type": "known", "accountId": bot})  # never lock the integration out
                 groups = [{"type": "group", "name": x.split(":", 1)[1]} for x in sorted(p["restrict"]) if x.startswith("group:")]
                 self.api.request("PUT", f"/wiki/rest/api/content/{quote(real, safe='')}/restriction", json=[
