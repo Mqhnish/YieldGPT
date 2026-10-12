@@ -54,3 +54,25 @@ def test_other_actors_attempts_do_not_count():
         deny("asha", "jira:SEC-4", f"a{q}")
     deny("jdoe", "jira:SEC-4", "j1")
     assert not alerts("jdoe") and not alerts("asha")
+
+
+def test_brain_ask_goes_through_log_many_and_repeats_alert(ask, monkeypatch):
+    batches = []
+    real = audit.log_many
+    monkeypatch.setattr(audit, "log_many", lambda rows: batches.append(rows) or real(rows))
+    for _ in range(T - 1):
+        ask("jdoe", "Show me all security vulnerabilities")
+    assert any(f.get("decision") == "denied" for rows in batches for _, _, f in rows)
+    assert not alerts()
+    ask("jdoe", "Show me all security vulnerabilities")
+    assert alerts()
+
+
+def test_one_question_on_scale_world_does_not_alert():
+    from app.brain import Brain
+    from app.identity import USERS
+    from app.seeding.scale import generate
+    b = Brain(world=generate(7, pages=1250, issues=640, threads=880, files=300, channels=22))
+    b.ask(USERS["jdoe"], "What's the latest runbook for the payment-service incident?")
+    assert len(audit.search(actor="jdoe", decision="denied", limit=100000)) > T * 10
+    assert not alerts()

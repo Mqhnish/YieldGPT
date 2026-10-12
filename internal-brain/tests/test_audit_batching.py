@@ -82,5 +82,9 @@ def test_batch_crossing_anchor_boundary_checkpoints(monkeypatch):
 
 def test_batched_denials_still_raise_probing_alert(monkeypatch):
     monkeypatch.setattr(audit, "PROBE_ALERT_THRESHOLD", 3)
+    # One broad batch over many docs is routine; the same doc denied in separate attempts is probing.
     audit.log_many([("mallory", "authz_decision", {"decision": "denied", "doc_uid": f"d{i}"}) for i in range(5)])
+    assert not audit.search(actor="mallory", event="probing_suspected")
+    audit.log_many([("mallory", "authz_decision", {"decision": "denied", "doc_uid": "d0", "query_id": f"q{i}"})
+                    for i in range(3)])
     assert len(audit.search(actor="mallory", event="probing_suspected")) == 1
