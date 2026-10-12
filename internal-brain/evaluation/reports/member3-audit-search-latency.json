@@ -1,0 +1,79 @@
+{
+  "metric": "A07",
+  "label": "synthetic",
+  "date_utc": "2026-10-12T11:00:53+00:00",
+  "commit": "8c75bf1",
+  "target": "p95 <= 2000 ms over 100,000 events via compliance API",
+  "path": "POST /api/compliance/requests (TestClient, in-process) -> audit_policy.reconstruct -> audit.search",
+  "audit_rows": 100005,
+  "synthetic_requests": 5017,
+  "fill_seconds": 31.6,
+  "machine": "macOS-27.0-arm64-arm-64bit-Mach-O / arm / Python 3.13.15",
+  "searches": {
+    "by user": {
+      "filters": {
+        "actor": "jdoe"
+      },
+      "stories_returned": 26,
+      "runs": 50,
+      "p50_ms": 82.07,
+      "p95_ms": 84.59,
+      "max_ms": 88.08
+    },
+    "by container": {
+      "filters": {
+        "container": "payment-gateway"
+      },
+      "stories_returned": 339,
+      "runs": 50,
+      "p50_ms": 910.07,
+      "p95_ms": 950.47,
+      "max_ms": 1031.24
+    },
+    "by platform": {
+      "filters": {
+        "platform": "jira"
+      },
+      "stories_returned": 117,
+      "runs": 50,
+      "p50_ms": 320.1,
+      "p95_ms": 343.27,
+      "max_ms": 346.72
+    },
+    "by decision": {
+      "filters": {
+        "decision": "denied"
+      },
+      "stories_returned": 90,
+      "runs": 50,
+      "p50_ms": 249.63,
+      "p95_ms": 256.99,
+      "max_ms": 264.4
+    },
+    "by time range (10% of log)": {
+      "filters": {
+        "since": 1791802715.4087968,
+        "until": 1791802718.571159
+      },
+      "stories_returned": 25,
+      "runs": 50,
+      "p50_ms": 86.95,
+      "p95_ms": 89.53,
+      "max_ms": 90.75
+    },
+    "user + platform + decision": {
+      "filters": {
+        "actor": "jdoe",
+        "platform": "jira",
+        "decision": "denied"
+      },
+      "stories_returned": 266,
+      "runs": 50,
+      "p50_ms": 720.34,
+      "p95_ms": 736.93,
+      "max_ms": 759.48
+    }
+  },
+  "worst_p95_ms": 950.47,
+  "pass": true
+}
