@@ -163,7 +163,7 @@ SPECS = [
             ("kim", "MIG-1", D),       # no Atlassian account
         ],
         revoke=_jira_revoke,
-        edit=lambda w: (w.jira_update("MIG-1", status="Done", push=False), "MIG-1")[1],
+        edit=lambda w: (w.jira_update("MIG-1", comment=f"edit {len(w.changes)}", push=False), "MIG-1")[1],
         deletable="MIG-9",
         inventory=lambda w: set(w.issues),
         extra=[_jira_unknown_level],

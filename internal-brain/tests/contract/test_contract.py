@@ -14,7 +14,16 @@ from app.sources.world import World
 
 from .specs import SPECS
 
-ids = [s.platform for s in SPECS]
+# Every connector implementation runs the same suite. Confluence and Jira run twice:
+# the simulator ("sim") and the real HTTP connectors against the fake Atlassian site ("fixture").
+# For a live site: IB_ATLASSIAN_MODE=live + a fixture manifest (see docs/ATLASSIAN_SETUP.md).
+CASES = [(s, "sim") for s in SPECS] + [(s, "fixture") for s in SPECS if s.platform in ("confluence", "jira")]
+IDS = [f"{s.platform}-{m}" for s, m in CASES]
+
+
+def make_env(mode):
+    w = World()
+    return w, build_connectors(w, atlassian_mode=mode)
 
 
 def crawl(c) -> list[str]:
@@ -27,40 +36,34 @@ def crawl(c) -> list[str]:
             return seen
 
 
-@pytest.fixture
-def env():
-    w = World()
-    return w, build_connectors(w)
-
-
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_permission_matrix(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_permission_matrix(spec, mode):
+    w, cs = make_env(mode)
     for user, nid, expected in spec.matrix:
         got = cs[spec.platform].check(USERS[user], nid)
         assert got.decision is expected, f"{user} on {nid}: expected {expected.value}, got {got.decision.value} ({got.reason})"
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_extra_cases(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_extra_cases(spec, mode):
+    w, cs = make_env(mode)
     for fn in spec.extra:
         for user, nid, expected in fn(w):
             assert cs[spec.platform].check(USERS[user], nid).decision is expected
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R1_R10_result_shape(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R1_R10_result_shape(spec, mode):
+    w, cs = make_env(mode)
     r = cs[spec.platform].check(USERS["jdoe"], spec.matrix[0][1])
     assert isinstance(r, PermissionResult)
     assert r.reason_code and r.reason_code.replace("_", "").isalnum()   # stable machine code
     assert r.checked_at > 0 and r.platform_account
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R1_outage_fails_closed(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R1_outage_fails_closed(spec, mode):
+    w, cs = make_env(mode)
     w.outages.add(spec.platform)
     user, nid, _ = next(c for c in spec.matrix if c[2] is Decision.ALLOWED)
     r = cs[spec.platform].check(USERS[user], nid)                       # must not raise
@@ -69,51 +72,51 @@ def test_R1_outage_fails_closed(env, spec):
         cs[spec.platform].fetch(nid)
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R3_no_linked_account_is_denied(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R3_no_linked_account_is_denied(spec, mode):
+    w, cs = make_env(mode)
     ghost = dataclasses.replace(USERS["asha"], accounts=())
     for _, nid, _ in spec.matrix:
         r = cs[spec.platform].check(ghost, nid)
         assert r.decision is Decision.DENIED and r.reason_code == "no_linked_account"
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R4_unknown_resource_is_denied_not_found(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R4_unknown_resource_is_denied_not_found(spec, mode):
+    w, cs = make_env(mode)
     r = cs[spec.platform].check(USERS["asha"], "DOES-NOT-EXIST/0")
     assert r.decision is Decision.DENIED and r.reason_code == "not_found"
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R2_revocation_without_event(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R2_revocation_without_event(spec, mode):
+    w, cs = make_env(mode)
     user, nid = spec.revoke(World())  # dry run on a scratch world to learn the target
     assert cs[spec.platform].check(USERS[user], nid).allowed, "precondition: allowed before revocation"
     spec.revoke(w)
     assert not cs[spec.platform].check(USERS[user], nid).allowed
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R5_acl_hint_covers_every_allowed_user(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R5_acl_hint_covers_every_allowed_user(spec, mode):
+    w, cs = make_env(mode)
     c = cs[spec.platform]
     for user, nid in itertools.product(USERS.values(), crawl(c)):
         if c.check(user, nid).allowed:
             assert principals(user) & c.acl_hint(nid), f"hint for {nid} would hide it from {user.username}"
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R7_list_page_is_complete_without_duplicates(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R7_list_page_is_complete_without_duplicates(spec, mode):
+    w, cs = make_env(mode)
     seen = crawl(cs[spec.platform])
     assert len(seen) == len(set(seen)), "duplicates across pages"
     assert set(seen) == spec.inventory(w), "crawl missed or invented objects"
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R7_R8_changes_since_cursor(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R7_R8_changes_since_cursor(spec, mode):
+    w, cs = make_env(mode)
     c = cs[spec.platform]
     cur = c.start_cursor()
     assert c.changes_since(cur).changes == []
@@ -124,9 +127,9 @@ def test_R7_R8_changes_since_cursor(env, spec):
     assert c.changes_since(cur).changes == page.changes                 # replayable
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R6_R7_deletion(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R6_R7_deletion(spec, mode):
+    w, cs = make_env(mode)
     c = cs[spec.platform]
     cur = c.start_cursor()
     assert c.fetch(spec.deletable) is not None
@@ -135,9 +138,9 @@ def test_R6_R7_deletion(env, spec):
     assert [(ch.native_id, ch.kind) for ch in c.changes_since(cur).changes] == [(spec.deletable, "delete")]
 
 
-@pytest.mark.parametrize("spec", SPECS, ids=ids)
-def test_R9_document_shape_and_versioning(env, spec):
-    w, cs = env
+@pytest.mark.parametrize("spec,mode", CASES, ids=IDS)
+def test_R9_document_shape_and_versioning(spec, mode):
+    w, cs = make_env(mode)
     c = cs[spec.platform]
     for nid in crawl(c):
         d = c.fetch(nid)

@@ -1,11 +1,11 @@
 {
   "schema": "internal-brain.retrieval-benchmark/1",
-  "generated_at": "2026-09-29T11:49:51.362875+00:00",
+  "generated_at": "2026-10-09T21:45:06.621516+00:00",
   "mode": "synthetic local index only; no model, connector, live gate or audit cost",
   "size": "full",
   "seed": 20260928,
   "corpus_sha256": "ab244e27f06b00c2c50f39a96f855a90db2ad8f2b59e1047ebf0f7af91d71a98",
-  "index_sha256_at_start": "437486fd7dc946f13aca9e62109d10b7b0a3379466c911ed2d0cb837a9668d9e",
+  "index_sha256_at_start": "d4c2cf26c622bc79bb3b48dac0c0a1320c84eeaa19960291d9dabfe00d6128d7",
   "environment": {
     "python": "3.14.7",
     "system": "Darwin",
@@ -20,27 +20,27 @@
       "gdrive": 1800
     },
     "containers": {
+      "slack": 220,
       "confluence": 52,
-      "gdrive": 150,
       "jira": 32,
-      "slack": 220
+      "gdrive": 150
     },
     "tenants": {
+      "slack": 3,
       "confluence": 1,
-      "gdrive": 1,
       "jira": 1,
-      "slack": 3
+      "gdrive": 1
     },
     "eligible_by_synthetic_hint": 11261,
     "mean_words": 85.1
   },
   "measurements": {
-    "build_seconds": 0.69,
+    "build_seconds": 0.762,
     "search_samples": 40,
-    "search_p50_ms": 42.623,
-    "search_p95_ms": 736.994,
-    "search_max_ms": 785.347,
-    "process_peak_rss_mib": 237.8
+    "search_p50_ms": 4.491,
+    "search_p95_ms": 261.634,
+    "search_max_ms": 269.507,
+    "process_peak_rss_mib": 239.4
   },
   "quality": {
     "queries": 8,

@@ -45,7 +45,7 @@ python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluat
 
 The controlled comparison runs the original Member 1 lexical pipeline and the current pipeline on the **same** current fixtures and 65 question expectations. It measures **50/65 → 65/65** passing questions and **85.7% → 100%** required-source recall. The separate 28-case grounding category measures **15/28 → 28/28**, with false accepts falling from 13 to zero. Neither pipeline exposed unauthorized citations/context in this fixture set. This is a reconstructed offline comparison, not historical production evidence.
 
-The integrated automated suite passes **326 tests**, with four real-S3 checks skipped because no endpoint is configured.
+The integrated automated suite passes **395 tests** (default `fixture` mode), with four real-S3 checks skipped because no endpoint is configured. `IB_ATLASSIAN_MODE=sim python -m pytest -q` runs the same suite against the in-process simulator (393 pass, two fixture-only checks skip).
 
 See [the comparison](evaluation/reports/comparison.md), [current per-case measurements](evaluation/reports/current.json), [integration review](docs/INTEGRATION_REVIEW.md) and [evaluation methods](docs/EVALUATION.md). The 19,700-object synthetic benchmark measures the local index only.
 
@@ -61,6 +61,22 @@ This runs 65 regression cases plus 13 additional paraphrase/adversarial probes, 
 
 The current saved live report is **not run**, because credentials remain placeholders. See [Tencent requirements and model setup](docs/TENCENT_REQUIREMENTS.md). Exact organizer service requirements still need confirmation before deployment.
 
+## Confluence and Jira (Member 1)
+
+Confluence and Jira run through **real REST connectors** (`app/sources/confluence_cloud.py`, `jira_cloud.py`) in every mode except `sim`. `IB_ATLASSIAN_MODE` picks where they point:
+
+| Mode | What runs |
+|---|---|
+| `fixture` (default) | Real HTTP connectors against an in-process fake Atlassian site built from the demo company |
+| `live` | Real HTTP connectors against a real Atlassian Cloud site (Standard plan needed for restrictions and issue security) |
+| `sim` | The old in-process simulator, no HTTP |
+
+Permission decisions are Atlassian's own: Confluence's content permission check for the asker's accountId, and Jira's bulk `permissions/check` (one call per pipeline phase for every issue in it). Every phase of the pipeline (before read, after read, link hops, release) batches its checks per platform under one shared deadline. Confluence checks also report the page version, so an edit landing between read and recheck is caught. Errors, timeouts and rate limits fail closed; tokens never appear in errors and are never sent off-site. Polling uses an overlap window with dedupe, plus deletion reconciliation that holds back suspicious mass deletes.
+
+- Live setup, seeding a real site with the demo company, and the read-only conformance check: [docs/ATLASSIAN_SETUP.md](docs/ATLASSIAN_SETUP.md)
+- Brief-sized estate (about 30,000 documents) and benchmark: [docs/SCALE.md](docs/SCALE.md)
+- Connector pattern for other platforms: [docs/CONNECTOR_GUIDE.md](docs/CONNECTOR_GUIDE.md)
+
 ## Slack and team integration
 
 [Slack setup](docs/SLACK_MEMBER2.md) covers multiple workspaces, `TEAM/USER` identities, `TEAM/CHANNEL/THREAD` resource IDs, delegated reads, encrypted OAuth installs, single-use state, refresh rotation, signed events and 15-minute reconciliation. The common contract suite exercises DMs, public-channel scope, edits, deletion and retention on simulated and mocked HTTP implementations. A separate [live verifier](scripts/verify_live_slack.py) records real-workspace checks once configured.
@@ -70,7 +86,7 @@ Member 3’s independent S3 Object Lock checkpoint implementation is included. D
 ## Boundaries
 
 - Production SSO is still a teammate integration. The seeded demo identity directory must be replaced before connecting real employees or sensitive company data.
-- Confluence and Jira remain simulated. Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Slack/Drive/model/OAuth/WORM deployments have not been verified.
+- Confluence and Jira use real REST connectors, tested against a fake Atlassian site; the live site run (`scripts/atlassian_live_check.py`) has not been done yet. Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Atlassian/Slack/Drive/model/OAuth/WORM deployments have not been verified.
 - Conversation allowlists intentionally bound ingestion; multi-workspace support does not grant access to every private channel or DM. Slack itself authorizes every delegated read.
 - Search uses controlled lexical expansion and authorized link traversal, without embeddings. Broad queries can require many native permission calls; measure live throughput before scaling.
 - Grounding proves exact passage support, not source truth, complete answers, semantic entailment or perfect contradiction handling. Source dates remain visible.

@@ -7,6 +7,8 @@ os.environ['IB_ENV_FILE'] = os.path.join(_tmp, '.env')
 os.environ.setdefault("IB_AUDIT_DB", os.path.join(_tmp, "audit.db"))
 os.environ.setdefault("IB_ANCHOR_PATH", os.path.join(_tmp, "anchors.jsonl"))
 os.environ["IB_LLM_PROVIDER"] = "stub"
+os.environ["IB_RECONCILE_EVERY_S"] = "0"   # detect deletions on every poll in tests
+os.environ.setdefault("IB_ATLASSIAN_MODE", "fixture")
 
 import pytest  # noqa: E402
 

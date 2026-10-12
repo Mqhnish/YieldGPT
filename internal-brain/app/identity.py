@@ -7,8 +7,10 @@ demo directory.
 import os
 import hashlib
 import hmac
+import json
+import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from .config import SECRET_KEY
 from . import config
@@ -21,7 +23,7 @@ class User:
     title: str
     kind: str                      # "employee" | "contractor"
     groups: frozenset = field(default_factory=frozenset)
-    app_roles: frozenset = field(default_factory=frozenset)  # rights inside the Internal Brain itself
+    app_roles: frozenset = field(default_factory=frozenset)  # rights inside YieldGPT itself
     # Explicit per-platform account ids. Never assume the username is the same
     # everywhere: in production these come from SCIM / the IdP's app links.
     accounts: tuple = ()   # ((platform, account_id), ...)
@@ -59,6 +61,31 @@ USERS = {
     "priya": _u("priya", "Priya Nair", "Compliance officer", "employee", {"all-employees", "compliance"}, {"ask", "audit"}, _emp("priya")),
     "dana":  _u("dana", "Dana Koh", "Platform admin", "employee", {"all-employees", "it"}, {"ask", "admin", "audit_meta"}, _emp("dana")),
 }
+
+
+def apply_account_map(mapping: dict, users: dict | None = None) -> None:
+    """Live mode: map demo personas to REAL Atlassian account ids without editing code.
+      {"jdoe": {"confluence": "557058:abc...", "jira": "557058:abc..."}, "kim": {}}
+    Listed platforms replace the demo ids. A persona that is missing from the map, or maps to
+    {}, has NO Atlassian account on the live site: its demo placeholder ids are dropped, so they
+    are never sent to Atlassian (they'd be rejected, or worse, collide). The file holds ids, not secrets."""
+    users = USERS if users is None else users
+    for username, user in list(users.items()):
+        merged = {k: v for k, v in user.accounts if k not in ("confluence", "jira")}
+        merged.update({k: v for k, v in (mapping.get(username) or {}).items()
+                       if v and k in ("confluence", "jira")})
+        users[username] = replace(user, accounts=tuple(sorted(merged.items())))
+
+
+def _apply_account_map():
+    path = os.getenv("IB_ACCOUNT_MAP")
+    if not path:
+        return
+    with open(path) as f:
+        apply_account_map(json.load(f))
+
+
+_apply_account_map()
 DEMO_PASSWORD = "demo"
 TOKEN_TTL = 8 * 3600
 

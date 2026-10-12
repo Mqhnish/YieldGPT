@@ -15,3 +15,6 @@ slack-config.json
 *.db-wal
 *.db-shm
 .DS_Store
+accounts.json
+expectations.json
+seed_manifest.json

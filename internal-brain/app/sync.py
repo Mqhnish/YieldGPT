@@ -42,7 +42,8 @@ class Syncer:
 
     def _ok(self, st: PlatformSyncState):
         st.last_success = time.time()
-        st.last_error = ""
+        # a connector can succeed but report something a human should look at (e.g. held-back deletions)
+        st.last_error = getattr(self.c[st.platform], "anomaly", "") or ""
         st.consecutive_failures = 0
         self.store.put(st)
 

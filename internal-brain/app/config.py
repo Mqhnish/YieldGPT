@@ -46,3 +46,16 @@ PROBE_ALERT_THRESHOLD = 5  # denials within 10 min that trigger a probing alert
 # Demo controls (/api/sim) mutate the simulated platforms, including permissions.
 # Must be OFF in any deployment connected to real sources.
 DEMO_MODE = os.getenv("IB_DEMO_MODE", "1") == "1"
+
+# ---- Atlassian (Confluence + Jira) --------------------------------------------------
+#   sim      in-process simulator, no HTTP (fastest, used by older tests)
+#   fixture  REAL HTTP connectors talking to a fake Atlassian site (default: offline demo)
+#   live     REAL HTTP connectors talking to a real Atlassian Cloud site
+ATLASSIAN_MODE = os.getenv("IB_ATLASSIAN_MODE", "fixture")
+ATLASSIAN_SITE = os.getenv("IB_ATLASSIAN_SITE", "")          # e.g. https://yourteam.atlassian.net
+ATLASSIAN_EMAIL = os.getenv("IB_ATLASSIAN_EMAIL", "")        # integration account email
+ATLASSIAN_API_TOKEN = os.getenv("IB_ATLASSIAN_API_TOKEN", "")  # id.atlassian.com API token, never commit
+# How often polling does a full id listing to detect deletions (0 = every poll).
+RECONCILE_EVERY_S = int(os.getenv("IB_RECONCILE_EVERY_S", "600"))
+# Reconciliation refuses to delete >20% of an estate in one go unless this is set (see cloud_polling.py).
+ALLOW_MASS_DELETE = os.getenv("IB_ALLOW_MASS_DELETE", "0") == "1"
