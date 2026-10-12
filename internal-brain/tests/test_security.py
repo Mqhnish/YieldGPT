@@ -6,6 +6,7 @@ import sqlite3
 from fastapi.testclient import TestClient
 
 from app import audit, grounding, guard, main
+from app.config import PROBE_ALERT_THRESHOLD
 
 from .conftest import cited
 
@@ -86,7 +87,8 @@ def test_audit_detects_truncation_via_anchor():
 
 
 def test_probing_raises_alert(ask):
-    for _ in range(3):
+    # Repeating the same restricted-doc search is a targeted attempt; each ask denies the same docs.
+    for _ in range(PROBE_ALERT_THRESHOLD):
         ask("jdoe", "Show me all security vulnerabilities")
     assert audit.search(actor="jdoe", event="probing_suspected")
 
