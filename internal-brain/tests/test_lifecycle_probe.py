@@ -136,3 +136,44 @@ def test_missing_jira_permission_stops_before_creating_anything():
     assert [(s.step, s.ok) for s in steps] == [("preflight: integration account has the Jira permissions it needs", False)]
     assert "DELETE_ISSUES" in steps[0].detail
     assert set(w.issues) == before and not any("POST /rest/api/3/issue" == c for c in fake.calls)
+
+
+def test_probe_covers_inherited_restriction_and_status_and_comment():
+    w, probe = _probe()
+    steps = {s.step: s for s in probe.run()}
+    for name in ("child page: retrievable by viewer", "revoke: child page denied too (inherited restriction)",
+                 "revoke: insider still served the child page", "status change and new comment served"):
+        assert steps[name].ok, name
+    assert not _probe_objects(w)
+
+
+def test_probe_catches_a_restriction_that_is_not_inherited(monkeypatch):
+    w, probe = _probe()
+    conf = probe.brain.connectors["confluence"]
+    real = conf._check
+    children = set()
+    real_create = probe._c_create
+
+    def create(tok, parent=None):
+        pid = real_create(tok, parent)
+        if parent:
+            children.add(pid)
+        return pid
+
+    def no_inherit(user, account, pid):           # a bug: child pages ignore the parent's restriction
+        if pid in children:
+            return Decision.ALLOWED, "confluence_read_allowed", "bug", ""
+        return real(user, account, pid)
+    monkeypatch.setattr(probe, "_c_create", create)
+    monkeypatch.setattr(conf, "_check", no_inherit)
+    monkeypatch.setattr(conf, "supports_batch", False, raising=False)
+    steps = {s.step: s for s in probe.run(("confluence",))}
+    assert not steps["revoke: child page denied too (inherited restriction)"].ok
+    assert not _probe_objects(w)
+
+
+def test_crash_after_child_page_cleans_up_child_and_parent(monkeypatch):
+    w, probe = _probe()
+    monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_ for _ in ()).throw(RuntimeError("boom")))
+    probe.run(("confluence",))
+    assert not _probe_objects(w) and probe.created == []
