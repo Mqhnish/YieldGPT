@@ -21,6 +21,8 @@
   let selectedPersona = 'jdoe';
   let loginBusy = false;
   let historySerial = 0;
+  let latticeStartedAt = 0;
+  let latticeTimerId = null;
 
   function node(tag, className, text) {
     const el = document.createElement(tag);
@@ -81,6 +83,63 @@
     $('ask-label').textContent = working ? 'Searching…' : 'Ask Brain';
     $('question-form').setAttribute('aria-busy', String(working));
     document.querySelectorAll('.suggestion-card').forEach(button => { button.disabled = working; });
+    if (latticeTimerId !== null) window.clearInterval(latticeTimerId);
+    latticeTimerId = null;
+    if (working) {
+      latticeStartedAt = performance.now();
+      $('lattice-timer').textContent = '0.0s';
+      latticeTimerId = window.setInterval(() => {
+        $('lattice-timer').textContent = `${((performance.now() - latticeStartedAt) / 1000).toFixed(1)}s`;
+      }, 100);
+    }
+  }
+  function initShapeWaves() {
+    const canvas = $('shape-waves');
+    const context = canvas && canvas.getContext('2d');
+    if (!canvas || !context) return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let width = 1, height = 1, frameId = 0, visible = true;
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.max(1, rect.width); height = Math.max(1, rect.height);
+      canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      draw(0);
+    };
+    const draw = now => {
+      context.clearRect(0, 0, width, height);
+      const cell = width < 500 ? 18 : 20;
+      const time = reducedMotion ? 0 : now * 0.00035;
+      for (let y = cell / 2; y < height; y += cell) {
+        for (let x = cell / 2; x < width; x += cell) {
+          const wave = (Math.sin(x * 0.032 + time * 4) + Math.cos(y * 0.045 - time * 3)) * 0.5;
+          const edge = Math.min(1, x / (width * 0.36), (width - x) / (width * 0.2), y / (height * 0.35), (height - y) / (height * 0.35));
+          const alpha = Math.max(0, edge) * (0.08 + (wave + 1) * 0.08);
+          const size = 2 + (wave + 1) * 1.4;
+          context.fillStyle = `rgba(15,159,145,${alpha.toFixed(3)})`;
+          if ((Math.round(x / cell) + Math.round(y / cell)) % 3 === 0) {
+            context.beginPath(); context.arc(x, y, size, 0, Math.PI * 2); context.fill();
+          } else context.fillRect(x - size / 2, y - size / 2, size, size);
+        }
+      }
+    };
+    const animate = now => {
+      if (!visible) return;
+      draw(now);
+      if (!reducedMotion) frameId = window.requestAnimationFrame(animate);
+    };
+    const resizeObserver = new ResizeObserver(resize);
+    const intersectionObserver = new IntersectionObserver(entries => {
+      visible = entries.some(entry => entry.isIntersecting);
+      window.cancelAnimationFrame(frameId);
+      if (visible && !reducedMotion) frameId = window.requestAnimationFrame(animate);
+    });
+    resizeObserver.observe(canvas); intersectionObserver.observe(canvas); resize();
+    if (!reducedMotion) frameId = window.requestAnimationFrame(animate);
+    window.addEventListener('pagehide', () => {
+      window.cancelAnimationFrame(frameId); resizeObserver.disconnect(); intersectionObserver.disconnect();
+    }, { once: true });
   }
   function clearAnswer() {
     state.answer = null; state.question = '';
@@ -181,6 +240,7 @@
     button.append(avatar, details); button.addEventListener('click', () => selectPersona(persona)); $('persona-grid').append(button);
   });
   selectPersona(personas[0]);
+  initShapeWaves();
 
   function updateCount() { $('character-count').textContent = `${$('question').value.length.toLocaleString()} / 2,000`; }
   function cancelAsk() {
@@ -355,7 +415,7 @@
   async function copyAnswer() {
     if (!state.answer) return;
     const epoch = state.epoch; const answer = state.answer;
-    const sources = answer.citations.map(source => { const url = httpsUrl(source.url); return `[${source.ref}] ${source.title}${url ? ` — ${url}` : ''}`; });
+    const sources = answer.citations.map(source => { const url = httpsUrl(source.url); return `[${source.ref}] ${source.title}${url ? ` | ${url}` : ''}`; });
     const text = [answer.answer, sources.length ? `Sources\n${sources.join('\n')}` : ''].filter(Boolean).join('\n\n');
     try {
       await navigator.clipboard.writeText(text);
@@ -388,6 +448,116 @@
   $('close-evidence').addEventListener('click', closeEvidence);
   $('evidence-dialog').addEventListener('cancel', event => { event.preventDefault(); closeEvidence(); });
   $('copy-answer').addEventListener('click', copyAnswer);
+
+  function initAsciiCursor() {
+    const canvas = $('ascii-cursor');
+    if (!canvas) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(pointer: fine)');
+    if (reducedMotion.matches || !finePointer.matches) {
+      canvas.hidden = true;
+      return;
+    }
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const glyphs = ['$', '€', '£', '¥', '₿', '%', '↗', '↘', '+', '−'];
+    const amberGlyphs = new Set(['%', '↗', '↘']);
+    const textSelector = 'a,button,input,textarea,label,h1,h2,h3,h4,p,span,strong,em,small,blockquote,summary,li,td,th,dt,dd';
+    const cellSize = 18;
+    const persistence = 760;
+    const maxGlyphs = 150;
+    let width = 0;
+    let height = 0;
+    let ratio = 1;
+    let frame = 0;
+    let lastX = -100;
+    let lastY = -100;
+    let trail = [];
+
+    function resizeAsciiCursor() {
+      ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.font = '700 14px "IBM Plex Mono", SFMono-Regular, Menlo, Consolas, monospace';
+    }
+
+    function drawAsciiCursor(now) {
+      context.clearRect(0, 0, width, height);
+      trail = trail.filter(point => now - point.created < persistence);
+
+      for (const point of trail) {
+        const progress = Math.min(1, (now - point.created) / persistence);
+        const alpha = (1 - progress) * point.opacity;
+        const color = amberGlyphs.has(point.glyph) ? '245,158,11' : '15,159,145';
+        context.fillStyle = `rgba(${color},${alpha.toFixed(3)})`;
+        context.shadowColor = `rgba(${color},${(alpha * 0.7).toFixed(3)})`;
+        context.shadowBlur = 7 * (1 - progress);
+        context.fillText(point.glyph, point.x, point.y);
+      }
+
+      context.shadowBlur = 0;
+      frame = trail.length ? window.requestAnimationFrame(drawAsciiCursor) : 0;
+    }
+
+    function addAsciiTrail(x, y, created) {
+      for (let row = -1; row <= 1; row += 1) {
+        for (let column = -1; column <= 1; column += 1) {
+          if (row !== 0 && column !== 0 && Math.random() > 0.48) continue;
+          const px = Math.round((x + column * cellSize) / cellSize) * cellSize;
+          const py = Math.round((y + row * cellSize) / cellSize) * cellSize;
+          trail.push({
+            x: px,
+            y: py,
+            created: created - Math.random() * 90,
+            opacity: row === 0 && column === 0 ? 0.86 : 0.38 + Math.random() * 0.25,
+            glyph: glyphs[Math.floor(Math.random() * glyphs.length)]
+          });
+        }
+      }
+
+      if (trail.length > maxGlyphs) trail = trail.slice(-maxGlyphs);
+      if (!frame) frame = window.requestAnimationFrame(drawAsciiCursor);
+    }
+
+    document.addEventListener('pointermove', event => {
+      if (event.pointerType === 'touch') return;
+      const target = event.target instanceof Element ? event.target : null;
+      canvas.classList.toggle('is-over-text', Boolean(target && target.closest(textSelector)));
+      const distance = Math.hypot(event.clientX - lastX, event.clientY - lastY);
+      if (distance < 8) return;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      addAsciiTrail(lastX, lastY, performance.now());
+    }, { passive: true });
+
+    document.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'touch') {
+        addAsciiTrail(event.clientX, event.clientY, performance.now());
+      }
+    }, { passive: true });
+
+    document.addEventListener('pointerleave', () => {
+      canvas.classList.remove('is-over-text');
+    });
+
+    window.addEventListener('resize', resizeAsciiCursor, { passive: true });
+    window.addEventListener('blur', () => {
+      trail = [];
+      context.clearRect(0, 0, width, height);
+    });
+    resizeAsciiCursor();
+  }
+
+  initAsciiCursor();
   // A restored browser page must not resurrect a prior identity or its answer.
   window.addEventListener('pageshow', event => { if (event.persisted) clearSession(); });
 })();
+

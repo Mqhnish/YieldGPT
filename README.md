@@ -1,8 +1,8 @@
-# The Internal Brain
+# YieldGPT
 
 Entry for the **Aspire FinTech track**, AI CAN DO IT Tencent Cloud Hackathon Singapore 2026.
 
-> The Internal Brain: a context-aware enterprise knowledge system with RBAC, security logging and audit trail.
+> YieldGPT: a context-aware enterprise knowledge system with RBAC, security logging and audit trail.
 
 It answers natural-language questions across **Confluence, Jira, Slack and Google Drive**, while every
 piece of content respects the source platform's own permissions, and every retrieval and answer is
@@ -34,7 +34,7 @@ Demo users (password `demo`):
 ## Architecture
 
 ```
-            +------------------------- TRUST BOUNDARY: Internal Brain ---------------------------+
+            +------------------------- TRUST BOUNDARY: YieldGPT ---------------------------+
  user --SSO-->  Identity (user, groups)                                                           |
             |       |                                                                             |
             |   question --> input guard --> planner --> fan-out search (unified index)           |

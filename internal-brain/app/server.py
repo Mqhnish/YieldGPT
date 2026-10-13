@@ -40,7 +40,7 @@ async def lifespan(app):
             audit.try_checkpoint()
 
 
-app = FastAPI(title="The Internal Brain", lifespan=lifespan)
+app = FastAPI(title="YieldGPT", lifespan=lifespan)
 app.middleware("http")(main.private_responses)
 app.add_middleware(reliability.AuditedDelivery)
 

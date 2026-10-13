@@ -1,4 +1,4 @@
-# Internal Brain — integrated team delivery
+# YieldGPT: integrated team delivery
 
 This project integrates Member 2’s retrieval and answer checks with the supplied **Tencent---YieldGPT-main.zip**, including Member 3’s encrypted audit log, protected checkpoint adapter, compliance console and delivery controls. The previous project is preserved separately.
 

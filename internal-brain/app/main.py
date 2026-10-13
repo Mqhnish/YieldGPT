@@ -72,7 +72,7 @@ async def lifespan(_app):
         state.clear()
 
 
-app = FastAPI(title="The Internal Brain", lifespan=lifespan)
+app = FastAPI(title="YieldGPT", lifespan=lifespan)
 app.mount('/static', StaticFiles(directory=STATIC), name='static')
 
 

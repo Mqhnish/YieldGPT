@@ -19,7 +19,7 @@ class User:
     title: str
     kind: str                      # "employee" | "contractor"
     groups: frozenset = field(default_factory=frozenset)
-    app_roles: frozenset = field(default_factory=frozenset)  # rights inside the Internal Brain itself
+    app_roles: frozenset = field(default_factory=frozenset)  # rights inside YieldGPT itself
     # Explicit per-platform account ids. Never assume the username is the same
     # everywhere: in production these come from SCIM / the IdP's app links.
     accounts: tuple = ()   # ((platform, account_id), ...)

@@ -33,7 +33,7 @@ async def lifespan(_app):
     brain.syncer.stop()
 
 
-app = FastAPI(title="The Internal Brain", lifespan=lifespan)
+app = FastAPI(title="YieldGPT", lifespan=lifespan)
 
 
 def brain() -> Brain:

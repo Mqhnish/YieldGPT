@@ -3,89 +3,84 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Internal Brain</title>
-<style>
-  :root { --bg:#f6f6f3; --fg:#1a1a1a; --muted:#6a6a6a; --card:#fff; --line:#e2e2de; --accent:#0f6b5c;
-          --warn:#a65400; --alert:#b3261e; --conf:#1d4ed8; --jira:#2563eb; --slack:#7c3aed; --gdrive:#15803d; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#131313; --fg:#ececec; --muted:#9a9a9a; --card:#1c1c1c; --line:#303030; } }
-  * { box-sizing:border-box; }
-  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
-  main { max-width:900px; margin:0 auto; padding:16px; }
-  h1 { font-size:20px; margin:6px 0 2px; } h2 { font-size:15px; margin:0 0 10px; }
-  .sub { color:var(--muted); font-size:13px; margin-bottom:14px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:14px; }
-  input, select, button, textarea { font:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
-  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
-  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--line); font-size:13px; padding:5px 9px; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  .grow { flex:1; min-width:220px; }
-  .muted { color:var(--muted); font-size:13px; }
-  .answer { white-space:pre-wrap; margin:12px 0 6px; }
-  .cite { font-size:13px; margin:3px 0; }
-  .badge { display:inline-block; font-size:11px; font-weight:600; color:#fff; border-radius:4px; padding:1px 6px; margin-right:6px; }
-  .confluence { background:var(--conf); } .jira { background:var(--jira); } .slack { background:var(--slack); } .gdrive { background:var(--gdrive); }
-  table { width:100%; border-collapse:collapse; font-size:12px; }
-  td, th { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
-  .warning { color:var(--warn); } .alert { color:var(--alert); font-weight:600; }
-  .denied { color:var(--alert); } .allowed { color:var(--gdrive); }
-  .hidden { display:none; }
-  .story { border-top:1px solid var(--line); padding:8px 0; font-size:13px; }
-  details summary { cursor:pointer; }
-</style>
+<meta name="color-scheme" content="light">
+<title>YieldGPT · Administration</title>
+<link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-<main>
-  <h1>The Internal Brain</h1>
-  <div class="sub">Permission-aware answers across Confluence, Jira, Slack and Drive (simulated Company A)</div>
-
-  <div class="card">
-    <div class="row">
-      <select id="user">
-        <option value="jdoe">jdoe, backend engineer</option>
-        <option value="ravi">ravi, SRE / payments on-call</option>
-        <option value="asha">asha, security engineer</option>
-        <option value="kim">kim, external contractor</option>
-        <option value="priya">priya, compliance officer</option>
-        <option value="dana">dana, platform admin</option>
-      </select>
-      <button onclick="login()">Sign in</button>
-      <span id="who" class="muted"></span>
-    </div>
+<body class="console-page">
+<header class="ops-header">
+  <div class="ops-header-inner">
+    <a class="ops-brand" href="/" aria-label="YieldGPT workspace home"><span class="ops-brand-mark" aria-hidden="true">✳</span><span><strong>YieldGPT.</strong><span>Administration workspace</span></span></a>
+    <a class="ops-backlink" href="/">Employee workspace ↗</a>
   </div>
+</header>
+<main class="ops-page">
+  <section class="ops-intro" aria-labelledby="console-title">
+    <div class="eyebrow">OPERATIONS · PERMISSION-AWARE DEMO</div>
+    <h1 id="console-title">Test answers. <em>Protect the boundary.</em></h1>
+    <p>Use a demo perspective to check the knowledge experience. Administrative tools remain separate from document access and are displayed only when the current account has the appropriate right.</p>
+  </section>
 
-  <div class="card">
-    <h2>Ask</h2>
-    <div class="row">
-      <input id="q" class="grow" placeholder="Ask anything about Company A">
-      <button onclick="ask()">Ask</button>
-    </div>
-    <div class="row" style="margin-top:8px" id="examples"></div>
-    <div id="out"></div>
-  </div>
+  <div class="ops-grid">
+    <div class="ops-stack">
+      <section class="ops-card" aria-labelledby="session-title">
+        <h2 id="session-title">Demo perspective</h2>
+        <div class="row">
+          <label class="sr-only" for="user">Demo persona</label>
+          <select id="user">
+            <option value="jdoe">jdoe · backend engineer</option>
+            <option value="ravi">ravi · SRE / payments on-call</option>
+            <option value="asha">asha · security engineer</option>
+            <option value="kim">kim · external contractor</option>
+            <option value="priya">priya · compliance officer</option>
+            <option value="dana">dana · platform administrator</option>
+          </select>
+          <button onclick="login()">Sign in</button>
+        </div>
+        <p id="who" class="muted ops-status" aria-live="polite">Select a demo account to begin.</p>
+      </section>
 
-  <div class="card hidden" id="simCard">
-    <h2>Demo controls (simulate platform changes)</h2>
-    <div class="row">
-      <button class="ghost" onclick="sim('confluence_update','CONF-101','Step 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway.', false)">Scenario 2: runbook updated, webhook MISSED</button>
-      <button class="ghost" onclick="sim('slack_remove_member','db-migration','jdoe', false)">Scenario 4: remove jdoe from #db-migration, webhook MISSED</button>
-      <button class="ghost" onclick="sim('confluence_restrict','CONF-102','user:asha', true)">Restrict ADR-17 to asha only</button>
-      <button class="ghost" onclick="api('/api/sync/poll',{method:'POST'}).then(r=>note('Polled: '+JSON.stringify(r)))">Force poll now</button>
+      <section class="ops-card" aria-labelledby="ask-title">
+        <h2 id="ask-title">Test a question</h2>
+        <label class="sr-only" for="q">Question about Company A</label>
+        <div class="row">
+          <input id="q" class="grow" placeholder="Ask anything about Company A">
+          <button onclick="ask()">Ask Brain</button>
+        </div>
+        <div class="ops-example-label">SUGGESTED TESTS</div>
+        <div class="row" id="examples"></div>
+        <div id="out" aria-live="polite"></div>
+      </section>
     </div>
-    <div id="simOut" class="muted" style="margin-top:6px"></div>
-  </div>
 
-  <div class="card hidden" id="auditCard">
-    <h2>Audit trail <span id="auditScope" class="muted"></span></h2>
-    <div class="row" id="auditQueryRow">
-      <input id="aq" class="grow" value="Show me everything user 'jdoe' accessed related to the 'payment-gateway' Confluence space in the last 30 days">
-      <button onclick="auditQuery()">Query</button>
+    <div class="ops-stack">
+      <section class="ops-card ops-demo-card hidden" id="simCard" aria-labelledby="demo-controls-title">
+        <h2 id="demo-controls-title">Demo controls</h2>
+        <p class="muted">Simulate platform changes. These controls are available only to administrators in demo mode.</p>
+        <div class="row">
+          <button class="ghost" onclick="sim('confluence_update','CONF-101','Step 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway.', false)">Missed runbook webhook</button>
+          <button class="ghost" onclick="sim('slack_remove_member','db-migration','jdoe', false)">Remove migration member</button>
+          <button class="ghost" onclick="sim('confluence_restrict','CONF-102','user:asha', true)">Restrict ADR-17</button>
+          <button class="ghost" onclick="api('/api/sync/poll',{method:'POST'}).then(r=>note('Polled: '+JSON.stringify(r)))">Force poll</button>
+        </div>
+        <p id="simOut" class="muted ops-status" aria-live="polite"></p>
+      </section>
+
+      <section class="ops-card ops-audit-card hidden" id="auditCard" aria-labelledby="audit-title">
+        <h2 id="audit-title">Audit trail <span id="auditScope" class="muted"></span></h2>
+        <div class="row" id="auditQueryRow">
+          <label class="sr-only" for="aq">Audit question</label>
+          <input id="aq" class="grow" value="Show me everything user 'jdoe' accessed related to the 'payment-gateway' Confluence space in the last 30 days">
+          <button onclick="auditQuery()">Query</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="ghost" onclick="verify()">Verify hash chain</button>
+          <button class="ghost" onclick="alerts()">Security alerts</button>
+        </div>
+        <p id="chain" class="muted ops-status" aria-live="polite"></p>
+        <div id="auditOut" aria-live="polite"></div>
+      </section>
     </div>
-    <div class="row" style="margin-top:8px">
-      <button class="ghost" onclick="verify()">Verify hash chain</button>
-      <button class="ghost" onclick="alerts()">Security alerts</button>
-      <span id="chain" class="muted"></span>
-    </div>
-    <div id="auditOut" style="margin-top:8px"></div>
   </div>
 </main>
 <script>
@@ -124,7 +119,7 @@ async function login() {
 
 async function ask() {
   if (!token) { $("out").innerHTML = '<p class="muted">Sign in first.</p>'; return; }
-  $("out").innerHTML = '<p class="muted">Thinking...</p>';
+  $("out").innerHTML = '<p class="muted">Checking current access and assembling evidence…</p>';
   try {
     const j = await api("/api/ask", { method: "POST", body: JSON.stringify({ question: $("q").value }) });
     const cites = j.citations.map(c => `<div class="cite"><span class="badge ${c.platform}">${c.platform}</span><b>${c.ref}</b> <a href="${esc(c.url)}" target="_blank">${esc(c.title)}</a> <span class="muted">updated ${esc(c.updated_iso)}</span></div>`).join("");

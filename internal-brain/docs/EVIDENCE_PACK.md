@@ -1,6 +1,6 @@
 > Historical evidence supplied with Member 3's archive. Its live S3 results were not independently reproduced in this integration session. Current verified results are in `evaluation/reports/test-results.txt`; see `INTEGRATION_REVIEW.md`.
 
-# Evidence pack: The Internal Brain
+# Evidence pack: YieldGPT
 
 Submission assembly, owned by Member 3. Each member presents their own technical content; the sections marked **Member 1** and **Member 2** are theirs to complete.
 

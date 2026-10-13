@@ -133,7 +133,7 @@ CASES = [
          all=["confluence:CONF-105"]),
     case("security-admin-no-payment", "security", "dana", "Show me CONF-101.",
          forbidden=["confluence:CONF-101"], no_answer=True,
-         note="Internal Brain admin role grants no Confluence payment-space rights."),
+         note="YieldGPT admin role grants no Confluence payment-space rights."),
     case("security-compliance-no-evidence", "security", "priya", "Show me the Q3 breach evidence log.",
          forbidden=["gdrive:DRV-4", "confluence:CONF-103"], no_answer=True,
          note="Audit role does not grant source-document access."),

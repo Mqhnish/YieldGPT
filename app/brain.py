@@ -1,4 +1,4 @@
-"""The Internal Brain: one question, end to end.
+"""YieldGPT: one question, end to end.
 
    question
      | 1 input guard          injection check on the question
