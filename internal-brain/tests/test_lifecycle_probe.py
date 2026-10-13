@@ -64,12 +64,12 @@ def test_report_redacts_token_email_site_and_account_ids(monkeypatch):
     from app.identity import USERS
     monkeypatch.setattr(config, "ATLASSIAN_API_TOKEN", "ATATT3xFfGF0secret-token-value")
     monkeypatch.setattr(config, "ATLASSIAN_EMAIL", "bot@example.org")
-    monkeypatch.setattr(config, "ATLASSIAN_SITE", "https://yieldgpt-demo.atlassian.net")
+    monkeypatch.setattr(config, "ATLASSIAN_SITE", "https://example-site.atlassian.net")
     sys.path.insert(0, "scripts")
     mod = importlib.import_module("atlassian_lifecycle_probe")
     acct = dict(USERS["ravi"].accounts)["jira"]
-    text = mod.redact(f"ATATT3xFfGF0secret-token-value bot@example.org https://yieldgpt-demo.atlassian.net/wiki {acct} ok")
-    for leaked in ("secret-token", "bot@example.org", "yieldgpt-demo", acct):
+    text = mod.redact(f"ATATT3xFfGF0secret-token-value bot@example.org https://example-site.atlassian.net/wiki {acct} ok")
+    for leaked in ("secret-token", "bot@example.org", "example-site", acct):
         assert leaked not in text
     assert text.endswith("ok")
 
