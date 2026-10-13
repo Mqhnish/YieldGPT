@@ -51,6 +51,9 @@ class LifecycleProbe:
     brain: object
     cfg: ProbeConfig = field(default_factory=ProbeConfig)
     sleep: callable = time.sleep
+    # Client for the probe's own writes. The connectors' client keeps a short timeout so permission
+    # checks fail closed fast; writes don't need that (seen live: a Jira transition took over 10 s).
+    writer: object = None
     steps: list[Step] = field(default_factory=list)
     created: list = field(default_factory=list)   # (platform, native id) in creation order, for cleanup
     stage: str = ""                               # current step, named in error reports
@@ -58,7 +61,7 @@ class LifecycleProbe:
     # ------------------------------------------------------------------ helpers
     @property
     def api(self):
-        return self.brain.connectors["confluence"].api
+        return self.writer or self.brain.connectors["confluence"].api
 
     def _ask(self, who, tok):
         return self.brain.ask(USERS[who], f"lifecycle probe {tok}")

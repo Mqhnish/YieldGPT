@@ -29,6 +29,7 @@ from app.brain import Brain  # noqa: E402
 from app.identity import USERS  # noqa: E402
 from app.seeding.lifecycle import LifecycleProbe, ProbeConfig  # noqa: E402
 from app.seeding.report import commit_label, redact  # noqa: E402,F401  (redact re-exported for tests)
+from app.sources.atlassian_client import AtlassianClient  # noqa: E402
 from app.sources.registry import build_connectors  # noqa: E402
 from app.sources.world import World  # noqa: E402
 
@@ -69,7 +70,9 @@ def main():
     audit.init()
     world = World()
     brain = Brain(world=world, connectors=build_connectors(world, atlassian_mode=a.mode))
-    probe = LifecycleProbe(brain, cfg)
+    writer = (AtlassianClient(config.ATLASSIAN_SITE, config.ATLASSIAN_EMAIL, config.ATLASSIAN_API_TOKEN, timeout_s=45)
+              if a.mode == "live" else None)
+    probe = LifecycleProbe(brain, cfg, writer=writer)
     steps = probe.run(tuple(a.platforms.split(",")))
     commit, dirty = commit_label()
     r = {"mode": a.mode, "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
