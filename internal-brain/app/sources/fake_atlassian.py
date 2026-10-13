@@ -73,6 +73,7 @@ class FakeAtlassian:
             self._jid(k)
         self.by_account = _LiveAccounts()   # resolved per request: group changes apply immediately
         self.calls: list[str] = []  # request log, handy in tests
+        self.bot_lacks: set[str] = set()   # Jira project permissions the integration account lacks
 
     def transport(self) -> httpx.MockTransport:
         return httpx.MockTransport(self.handle)
@@ -357,6 +358,10 @@ def _jira_write(self, method, rest, q, body):
     from .textconv import adf_to_text
     from .links import uid_from_url
     w = self.w
+    if rest == ["mypermissions"] and method == "GET":
+        wanted = [x for x in q.get("permissions", "").split(",") if x]
+        return self._json(200, {"permissions": {p: {"key": p, "havePermission": p not in self.bot_lacks}
+                                                for p in wanted}})
     if rest == ["group"] and method == "POST":
         if body["name"] in self.groups:
             return self._json(400, {"errorMessages": ["group exists"]})

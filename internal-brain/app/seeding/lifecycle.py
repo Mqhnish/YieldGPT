@@ -132,6 +132,16 @@ class LifecycleProbe:
         self.api.request("PUT", f"/rest/api/3/issue/{quote(key, safe='')}",
                          json={"fields": {"security": {"name": self.cfg.security_level}}})
 
+    JIRA_NEEDS = ("BROWSE_PROJECTS", "CREATE_ISSUES", "EDIT_ISSUES", "SET_ISSUE_SECURITY", "DELETE_ISSUES")
+
+    def _j_missing(self):
+        """Project permissions the integration account lacks. Checked BEFORE creating anything,
+        so a missing grant can't leave a probe issue behind (seen live: no Delete Issues)."""
+        r = self.api.get("/rest/api/3/mypermissions", projectKey=self.cfg.project_key,
+                         permissions=",".join(self.JIRA_NEEDS))
+        perms = r.get("permissions", {})
+        return [p for p in self.JIRA_NEEDS if not (perms.get(p) or {}).get("havePermission")]
+
     def _j_delete(self, key):
         self.api.request("DELETE", f"/rest/api/3/issue/{quote(key, safe='')}")
 
@@ -142,6 +152,13 @@ class LifecycleProbe:
     # ------------------------------------------------------------------ the lifecycle
     def run_platform(self, platform):
         conn = self.brain.connectors[platform]
+        if platform == "jira":
+            self.stage = "preflight"
+            missing = self._j_missing()
+            self._record(platform, "preflight: integration account has the Jira permissions it needs", not missing,
+                         0.0, f"missing in {self.cfg.project_key}: {', '.join(missing)}" if missing else "")
+            if missing:
+                return
         w = {"confluence": (self._c_create, self._c_edit, self._c_revoke, self._c_delete),
              "jira": (self._j_create, self._j_edit, self._j_revoke, self._j_delete)}[platform]
         create, edit, revoke, delete = w

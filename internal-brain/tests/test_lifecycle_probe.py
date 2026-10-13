@@ -124,3 +124,15 @@ def test_short_stale_allow_is_stopped_by_the_release_recheck(monkeypatch):
     steps = {s.step: s for s in probe.run(("jira",))}
     assert steps["revoke: viewer denied on next query (no reindex)"].ok
     assert not _probe_objects(w)
+
+
+def test_missing_jira_permission_stops_before_creating_anything():
+    # Live: the bot lacked Delete Issues, so three runs each left a probe issue behind.
+    w, probe = _probe()
+    fake = probe.brain.connectors["jira"].api._http._transport.handler.__self__
+    fake.bot_lacks = {"DELETE_ISSUES"}
+    before = set(w.issues)
+    steps = probe.run(("jira",))
+    assert [(s.step, s.ok) for s in steps] == [("preflight: integration account has the Jira permissions it needs", False)]
+    assert "DELETE_ISSUES" in steps[0].detail
+    assert set(w.issues) == before and not any("POST /rest/api/3/issue" == c for c in fake.calls)
