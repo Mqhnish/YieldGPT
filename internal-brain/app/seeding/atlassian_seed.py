@@ -261,12 +261,16 @@ class AtlassianSeeder:
             fields = {"description": self._adf(self._rewrite(i["desc"]))}
             self.api.request("PUT", f"/rest/api/3/issue/{real}", json={"fields": fields})
             # status: find a transition into the demo status (workflows differ per site)
+            cur = self.api.get(f"/rest/api/3/issue/{real}", fields="status")["fields"]["status"]["name"]
             ts = self.api.get(f"/rest/api/3/issue/{real}/transitions").get("transitions", [])
             match = next((t for t in ts if (t.get("to") or {}).get("name", "").lower() == i["status"].lower()), None)
-            if match:
+            if cur.lower() == i["status"].lower():
+                pass                                    # already there (re-run)
+            elif match:
                 self.api.post(f"/rest/api/3/issue/{real}/transitions", {"transition": {"id": match["id"]}})
             else:
-                self.note(f"issue {real}: no transition to '{i['status']}' in this workflow, left as is")
+                self.note(f"issue {real}: status '{i['status']}' is not in this project's workflow (now '{cur}'). "
+                          f"Add it to the workflow (manual step), then re-run")
             for uid in i["links"]:
                 platform, _, nid = uid.partition(":")
                 if platform == "jira" and nid in self.m.issues:
@@ -328,6 +332,10 @@ class AtlassianSeeder:
             groups = sorted(p.split(":", 1)[1] for p in members if p.startswith("group:"))
             steps.append(f"Jira issue security scheme with level '{level}' (members: groups {', '.join(groups)}), "
                          f"attached to projects of {', '.join(issues)}. Then re-run with --apply-security")
+        for key in sorted(self.demo.projects):
+            wanted = sorted({i["status"] for i in self.demo.issues.values() if i["project"] == key})
+            steps.append(f"Jira project {key}: its workflow must offer the statuses {', '.join(wanted)} "
+                         f"(add any missing ones, reachable from any status), then re-run")
         steps.append("Add each teammate persona to their groups (Admin > Groups) and write accounts.json. "
                      "Leave the contractor persona WITHOUT an Atlassian account")
         return steps
