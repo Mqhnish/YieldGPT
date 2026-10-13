@@ -1,4 +1,4 @@
-"""The Internal Brain: one question, end to end.
+"""YieldGPT: one question, end to end.
 
    question
      | 1 input guard          injection check on the question
@@ -221,3 +221,4 @@ class Brain:
 
     def freshness(self, interval_s):
         return {"indexed_docs": len(self.index), "platforms": self.syncer.status(interval_s), "checked_at": time.time()}
+

@@ -26,9 +26,9 @@ Any failed gate blocks the “submission ready” label, even if the UI looks co
 | G08 | Prior-answer replay access recheck | 100% | Revoke access after answer creation, then replay the saved answer | Verified in automated tests |
 | G09 | Released answers with a valid audit checkpoint | 100% | Compare release records with checkpoint records | Verified in automated tests |
 | G10 | Answers released when checkpointing fails | **0** | Force checkpoint storage failure during release | Verified in automated tests |
-| G11 | Unsupported factual claims in released answers | **0** in the adjudicated submission set | Sentence-level entailment review against authorized citations | 28/28 current grounding cases pass; broadened bank required |
+| G11 | Unsupported factual claims in released answers | **0** in the adjudicated submission set | Sentence-level entailment review against authorized citations | Automated grounding cases pass; the 320-row human scoring sheet is frozen but still has 0 adjudicated rows |
 | G12 | Test suite | 100% pass, 0 unexpected skips | Run the full suite from a clean checkout | 321 passed, 4 live-service skips at last run |
-| G13 | Real model path | At least 1 approved real model; 0 silent stub fallbacks in the live report | Run the live evaluation with remote-use assertions enabled | Not yet verified with approved credentials |
+| G13 | Real model path | At least 1 approved real model; 0 silent stub fallbacks in the live report | Run the live evaluation with remote-use assertions enabled | **Not run:** no approved provider credentials are present in the validation environment |
 | G14 | Live connector proof | At least 1 real workspace/account per source, or a clearly disclosed organizer-approved simulation exception | Execute a create/update/revoke/delete probe for each connector | Slack adapter is implemented but only mocked; other live proofs pending |
 | G15 | Tencent requirement | Written organizer confirmation recorded and implementation matches it | Save the rule/link/organizer response in `docs/TENCENT_REQUIREMENTS.md` | Still unconfirmed |
 
@@ -139,15 +139,15 @@ The final evidence pack should include dated screen recordings or redacted logs.
 
 ## UI and demo readiness
 
-| ID | Metric | Submission target |
-|---|---|---:|
-| U01 | Demo path | All 5 required scenarios completed in **≤6 minutes** with no database reset or manual file edit |
-| U02 | UI task success | **≥90%** across 5 first-time users completing ask, inspect citation, change persona, replay, and inspect audit tasks |
-| U03 | Accessibility | Lighthouse accessibility **≥95** and **0 critical** automated accessibility violations |
-| U04 | Keyboard use | 100% of search, filters, citation cards, dialogs, and audit controls usable without a mouse |
-| U05 | Responsive layouts | No clipped controls or horizontal page scroll at **390 px, 768 px, and 1440 px** widths |
-| U06 | Error recovery | 100% of forced source/model/checkpoint failures show a clear safe state and a retry path |
-| U07 | Naming and theme | 100% user-facing product references say **YieldGPT** and match the approved color tokens |
+| ID | Metric | Submission target | Current verified baseline |
+|---|---|---:|---|
+| U01 | Demo path | All 5 required scenarios completed in **≤6 minutes** with no database reset or manual file edit | Automated scenario coverage passes; final timed walkthrough still required |
+| U02 | UI task success | **≥90%** across 5 first-time users completing ask, inspect citation, change persona, replay, and inspect audit tasks | **Not run:** requires five first-time human participants |
+| U03 | Accessibility | Lighthouse accessibility **≥95** and **0 critical** automated accessibility violations | **100/100**, 0 failed scored audits on 14 Oct 2026; see `internal-brain/evaluation/reports/lighthouse-accessibility.json` |
+| U04 | Keyboard use | 100% of search, filters, citation cards, dialogs, and audit controls usable without a mouse | Main sign-in and evidence-dialog path passes; full compliance-control checklist still required |
+| U05 | Responsive layouts | No clipped controls or horizontal page scroll at **390 px, 768 px, and 1440 px** widths | **Pass** at all three widths in the repeatable browser suite |
+| U06 | Error recovery | 100% of forced source/model/checkpoint failures show a clear safe state and a retry path | Forced source failure is safe and retryable in-browser; automated server tests cover model/checkpoint failure paths |
+| U07 | Naming and theme | 100% user-facing product references say **YieldGPT** and match the approved color tokens | **Pass** in the integrated UI acceptance run; visible legacy product naming is rejected by the browser suite |
 
 ## Minimum evaluation composition
 

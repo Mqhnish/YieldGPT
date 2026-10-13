@@ -2,16 +2,16 @@
   "schema": "internal-brain.evaluation/2",
   "status": "completed",
   "variant": "frozen_member1_lexical",
-  "generated_at": "2026-09-29T11:49:34.070848+00:00",
+  "generated_at": "2026-10-13T18:57:05.838762+00:00",
   "provider": "stub",
   "corpus": "fictional Company A app/sources/world.py",
-  "case_sha256": "5fa11b74bfa5590e754d713e24113bf69b35a70572c7574dd18e8ad81c0d6fb1",
+  "case_sha256": "658fef1d40e1f0fc86489ae346c9b2728fe57f7981f6f7ef298c5e36d1e15e4a",
   "implementation_sha256_at_start": {
-    "brain.py": "a5edab72bc405931b60ee6de9493b796ca647fd760505effe9ae40264d50337c",
-    "index.py": "3672e279888ff5cfd8fec622ad43598f5092d8669f7de7d79c7ab9edb5cbdeb3",
-    "grounding.py": "b2406c5584206f35bd91ae5b275bf700d2b78df6cb2737dcaf6f55fe56eb9fa3",
-    "llm.py": "cbab80efbc4f09edce406dcff7108cb22708864af594936d69b5b24e1cf31564",
-    "planner.py": "2624d946eedc068a0795ccf248deb6b9aaaa11875eee6eb030f4ef149cc6c332"
+    "brain.py": "c6c0bb563e93aaa75d884c1b9a95f71b1021207ad769b4592d6c90ea7e96d5ae",
+    "index.py": "c668209e47fb96f9ad8b53d7d45c5bfebc5e980ce3b53a912d0a050954f09fb7",
+    "grounding.py": "5530bac3799491aca509d4a26a8d1641ecdf35e26abea49efa9f362b5eea73da",
+    "llm.py": "2dc15d772131a963a91760d01eddf0897962a5439a8ddb5478bfbcba2da0b2c7",
+    "planner.py": "512b967ad291aef9c40386e919a0a7671b22777f3b66e3f6890528332266cd3d"
   },
   "summary": {
     "total": 65,
@@ -25,7 +25,7 @@
     "forbidden_context_sources": 2,
     "no_answer_cases": 16,
     "no_answer_correct": 13,
-    "elapsed_seconds": 0.504
+    "elapsed_seconds": 0.773
   },
   "categories": {
     "exact_identifier": {
@@ -94,7 +94,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 18.537
+      "elapsed_ms": 28.799
     },
     {
       "id": "exact-migration-blocker",
@@ -120,7 +120,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.872
+      "elapsed_ms": 6.397
     },
     {
       "id": "exact-pool-ticket",
@@ -146,7 +146,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.018
+      "elapsed_ms": 5.414
     },
     {
       "id": "exact-payment-incident",
@@ -184,7 +184,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 11.491
+      "elapsed_ms": 20.81
     },
     {
       "id": "exact-expiry-alert",
@@ -209,7 +209,7 @@
         "jira:PAY-103",
         "slack:T0COMPANYA/payments-oncall/3001"
       ],
-      "answer": "Jira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "answer": "Jira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S4]\nFollow-up to PAY-101. [S4]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
       "source_obligations": 1,
       "source_obligations_met": 1,
       "unauthorized_citations": [],
@@ -220,7 +220,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 10.784
+      "elapsed_ms": 19.261
     },
     {
       "id": "exact-renewal-failure",
@@ -245,7 +245,7 @@
         "jira:PAY-103",
         "slack:T0COMPANYA/payments-oncall/3001"
       ],
-      "answer": "Jira PAY-103 [Done] Make cert renewal job fail loudly. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S4]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "answer": "Jira PAY-103 [Done] Make cert renewal job fail loudly. [S1]\nFollow-up to PAY-101. [S1]\nDrive \"Postmortem: Q2 payment outage\": Follow-ups: PAY-102 expiry alerting, PAY-103 loud failures for the renewal job. [S2]\nJira PAY-101 [Done] Root cause: payment outage (Q2). [S3]\nFollow-up tickets created: PAY-102 and PAY-103. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nFollow-up to PAY-101. [S4]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
       "source_obligations": 1,
       "source_obligations_met": 1,
       "unauthorized_citations": [],
@@ -256,7 +256,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 12.025
+      "elapsed_ms": 19.843
     },
     {
       "id": "exact-auth-adr",
@@ -284,7 +284,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.343
+      "elapsed_ms": 9.259
     },
     {
       "id": "exact-runbook",
@@ -309,7 +309,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.596
+      "elapsed_ms": 3.918
     },
     {
       "id": "exact-drive-postmortem",
@@ -335,7 +335,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.159
+      "elapsed_ms": 3.858
     },
     {
       "id": "exact-security-issue",
@@ -361,7 +361,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.548
+      "elapsed_ms": 6.2
     },
     {
       "id": "migration-progress",
@@ -393,7 +393,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.213
+      "elapsed_ms": 10.783
     },
     {
       "id": "migration-cutover-date",
@@ -423,7 +423,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 9.327
+      "elapsed_ms": 11.422
     },
     {
       "id": "migration-delay",
@@ -453,7 +453,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 10.202
+      "elapsed_ms": 9.994
     },
     {
       "id": "migration-night-work",
@@ -479,7 +479,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.327
+      "elapsed_ms": 5.146
     },
     {
       "id": "migration-pool",
@@ -505,7 +505,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.542
+      "elapsed_ms": 6.621
     },
     {
       "id": "migration-sequence",
@@ -537,7 +537,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.101
+      "elapsed_ms": 9.218
     },
     {
       "id": "migration-lag-threshold",
@@ -569,7 +569,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 8.574
+      "elapsed_ms": 13.588
     },
     {
       "id": "auth-scalability",
@@ -597,7 +597,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.504
+      "elapsed_ms": 9.682
     },
     {
       "id": "auth-refresh",
@@ -625,7 +625,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.97
+      "elapsed_ms": 8.441
     },
     {
       "id": "auth-owner",
@@ -653,7 +653,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.015
+      "elapsed_ms": 9.317
     },
     {
       "id": "auth-decision",
@@ -679,7 +679,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.021
+      "elapsed_ms": 4.49
     },
     {
       "id": "payments-root-cause",
@@ -716,7 +716,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 12.924
+      "elapsed_ms": 21.522
     },
     {
       "id": "payments-duration",
@@ -752,7 +752,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 11.448
+      "elapsed_ms": 19.85
     },
     {
       "id": "payments-protocol",
@@ -789,7 +789,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 12.872
+      "elapsed_ms": 27.923
     },
     {
       "id": "payments-oncall-cadence",
@@ -817,7 +817,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.48
+      "elapsed_ms": 10.396
     },
     {
       "id": "payments-renewal",
@@ -854,7 +854,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 13.385
+      "elapsed_ms": 20.814
     },
     {
       "id": "vendor-sandbox",
@@ -882,7 +882,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.976
+      "elapsed_ms": 9.685
     },
     {
       "id": "vendor-guide-location",
@@ -910,7 +910,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 8.678
+      "elapsed_ms": 10.543
     },
     {
       "id": "security-accounts",
@@ -942,7 +942,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 9.136
+      "elapsed_ms": 13.256
     },
     {
       "id": "security-response",
@@ -972,7 +972,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 8.767
+      "elapsed_ms": 11.769
     },
     {
       "id": "security-remediation",
@@ -1002,7 +1002,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.223
+      "elapsed_ms": 11.787
     },
     {
       "id": "security-evidence",
@@ -1032,7 +1032,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.83
+      "elapsed_ms": 12.779
     },
     {
       "id": "cross-migration",
@@ -1064,7 +1064,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 10.006
+      "elapsed_ms": 16.12
     },
     {
       "id": "cross-payment",
@@ -1089,7 +1089,7 @@
         "jira:PAY-103",
         "slack:T0COMPANYA/payments-oncall/3001"
       ],
-      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nFollow-up to PAY-101. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nFollow-up to PAY-101. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S2]\nFollow-up to PAY-101. [S2]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S3]\nFollow-up to PAY-101. [S3]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S4]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
       "source_obligations": 3,
       "source_obligations_met": 3,
       "unauthorized_citations": [],
@@ -1100,7 +1100,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 15.268
+      "elapsed_ms": 21.607
     },
     {
       "id": "cross-auth",
@@ -1128,7 +1128,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 11.417
+      "elapsed_ms": 9.545
     },
     {
       "id": "cross-cutover-checklist",
@@ -1160,7 +1160,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 10.59
+      "elapsed_ms": 18.921
     },
     {
       "id": "cross-security",
@@ -1188,7 +1188,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.657
+      "elapsed_ms": 16.758
     },
     {
       "id": "time-recent-blocker",
@@ -1214,7 +1214,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 5.709
+      "elapsed_ms": 12.298
     },
     {
       "id": "time-no-recent-auth",
@@ -1250,7 +1250,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.239
+      "elapsed_ms": 13.875
     },
     {
       "id": "time-auth-last-sprint",
@@ -1278,7 +1278,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 9.564
+      "elapsed_ms": 10.563
     },
     {
       "id": "time-vendor-week",
@@ -1304,7 +1304,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.993
+      "elapsed_ms": 9.202
     },
     {
       "id": "time-kickoff-month",
@@ -1330,7 +1330,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 5.458
+      "elapsed_ms": 9.34
     },
     {
       "id": "time-old-incident",
@@ -1359,7 +1359,7 @@
         "jira:PAY-103",
         "slack:T0COMPANYA/payments-oncall/3001"
       ],
-      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S2]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S3]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S4]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
+      "answer": "Jira PAY-101 [Done] Root cause: payment outage (Q2). [S1]\nRoot cause of the Q2 payment outage: the TLS certificate for the card network gateway expired because the nightly renewal job failed silently. [S1]\nJira PAY-102 [In Progress] Alert when any certificate expires within 14 days. [S2]\nJira PAY-103 [Done] Make cert renewal job fail loudly. [S3]\nDrive \"Postmortem: Q2 payment outage\": Postmortem for the Q2 payment outage. [S4]\nConfluence \"Runbook: payment-service incident\": Step 1: Check the payments dashboard for elevated card authorisation errors. [S5]\nSlack #payments-oncall, @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S6]",
       "source_obligations": 0,
       "source_obligations_met": 0,
       "unauthorized_citations": [],
@@ -1374,7 +1374,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 12.807
+      "elapsed_ms": 25.065
     },
     {
       "id": "missing-unicorn",
@@ -1396,7 +1396,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.911
+      "elapsed_ms": 5.179
     },
     {
       "id": "missing-cafeteria",
@@ -1418,7 +1418,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.646
+      "elapsed_ms": 5.078
     },
     {
       "id": "missing-identifier",
@@ -1440,7 +1440,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.05
+      "elapsed_ms": 5.346
     },
     {
       "id": "missing-cfo-salary",
@@ -1462,7 +1462,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.039
+      "elapsed_ms": 5.22
     },
     {
       "id": "missing-approval",
@@ -1494,7 +1494,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 8.006
+      "elapsed_ms": 14.91
     },
     {
       "id": "security-contractor-breach",
@@ -1516,7 +1516,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.208
+      "elapsed_ms": 8.383
     },
     {
       "id": "security-contractor-jira",
@@ -1538,7 +1538,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 13.986
+      "elapsed_ms": 18.549
     },
     {
       "id": "security-issue-level-denial",
@@ -1560,7 +1560,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 7.758
+      "elapsed_ms": 8.594
     },
     {
       "id": "security-inherited-page-denial",
@@ -1582,7 +1582,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 5.838
+      "elapsed_ms": 8.279
     },
     {
       "id": "security-named-page-allow",
@@ -1608,7 +1608,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 5.386
+      "elapsed_ms": 8.517
     },
     {
       "id": "security-inherited-page-allow",
@@ -1633,7 +1633,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.627
+      "elapsed_ms": 5.248
     },
     {
       "id": "security-admin-no-payment",
@@ -1655,7 +1655,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.1
+      "elapsed_ms": 7.838
     },
     {
       "id": "security-compliance-no-evidence",
@@ -1677,7 +1677,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.912
+      "elapsed_ms": 10.9
     },
     {
       "id": "security-private-leads-allow",
@@ -1713,7 +1713,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 14.359
+      "elapsed_ms": 21.869
     },
     {
       "id": "security-private-leads-deny",
@@ -1735,7 +1735,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.778
+      "elapsed_ms": 6.757
     },
     {
       "id": "security-private-oncall-allow",
@@ -1772,7 +1772,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 14.103
+      "elapsed_ms": 22.46
     },
     {
       "id": "security-poisoned-notes",
@@ -1798,7 +1798,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.802
+      "elapsed_ms": 8.455
     },
     {
       "id": "security-external-shared-guide",
@@ -1823,7 +1823,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 3.793
+      "elapsed_ms": 3.979
     },
     {
       "id": "security-external-internal-drive",
@@ -1845,7 +1845,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 4.068
+      "elapsed_ms": 7.244
     },
     {
       "id": "security-engineer-report",
@@ -1873,7 +1873,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 6.51
+      "elapsed_ms": 11.427
     },
     {
       "id": "security-vulnerability-list",
@@ -1903,7 +1903,7 @@
       "no_answer_correct": false,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 8.44
+      "elapsed_ms": 13.316
     },
     {
       "id": "security-engineer-no-vulns",
@@ -1925,7 +1925,7 @@
       "no_answer_correct": true,
       "measurements": [],
       "phases_ms": {},
-      "elapsed_ms": 5.73
+      "elapsed_ms": 9.323
     }
   ],
   "grounding": {

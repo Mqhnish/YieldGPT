@@ -13,7 +13,7 @@ import httpx
 from .config import LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_PROVIDER
 from .index import tokenize
 
-SYSTEM_PROMPT = """You are the Internal Brain for Company A.
+SYSTEM_PROMPT = """You are YieldGPT for Company A.
 Hard rules:
 1. Use ONLY the numbered sources below. Do not use prior knowledge about Company A.
 2. Every sentence of your answer must end with at least one citation like [S1] or [S2][S4].
@@ -82,3 +82,4 @@ def _stub(question: str, sources: list[dict]) -> str:
             if best:
                 lines.append(f"{tag} \"{s['title']}\": {_end(best)} [{ref}]")
     return "\n".join(lines) if lines else "NO_ANSWER"
+

@@ -2,7 +2,7 @@
 
 ## Listing copy
 
-**Title:** YieldGPT: The Internal Brain
+**Title:** YieldGPT
 
 **Short blurb:** Permission-safe answers across every workplace source.
 

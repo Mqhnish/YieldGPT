@@ -1,6 +1,6 @@
 # Company A stub evaluation (current)
 
-Generated: 2026-09-29T11:49:35.998091+00:00
+Generated: 2026-10-13T18:57:05.923550+00:00
 
 These are measured results on fictional fixtures. The provider mode is recorded above. They do not establish production authorization, semantic entailment, or live-model quality.
 

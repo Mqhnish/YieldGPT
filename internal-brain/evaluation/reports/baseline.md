@@ -1,6 +1,6 @@
 # Company A stub evaluation (frozen_member1_lexical)
 
-Generated: 2026-09-29T11:49:34.070848+00:00
+Generated: 2026-10-13T18:57:05.838762+00:00
 
 These are measured results on fictional fixtures. The provider mode is recorded above. They do not establish production authorization, semantic entailment, or live-model quality.
 

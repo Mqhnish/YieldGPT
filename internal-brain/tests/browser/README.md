@@ -21,7 +21,7 @@ From the project root:
 node tests/browser/employee-ui.mjs
 ```
 
-The default address is `http://127.0.0.1:8765`. To use a different address:
+The default address is `http://127.0.0.1:8000`. To use a different address:
 
 ```sh
 APP_URL=http://127.0.0.1:8000 node tests/browser/employee-ui.mjs
@@ -45,7 +45,11 @@ APP_URL=http://127.0.0.1:8000 CHROME_PATH=/path/to/chrome node tests/browser/emp
 - `javascript:` source URLs never become links.
 - A delayed answer from the previous user cannot render after switching accounts.
 - The mobile layout has no horizontal overflow and supports sign-out.
+- The 390, 768 and 1440 pixel layouts have no horizontal overflow.
+- The sign-in control works from the keyboard and every visible product reference says YieldGPT.
+- A forced source failure shows a safe, retryable error state.
 - Tokens and answers are not written to local or session storage.
 - The full flow produces no unhandled browser JavaScript errors.
 
 These are interface tests. The Python suite remains responsible for server-side authorization, retrieval, grounding, freshness, and audit behavior. The tests require the demo personas and a migration query that returns at least one source.
+

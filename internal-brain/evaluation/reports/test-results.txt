@@ -1,12 +1,32 @@
-........................................................................ [ 22%]
-........................................................................ [ 45%]
-........................................................................ [ 68%]
-ssss.................................................................... [ 91%]
-...........................                                              [100%]
-=============================== warnings summary ===============================
-../../work/review-venv/lib/python3.14/site-packages/fastapi/testclient.py:1
-  /Users/imaadmoosa/Documents/Codex/2026-09-28/imagine-a-company-that-stores-its/work/review-venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
-    from starlette.testclient import TestClient as TestClient  # noqa
+YieldGPT integrated verification
+Date: 2026-10-14
+Base commit: f8cbfb25edfccf4bf89aa94d2998ccd41d3cd5cb
 
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-311 passed, 4 skipped, 1 warning in 4.93s
+Default fixture suite
+Command: python -m pytest -q
+Result: 419 passed, 4 skipped, 1 warning in 7.11s
+
+Simulated Atlassian suite
+Command: IB_ATLASSIAN_MODE=sim python -m pytest -q
+Result: 413 passed, 10 skipped, 1 warning in 6.32s
+
+Offline evaluation
+Command: python scripts/evaluate.py --mode offline --json evaluation/reports/offline-evaluation.json --markdown evaluation/reports/offline-evaluation.md
+Result: 65/65 passed; 56/56 source obligations met; 0 unauthorized citations; 0 unauthorized context sources; 16/16 no-answer cases correct
+
+Five required brief scenarios
+Command: python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluation/reports/judging-scenarios.json
+Result: 11 checks passed across all five scenarios
+
+Browser acceptance
+Command: APP_URL=http://127.0.0.1:8000 node tests/browser/employee-ui.mjs
+Result: all checks passed; 0 JavaScript errors; no horizontal overflow at 390, 768, and 1440 px
+
+Lighthouse accessibility
+Result: 100/100; 0 failed scored accessibility audits
+
+Live model
+Result: NOT RUN; approved provider credentials are absent
+
+Live Slack
+Result: NOT RUN; IB_SLACK_CONFIG is absent

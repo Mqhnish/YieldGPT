@@ -2,17 +2,17 @@
   "schema": "internal-brain.evaluation/2",
   "status": "completed",
   "variant": "current",
-  "generated_at": "2026-09-29T11:49:35.998091+00:00",
+  "generated_at": "2026-10-13T18:57:05.923550+00:00",
   "provider": "stub",
   "corpus": "fictional Company A app/sources/world.py",
-  "case_sha256": "5fa11b74bfa5590e754d713e24113bf69b35a70572c7574dd18e8ad81c0d6fb1",
+  "case_sha256": "658fef1d40e1f0fc86489ae346c9b2728fe57f7981f6f7ef298c5e36d1e15e4a",
   "implementation_sha256_at_start": {
-    "brain.py": "bb1a0c65efa43e620153a09674c6626d79897a0e77aa15792401aaaaf732b799",
-    "index.py": "437486fd7dc946f13aca9e62109d10b7b0a3379466c911ed2d0cb837a9668d9e",
-    "evidence.py": "1380004e8b1e4704a285bb9afb1d94c2204d5ba0eb6a1f1c9469dc50f240f432",
-    "llm.py": "3ff9ff3687dfbdeac85f34a9299b10399345fd34f6557cfe54466217f80e315f",
-    "grounding.py": "838fc8eed8a29f5264da88cbdbb2878dab92e71a9c4fa0b025bc96d04af23383",
-    "planner.py": "fdbecc474e589dca7bba09c3325e7597b58626e15c6868d3209004b8e79477df"
+    "brain.py": "11664997f2cb0fc21b5cad621c4f6cdd7ba44e0b7ce8402472b4850b4a49ae22",
+    "index.py": "d4c2cf26c622bc79bb3b48dac0c0a1320c84eeaa19960291d9dabfe00d6128d7",
+    "evidence.py": "c4a6e7b71e40bb186dfaa869003e2bdf570e45a766e27364c8c0c13fd496d599",
+    "llm.py": "a84b6283be8e201c2aac644ff4dedf988cbe04eeb6f4634a7922e5ca3d4d9ac1",
+    "grounding.py": "32f99be478fecbf7a890132f5c130b818d213da4486010da0f03084bf6e39aad",
+    "planner.py": "f971aa694dfb5238ff898d2f9a7a62d3cec820b40710807436e62bfe893e3ebb"
   },
   "summary": {
     "total": 65,
@@ -26,7 +26,7 @@
     "forbidden_context_sources": 0,
     "no_answer_cases": 16,
     "no_answer_correct": 16,
-    "elapsed_seconds": 0.856
+    "elapsed_seconds": 0.869
   },
   "categories": {
     "exact_identifier": {
@@ -98,13 +98,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.388,
-        "generation_and_grounding_ms": 0.714,
-        "release_authorization_ms": 5.545,
-        "retrieval_ms": 0.087,
-        "total_ms": 21.96
+        "authorization_and_read_ms": 4.66,
+        "generation_and_grounding_ms": 1.049,
+        "release_authorization_ms": 3.335,
+        "retrieval_ms": 0.066,
+        "total_ms": 22.65
       },
-      "elapsed_ms": 23.619
+      "elapsed_ms": 25.745
     },
     {
       "id": "exact-migration-blocker",
@@ -145,13 +145,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 4.665,
-        "generation_and_grounding_ms": 0.648,
-        "release_authorization_ms": 4.776,
-        "retrieval_ms": 0.114,
-        "total_ms": 12.848
+        "authorization_and_read_ms": 3.709,
+        "generation_and_grounding_ms": 1.172,
+        "release_authorization_ms": 3.288,
+        "retrieval_ms": 0.077,
+        "total_ms": 12.554
       },
-      "elapsed_ms": 14.404
+      "elapsed_ms": 15.93
     },
     {
       "id": "exact-pool-ticket",
@@ -186,13 +186,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.121,
-        "generation_and_grounding_ms": 0.523,
-        "release_authorization_ms": 1.027,
-        "retrieval_ms": 0.052,
-        "total_ms": 4.957
+        "authorization_and_read_ms": 1.653,
+        "generation_and_grounding_ms": 1.138,
+        "release_authorization_ms": 1.62,
+        "retrieval_ms": 0.047,
+        "total_ms": 8.931
       },
-      "elapsed_ms": 6.547
+      "elapsed_ms": 11.524
     },
     {
       "id": "exact-payment-incident",
@@ -237,13 +237,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 6.973,
-        "generation_and_grounding_ms": 0.776,
-        "release_authorization_ms": 7.57,
-        "retrieval_ms": 0.109,
-        "total_ms": 18.414
+        "authorization_and_read_ms": 5.201,
+        "generation_and_grounding_ms": 1.179,
+        "release_authorization_ms": 3.981,
+        "retrieval_ms": 0.066,
+        "total_ms": 14.741
       },
-      "elapsed_ms": 20.035
+      "elapsed_ms": 17.927
     },
     {
       "id": "exact-expiry-alert",
@@ -278,13 +278,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.131,
-        "generation_and_grounding_ms": 0.575,
-        "release_authorization_ms": 1.165,
-        "retrieval_ms": 0.084,
-        "total_ms": 5.242
+        "authorization_and_read_ms": 1.478,
+        "generation_and_grounding_ms": 0.731,
+        "release_authorization_ms": 1.273,
+        "retrieval_ms": 0.056,
+        "total_ms": 6.604
       },
-      "elapsed_ms": 6.703
+      "elapsed_ms": 8.837
     },
     {
       "id": "exact-renewal-failure",
@@ -319,13 +319,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.113,
-        "generation_and_grounding_ms": 0.881,
-        "release_authorization_ms": 1.107,
-        "retrieval_ms": 0.122,
-        "total_ms": 5.433
+        "authorization_and_read_ms": 1.514,
+        "generation_and_grounding_ms": 1.523,
+        "release_authorization_ms": 1.457,
+        "retrieval_ms": 0.056,
+        "total_ms": 7.944
       },
-      "elapsed_ms": 6.946
+      "elapsed_ms": 10.572
     },
     {
       "id": "exact-auth-adr",
@@ -362,13 +362,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.356,
-        "generation_and_grounding_ms": 0.617,
-        "release_authorization_ms": 2.227,
-        "retrieval_ms": 0.098,
-        "total_ms": 8.08
+        "authorization_and_read_ms": 2.029,
+        "generation_and_grounding_ms": 0.858,
+        "release_authorization_ms": 1.933,
+        "retrieval_ms": 0.065,
+        "total_ms": 9.032
       },
-      "elapsed_ms": 9.593
+      "elapsed_ms": 11.902
     },
     {
       "id": "exact-runbook",
@@ -413,13 +413,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 6.687,
-        "generation_and_grounding_ms": 0.697,
-        "release_authorization_ms": 6.982,
-        "retrieval_ms": 0.061,
-        "total_ms": 17.675
+        "authorization_and_read_ms": 5.242,
+        "generation_and_grounding_ms": 0.988,
+        "release_authorization_ms": 3.823,
+        "retrieval_ms": 0.042,
+        "total_ms": 14.754
       },
-      "elapsed_ms": 19.286
+      "elapsed_ms": 18.032
     },
     {
       "id": "exact-drive-postmortem",
@@ -462,13 +462,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 7.044,
-        "generation_and_grounding_ms": 0.707,
-        "release_authorization_ms": 5.975,
-        "retrieval_ms": 0.052,
-        "total_ms": 16.441
+        "authorization_and_read_ms": 5.552,
+        "generation_and_grounding_ms": 0.878,
+        "release_authorization_ms": 2.926,
+        "retrieval_ms": 0.048,
+        "total_ms": 13.411
       },
-      "elapsed_ms": 17.883
+      "elapsed_ms": 16.559
     },
     {
       "id": "exact-security-issue",
@@ -503,13 +503,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.13,
-        "generation_and_grounding_ms": 0.557,
-        "release_authorization_ms": 1.107,
-        "retrieval_ms": 0.054,
-        "total_ms": 5.4
+        "authorization_and_read_ms": 1.313,
+        "generation_and_grounding_ms": 0.797,
+        "release_authorization_ms": 1.701,
+        "retrieval_ms": 0.044,
+        "total_ms": 7.462
       },
-      "elapsed_ms": 6.849
+      "elapsed_ms": 10.073
     },
     {
       "id": "migration-progress",
@@ -552,13 +552,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.986,
-        "generation_and_grounding_ms": 0.711,
-        "release_authorization_ms": 6.687,
-        "retrieval_ms": 0.148,
-        "total_ms": 16.24
+        "authorization_and_read_ms": 4.412,
+        "generation_and_grounding_ms": 1.129,
+        "release_authorization_ms": 2.991,
+        "retrieval_ms": 0.079,
+        "total_ms": 12.231
       },
-      "elapsed_ms": 17.855
+      "elapsed_ms": 14.798
     },
     {
       "id": "migration-cutover-date",
@@ -599,13 +599,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.396,
-        "generation_and_grounding_ms": 0.715,
-        "release_authorization_ms": 4.995,
-        "retrieval_ms": 0.082,
-        "total_ms": 13.982
+        "authorization_and_read_ms": 4.651,
+        "generation_and_grounding_ms": 0.846,
+        "release_authorization_ms": 2.045,
+        "retrieval_ms": 0.06,
+        "total_ms": 10.919
       },
-      "elapsed_ms": 15.495
+      "elapsed_ms": 13.512
     },
     {
       "id": "migration-delay",
@@ -646,13 +646,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.371,
-        "generation_and_grounding_ms": 0.695,
-        "release_authorization_ms": 5.037,
-        "retrieval_ms": 0.139,
-        "total_ms": 14.105
+        "authorization_and_read_ms": 4.514,
+        "generation_and_grounding_ms": 0.972,
+        "release_authorization_ms": 2.195,
+        "retrieval_ms": 0.066,
+        "total_ms": 11.582
       },
-      "elapsed_ms": 15.729
+      "elapsed_ms": 14.258
     },
     {
       "id": "migration-night-work",
@@ -687,13 +687,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.29,
-        "generation_and_grounding_ms": 0.746,
-        "release_authorization_ms": 1.497,
-        "retrieval_ms": 0.059,
-        "total_ms": 6.484
+        "authorization_and_read_ms": 1.086,
+        "generation_and_grounding_ms": 0.801,
+        "release_authorization_ms": 1.087,
+        "retrieval_ms": 0.047,
+        "total_ms": 6.97
       },
-      "elapsed_ms": 7.956
+      "elapsed_ms": 9.373
     },
     {
       "id": "migration-pool",
@@ -728,13 +728,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.268,
-        "generation_and_grounding_ms": 0.616,
-        "release_authorization_ms": 1.378,
+        "authorization_and_read_ms": 1.598,
+        "generation_and_grounding_ms": 0.964,
+        "release_authorization_ms": 1.28,
         "retrieval_ms": 0.047,
-        "total_ms": 5.919
+        "total_ms": 7.771
       },
-      "elapsed_ms": 7.563
+      "elapsed_ms": 10.263
     },
     {
       "id": "migration-sequence",
@@ -775,13 +775,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.54,
-        "generation_and_grounding_ms": 0.841,
-        "release_authorization_ms": 5.383,
-        "retrieval_ms": 0.165,
-        "total_ms": 14.968
+        "authorization_and_read_ms": 2.8,
+        "generation_and_grounding_ms": 0.932,
+        "release_authorization_ms": 2.134,
+        "retrieval_ms": 0.088,
+        "total_ms": 9.921
       },
-      "elapsed_ms": 16.975
+      "elapsed_ms": 12.69
     },
     {
       "id": "migration-lag-threshold",
@@ -822,13 +822,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.745,
-        "generation_and_grounding_ms": 0.733,
-        "release_authorization_ms": 4.988,
-        "retrieval_ms": 0.115,
-        "total_ms": 14.553
+        "authorization_and_read_ms": 4.041,
+        "generation_and_grounding_ms": 1.053,
+        "release_authorization_ms": 2.268,
+        "retrieval_ms": 0.075,
+        "total_ms": 11.977
       },
-      "elapsed_ms": 16.231
+      "elapsed_ms": 14.678
     },
     {
       "id": "auth-scalability",
@@ -865,13 +865,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.625,
-        "generation_and_grounding_ms": 0.7,
-        "release_authorization_ms": 2.662,
-        "retrieval_ms": 0.096,
-        "total_ms": 9.069
+        "authorization_and_read_ms": 1.791,
+        "generation_and_grounding_ms": 0.845,
+        "release_authorization_ms": 1.675,
+        "retrieval_ms": 0.061,
+        "total_ms": 8.535
       },
-      "elapsed_ms": 10.674
+      "elapsed_ms": 11.583
     },
     {
       "id": "auth-refresh",
@@ -908,13 +908,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.648,
-        "generation_and_grounding_ms": 0.697,
-        "release_authorization_ms": 2.54,
-        "retrieval_ms": 0.1,
-        "total_ms": 9.089
+        "authorization_and_read_ms": 1.78,
+        "generation_and_grounding_ms": 0.933,
+        "release_authorization_ms": 1.833,
+        "retrieval_ms": 0.062,
+        "total_ms": 9.257
       },
-      "elapsed_ms": 10.621
+      "elapsed_ms": 11.713
     },
     {
       "id": "auth-owner",
@@ -951,13 +951,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.891,
-        "generation_and_grounding_ms": 0.707,
-        "release_authorization_ms": 2.456,
-        "retrieval_ms": 0.112,
-        "total_ms": 9.298
+        "authorization_and_read_ms": 1.948,
+        "generation_and_grounding_ms": 0.878,
+        "release_authorization_ms": 1.774,
+        "retrieval_ms": 0.069,
+        "total_ms": 10.363
       },
-      "elapsed_ms": 10.99
+      "elapsed_ms": 13.01
     },
     {
       "id": "auth-decision",
@@ -994,13 +994,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.495,
-        "generation_and_grounding_ms": 0.649,
-        "release_authorization_ms": 2.653,
-        "retrieval_ms": 0.076,
-        "total_ms": 8.578
+        "authorization_and_read_ms": 2.953,
+        "generation_and_grounding_ms": 1.539,
+        "release_authorization_ms": 3.371,
+        "retrieval_ms": 0.049,
+        "total_ms": 11.714
       },
-      "elapsed_ms": 10.169
+      "elapsed_ms": 15.216
     },
     {
       "id": "payments-root-cause",
@@ -1047,13 +1047,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 9.933,
-        "generation_and_grounding_ms": 0.938,
-        "release_authorization_ms": 9.549,
-        "retrieval_ms": 0.201,
-        "total_ms": 23.912
+        "authorization_and_read_ms": 8.769,
+        "generation_and_grounding_ms": 1.221,
+        "release_authorization_ms": 5.008,
+        "retrieval_ms": 0.205,
+        "total_ms": 20.367
       },
-      "elapsed_ms": 25.561
+      "elapsed_ms": 23.956
     },
     {
       "id": "payments-duration",
@@ -1098,13 +1098,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 9.198,
-        "generation_and_grounding_ms": 0.876,
-        "release_authorization_ms": 7.884,
-        "retrieval_ms": 0.238,
-        "total_ms": 21.352
+        "authorization_and_read_ms": 6.01,
+        "generation_and_grounding_ms": 1.185,
+        "release_authorization_ms": 3.363,
+        "retrieval_ms": 0.102,
+        "total_ms": 15.239
       },
-      "elapsed_ms": 23.467
+      "elapsed_ms": 19.511
     },
     {
       "id": "payments-protocol",
@@ -1151,13 +1151,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 9.513,
-        "generation_and_grounding_ms": 0.833,
-        "release_authorization_ms": 9.43,
-        "retrieval_ms": 0.209,
-        "total_ms": 23.463
+        "authorization_and_read_ms": 5.132,
+        "generation_and_grounding_ms": 1.1,
+        "release_authorization_ms": 4.551,
+        "retrieval_ms": 0.085,
+        "total_ms": 15.194
       },
-      "elapsed_ms": 25.25
+      "elapsed_ms": 18.713
     },
     {
       "id": "payments-oncall-cadence",
@@ -1202,13 +1202,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 8.923,
-        "generation_and_grounding_ms": 0.853,
-        "release_authorization_ms": 8.475,
-        "retrieval_ms": 0.171,
-        "total_ms": 21.746
+        "authorization_and_read_ms": 5.578,
+        "generation_and_grounding_ms": 1.112,
+        "release_authorization_ms": 3.9,
+        "retrieval_ms": 0.052,
+        "total_ms": 15.003
       },
-      "elapsed_ms": 23.623
+      "elapsed_ms": 18.251
     },
     {
       "id": "payments-renewal",
@@ -1255,13 +1255,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 9.602,
-        "generation_and_grounding_ms": 0.937,
-        "release_authorization_ms": 9.107,
-        "retrieval_ms": 0.208,
-        "total_ms": 23.16
+        "authorization_and_read_ms": 5.338,
+        "generation_and_grounding_ms": 1.077,
+        "release_authorization_ms": 3.569,
+        "retrieval_ms": 0.089,
+        "total_ms": 14.58
       },
-      "elapsed_ms": 25.02
+      "elapsed_ms": 18.105
     },
     {
       "id": "vendor-sandbox",
@@ -1298,13 +1298,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 4.556,
-        "generation_and_grounding_ms": 0.907,
-        "release_authorization_ms": 2.903,
-        "retrieval_ms": 0.13,
-        "total_ms": 11.673
+        "authorization_and_read_ms": 1.495,
+        "generation_and_grounding_ms": 1.057,
+        "release_authorization_ms": 1.322,
+        "retrieval_ms": 0.063,
+        "total_ms": 8.209
       },
-      "elapsed_ms": 13.305
+      "elapsed_ms": 10.513
     },
     {
       "id": "vendor-guide-location",
@@ -1341,13 +1341,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 3.253,
-        "generation_and_grounding_ms": 0.678,
-        "release_authorization_ms": 2.683,
-        "retrieval_ms": 0.131,
-        "total_ms": 9.463
+        "authorization_and_read_ms": 1.809,
+        "generation_and_grounding_ms": 0.898,
+        "release_authorization_ms": 1.277,
+        "retrieval_ms": 0.058,
+        "total_ms": 7.967
       },
-      "elapsed_ms": 11.119
+      "elapsed_ms": 10.399
     },
     {
       "id": "security-accounts",
@@ -1388,13 +1388,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.283,
-        "generation_and_grounding_ms": 0.827,
-        "release_authorization_ms": 5.674,
-        "retrieval_ms": 0.143,
-        "total_ms": 15.529
+        "authorization_and_read_ms": 2.431,
+        "generation_and_grounding_ms": 0.948,
+        "release_authorization_ms": 2.398,
+        "retrieval_ms": 0.072,
+        "total_ms": 12.074
       },
-      "elapsed_ms": 17.32
+      "elapsed_ms": 15.059
     },
     {
       "id": "security-response",
@@ -1433,13 +1433,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 4.265,
-        "generation_and_grounding_ms": 0.802,
-        "release_authorization_ms": 4.129,
-        "retrieval_ms": 0.16,
-        "total_ms": 12.646
+        "authorization_and_read_ms": 3.406,
+        "generation_and_grounding_ms": 1.393,
+        "release_authorization_ms": 2.442,
+        "retrieval_ms": 0.06,
+        "total_ms": 11.626
       },
-      "elapsed_ms": 14.438
+      "elapsed_ms": 14.848
     },
     {
       "id": "security-remediation",
@@ -1480,13 +1480,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.977,
-        "generation_and_grounding_ms": 0.904,
-        "release_authorization_ms": 5.738,
-        "retrieval_ms": 0.185,
-        "total_ms": 16.257
+        "authorization_and_read_ms": 2.898,
+        "generation_and_grounding_ms": 1.176,
+        "release_authorization_ms": 2.571,
+        "retrieval_ms": 0.073,
+        "total_ms": 14.258
       },
-      "elapsed_ms": 18.088
+      "elapsed_ms": 17.348
     },
     {
       "id": "security-evidence",
@@ -1525,13 +1525,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 4.145,
-        "generation_and_grounding_ms": 1.049,
-        "release_authorization_ms": 7.113,
-        "retrieval_ms": 0.127,
-        "total_ms": 16.965
+        "authorization_and_read_ms": 7.253,
+        "generation_and_grounding_ms": 1.06,
+        "release_authorization_ms": 3.793,
+        "retrieval_ms": 0.057,
+        "total_ms": 18.66
       },
-      "elapsed_ms": 18.813
+      "elapsed_ms": 21.576
     },
     {
       "id": "cross-migration",
@@ -1572,13 +1572,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 7.293,
-        "generation_and_grounding_ms": 0.82,
-        "release_authorization_ms": 5.236,
-        "retrieval_ms": 0.213,
-        "total_ms": 16.992
+        "authorization_and_read_ms": 7.458,
+        "generation_and_grounding_ms": 1.107,
+        "release_authorization_ms": 2.106,
+        "retrieval_ms": 0.082,
+        "total_ms": 14.67
       },
-      "elapsed_ms": 18.747
+      "elapsed_ms": 21.212
     },
     {
       "id": "cross-payment",
@@ -1623,13 +1623,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 8.759,
-        "generation_and_grounding_ms": 0.985,
-        "release_authorization_ms": 8.693,
-        "retrieval_ms": 0.189,
-        "total_ms": 22.181
+        "authorization_and_read_ms": 6.001,
+        "generation_and_grounding_ms": 3.639,
+        "release_authorization_ms": 4.095,
+        "retrieval_ms": 0.066,
+        "total_ms": 18.513
       },
-      "elapsed_ms": 23.944
+      "elapsed_ms": 21.789
     },
     {
       "id": "cross-auth",
@@ -1666,13 +1666,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 2.774,
-        "generation_and_grounding_ms": 0.803,
-        "release_authorization_ms": 2.753,
-        "retrieval_ms": 0.112,
-        "total_ms": 9.28
+        "authorization_and_read_ms": 1.885,
+        "generation_and_grounding_ms": 1.069,
+        "release_authorization_ms": 1.795,
+        "retrieval_ms": 0.061,
+        "total_ms": 11.12
       },
-      "elapsed_ms": 10.89
+      "elapsed_ms": 14.11
     },
     {
       "id": "cross-cutover-checklist",
@@ -1713,13 +1713,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 7.623,
-        "generation_and_grounding_ms": 0.874,
-        "release_authorization_ms": 5.985,
-        "retrieval_ms": 0.185,
-        "total_ms": 17.871
+        "authorization_and_read_ms": 7.637,
+        "generation_and_grounding_ms": 1.402,
+        "release_authorization_ms": 2.174,
+        "retrieval_ms": 0.075,
+        "total_ms": 17.211
       },
-      "elapsed_ms": 19.733
+      "elapsed_ms": 22.302
     },
     {
       "id": "cross-security",
@@ -1760,13 +1760,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.632,
-        "generation_and_grounding_ms": 0.798,
-        "release_authorization_ms": 5.421,
-        "retrieval_ms": 0.165,
-        "total_ms": 15.801
+        "authorization_and_read_ms": 2.396,
+        "generation_and_grounding_ms": 1.115,
+        "release_authorization_ms": 4.379,
+        "retrieval_ms": 0.079,
+        "total_ms": 13.003
       },
-      "elapsed_ms": 17.592
+      "elapsed_ms": 15.854
     },
     {
       "id": "time-recent-blocker",
@@ -1807,13 +1807,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 7.976,
-        "generation_and_grounding_ms": 0.779,
-        "release_authorization_ms": 6.075,
-        "retrieval_ms": 0.194,
-        "total_ms": 18.155
+        "authorization_and_read_ms": 5.48,
+        "generation_and_grounding_ms": 1.067,
+        "release_authorization_ms": 3.014,
+        "retrieval_ms": 0.08,
+        "total_ms": 14.31
       },
-      "elapsed_ms": 19.841
+      "elapsed_ms": 17.298
     },
     {
       "id": "time-no-recent-auth",
@@ -1844,13 +1844,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.644,
-        "release_authorization_ms": 0.001,
-        "retrieval_ms": 0.012,
-        "total_ms": 3.516
+        "authorization_and_read_ms": 0.003,
+        "generation_and_grounding_ms": 0.941,
+        "release_authorization_ms": 0.004,
+        "retrieval_ms": 0.018,
+        "total_ms": 5.003
       },
-      "elapsed_ms": 5.15
+      "elapsed_ms": 7.421
     },
     {
       "id": "time-auth-last-sprint",
@@ -1885,13 +1885,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.36,
-        "generation_and_grounding_ms": 0.715,
-        "release_authorization_ms": 1.368,
-        "retrieval_ms": 0.132,
-        "total_ms": 6.628
+        "authorization_and_read_ms": 1.148,
+        "generation_and_grounding_ms": 0.954,
+        "release_authorization_ms": 1.179,
+        "retrieval_ms": 0.045,
+        "total_ms": 10.287
       },
-      "elapsed_ms": 8.477
+      "elapsed_ms": 12.814
     },
     {
       "id": "time-vendor-week",
@@ -1926,13 +1926,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.477,
-        "generation_and_grounding_ms": 0.659,
-        "release_authorization_ms": 1.36,
-        "retrieval_ms": 0.081,
-        "total_ms": 6.308
+        "authorization_and_read_ms": 1.246,
+        "generation_and_grounding_ms": 1.044,
+        "release_authorization_ms": 1.117,
+        "retrieval_ms": 0.037,
+        "total_ms": 7.495
       },
-      "elapsed_ms": 8.119
+      "elapsed_ms": 10.002
     },
     {
       "id": "time-kickoff-month",
@@ -1967,13 +1967,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.443,
-        "generation_and_grounding_ms": 0.656,
-        "release_authorization_ms": 1.512,
-        "retrieval_ms": 0.097,
-        "total_ms": 6.984
+        "authorization_and_read_ms": 1.151,
+        "generation_and_grounding_ms": 1.125,
+        "release_authorization_ms": 1.385,
+        "retrieval_ms": 0.042,
+        "total_ms": 11.339
       },
-      "elapsed_ms": 8.701
+      "elapsed_ms": 13.948
     },
     {
       "id": "time-old-incident",
@@ -2004,13 +2004,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.661,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.014,
-        "total_ms": 3.474
+        "authorization_and_read_ms": 0.003,
+        "generation_and_grounding_ms": 1.008,
+        "release_authorization_ms": 0.004,
+        "retrieval_ms": 0.017,
+        "total_ms": 4.916
       },
-      "elapsed_ms": 4.967
+      "elapsed_ms": 7.276
     },
     {
       "id": "missing-unicorn",
@@ -2041,13 +2041,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.626,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.1,
-        "total_ms": 3.361
+        "authorization_and_read_ms": 0.003,
+        "generation_and_grounding_ms": 0.903,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.022,
+        "total_ms": 4.954
       },
-      "elapsed_ms": 4.968
+      "elapsed_ms": 7.269
     },
     {
       "id": "missing-cafeteria",
@@ -2078,13 +2078,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.615,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.009,
-        "total_ms": 3.221
+        "authorization_and_read_ms": 0.003,
+        "generation_and_grounding_ms": 0.958,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.014,
+        "total_ms": 4.686
       },
-      "elapsed_ms": 4.958
+      "elapsed_ms": 7.041
     },
     {
       "id": "missing-identifier",
@@ -2115,13 +2115,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.654,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.008,
-        "total_ms": 3.665
+        "authorization_and_read_ms": 0.004,
+        "generation_and_grounding_ms": 0.95,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.011,
+        "total_ms": 5.367
       },
-      "elapsed_ms": 5.179
+      "elapsed_ms": 7.745
     },
     {
       "id": "missing-cfo-salary",
@@ -2152,13 +2152,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.65,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.009,
-        "total_ms": 3.394
+        "authorization_and_read_ms": 0.003,
+        "generation_and_grounding_ms": 3.054,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.013,
+        "total_ms": 6.976
       },
-      "elapsed_ms": 5.196
+      "elapsed_ms": 9.385
     },
     {
       "id": "missing-approval",
@@ -2189,13 +2189,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 9.485,
-        "generation_and_grounding_ms": 0.652,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.206,
-        "total_ms": 13.563
+        "authorization_and_read_ms": 6.116,
+        "generation_and_grounding_ms": 0.838,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.075,
+        "total_ms": 10.821
       },
-      "elapsed_ms": 15.426
+      "elapsed_ms": 13.271
     },
     {
       "id": "security-contractor-breach",
@@ -2226,13 +2226,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.937,
-        "generation_and_grounding_ms": 0.666,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 3.182,
-        "total_ms": 7.502
+        "authorization_and_read_ms": 1.495,
+        "generation_and_grounding_ms": 0.96,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 1.36,
+        "total_ms": 7.381
       },
-      "elapsed_ms": 9.235
+      "elapsed_ms": 11.79
     },
     {
       "id": "security-contractor-jira",
@@ -2263,13 +2263,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.604,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 1.742,
-        "total_ms": 5.39
+        "authorization_and_read_ms": 2.447,
+        "generation_and_grounding_ms": 0.931,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.033,
+        "total_ms": 7.754
       },
-      "elapsed_ms": 7.06
+      "elapsed_ms": 10.269
     },
     {
       "id": "security-issue-level-denial",
@@ -2300,13 +2300,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.655,
-        "release_authorization_ms": 0.001,
-        "retrieval_ms": 1.061,
-        "total_ms": 4.423
+        "authorization_and_read_ms": 1.589,
+        "generation_and_grounding_ms": 0.962,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.033,
+        "total_ms": 6.345
       },
-      "elapsed_ms": 5.959
+      "elapsed_ms": 8.622
     },
     {
       "id": "security-inherited-page-denial",
@@ -2337,13 +2337,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 1.172,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 2.206,
-        "total_ms": 6.026
+        "authorization_and_read_ms": 1.562,
+        "generation_and_grounding_ms": 1.618,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 1.532,
+        "total_ms": 8.494
       },
-      "elapsed_ms": 7.72
+      "elapsed_ms": 10.393
     },
     {
       "id": "security-named-page-allow",
@@ -2378,13 +2378,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.535,
-        "generation_and_grounding_ms": 0.63,
-        "release_authorization_ms": 1.498,
-        "retrieval_ms": 0.05,
-        "total_ms": 6.502
+        "authorization_and_read_ms": 1.509,
+        "generation_and_grounding_ms": 0.995,
+        "release_authorization_ms": 1.555,
+        "retrieval_ms": 0.039,
+        "total_ms": 7.561
       },
-      "elapsed_ms": 8.14
+      "elapsed_ms": 10.226
     },
     {
       "id": "security-inherited-page-allow",
@@ -2419,13 +2419,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.527,
-        "generation_and_grounding_ms": 0.723,
-        "release_authorization_ms": 1.746,
-        "retrieval_ms": 0.037,
-        "total_ms": 6.791
+        "authorization_and_read_ms": 1.449,
+        "generation_and_grounding_ms": 0.825,
+        "release_authorization_ms": 1.647,
+        "retrieval_ms": 0.033,
+        "total_ms": 7.427
       },
-      "elapsed_ms": 8.393
+      "elapsed_ms": 12.035
     },
     {
       "id": "security-admin-no-payment",
@@ -2456,13 +2456,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.672,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 1.138,
-        "total_ms": 4.573
+        "authorization_and_read_ms": 1.322,
+        "generation_and_grounding_ms": 0.833,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.03,
+        "total_ms": 5.193
       },
-      "elapsed_ms": 6.302
+      "elapsed_ms": 6.932
     },
     {
       "id": "security-compliance-no-evidence",
@@ -2493,13 +2493,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.033,
-        "generation_and_grounding_ms": 0.605,
-        "release_authorization_ms": 0.001,
-        "retrieval_ms": 3.063,
-        "total_ms": 7.715
+        "authorization_and_read_ms": 2.14,
+        "generation_and_grounding_ms": 0.92,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 3.977,
+        "total_ms": 10.322
       },
-      "elapsed_ms": 9.254
+      "elapsed_ms": 12.575
     },
     {
       "id": "security-private-leads-allow",
@@ -2542,13 +2542,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 7.16,
-        "generation_and_grounding_ms": 0.756,
-        "release_authorization_ms": 7.626,
-        "retrieval_ms": 0.146,
-        "total_ms": 19.169
+        "authorization_and_read_ms": 3.926,
+        "generation_and_grounding_ms": 1.175,
+        "release_authorization_ms": 3.055,
+        "retrieval_ms": 0.072,
+        "total_ms": 12.861
       },
-      "elapsed_ms": 21.138
+      "elapsed_ms": 16.114
     },
     {
       "id": "security-private-leads-deny",
@@ -2579,13 +2579,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.048,
-        "generation_and_grounding_ms": 0.627,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 0.094,
-        "total_ms": 4.48
+        "authorization_and_read_ms": 1.184,
+        "generation_and_grounding_ms": 0.684,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 0.043,
+        "total_ms": 5.128
       },
-      "elapsed_ms": 6.046
+      "elapsed_ms": 7.071
     },
     {
       "id": "security-private-oncall-allow",
@@ -2632,13 +2632,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 10.428,
-        "generation_and_grounding_ms": 0.975,
-        "release_authorization_ms": 10.264,
-        "retrieval_ms": 0.197,
-        "total_ms": 25.395
+        "authorization_and_read_ms": 5.637,
+        "generation_and_grounding_ms": 0.953,
+        "release_authorization_ms": 4.012,
+        "retrieval_ms": 0.094,
+        "total_ms": 14.35
       },
-      "elapsed_ms": 27.324
+      "elapsed_ms": 17.527
     },
     {
       "id": "security-poisoned-notes",
@@ -2675,13 +2675,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.114,
-        "generation_and_grounding_ms": 0.669,
-        "release_authorization_ms": 3.422,
-        "retrieval_ms": 0.123,
-        "total_ms": 12.228
+        "authorization_and_read_ms": 1.368,
+        "generation_and_grounding_ms": 0.985,
+        "release_authorization_ms": 1.83,
+        "retrieval_ms": 0.07,
+        "total_ms": 8.017
       },
-      "elapsed_ms": 13.879
+      "elapsed_ms": 9.992
     },
     {
       "id": "security-external-shared-guide",
@@ -2716,13 +2716,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 1.581,
-        "generation_and_grounding_ms": 0.718,
-        "release_authorization_ms": 1.41,
-        "retrieval_ms": 0.048,
-        "total_ms": 6.466
+        "authorization_and_read_ms": 0.883,
+        "generation_and_grounding_ms": 0.731,
+        "release_authorization_ms": 0.776,
+        "retrieval_ms": 0.029,
+        "total_ms": 5.357
       },
-      "elapsed_ms": 8.185
+      "elapsed_ms": 7.507
     },
     {
       "id": "security-external-internal-drive",
@@ -2753,13 +2753,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.002,
-        "generation_and_grounding_ms": 0.696,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 1.074,
-        "total_ms": 4.654
+        "authorization_and_read_ms": 0.004,
+        "generation_and_grounding_ms": 0.742,
+        "release_authorization_ms": 0.003,
+        "retrieval_ms": 1.132,
+        "total_ms": 4.778
       },
-      "elapsed_ms": 6.665
+      "elapsed_ms": 7.33
     },
     {
       "id": "security-engineer-report",
@@ -2800,13 +2800,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 5.809,
-        "generation_and_grounding_ms": 0.763,
-        "release_authorization_ms": 6.497,
-        "retrieval_ms": 0.16,
-        "total_ms": 16.367
+        "authorization_and_read_ms": 2.469,
+        "generation_and_grounding_ms": 0.744,
+        "release_authorization_ms": 2.682,
+        "retrieval_ms": 0.072,
+        "total_ms": 9.378
       },
-      "elapsed_ms": 18.17
+      "elapsed_ms": 11.924
     },
     {
       "id": "security-vulnerability-list",
@@ -2845,13 +2845,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 4.366,
-        "generation_and_grounding_ms": 0.88,
-        "release_authorization_ms": 4.551,
-        "retrieval_ms": 0.093,
-        "total_ms": 12.843
+        "authorization_and_read_ms": 4.462,
+        "generation_and_grounding_ms": 0.87,
+        "release_authorization_ms": 2.298,
+        "retrieval_ms": 0.046,
+        "total_ms": 13.494
       },
-      "elapsed_ms": 14.833
+      "elapsed_ms": 16.493
     },
     {
       "id": "security-engineer-no-vulns",
@@ -2882,13 +2882,13 @@
         }
       ],
       "phases_ms": {
-        "authorization_and_read_ms": 0.001,
-        "generation_and_grounding_ms": 0.65,
-        "release_authorization_ms": 0.0,
-        "retrieval_ms": 2.213,
-        "total_ms": 5.663
+        "authorization_and_read_ms": 1.327,
+        "generation_and_grounding_ms": 0.792,
+        "release_authorization_ms": 0.004,
+        "retrieval_ms": 0.045,
+        "total_ms": 5.241
       },
-      "elapsed_ms": 7.329
+      "elapsed_ms": 7.141
     }
   ],
   "grounding": {

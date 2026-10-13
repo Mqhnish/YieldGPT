@@ -84,7 +84,7 @@ Only the owner edits these. Paths are relative to `internal-brain/`.
 ## Prompt for Imaad's agent (Piece B)
 
 > You're helping Imaad (Member 2) finish YieldGPT for the AI CAN DO IT Tencent Cloud Hackathon (Aspire FinTech
-> track, "The Internal Brain"), due 16 Oct 2026. Repo: github.com/Imaad001M/Tencent---YieldGPT. The team's code is
+> track, "YieldGPT"), due 16 Oct 2026. Repo: github.com/Imaad001M/Tencent---YieldGPT. The team's code is
 > in `internal-brain/`; the repo-root `app/` is an old copy, never edit it. Read `internal-brain/README.md`,
 > `internal-brain/docs/WORK_SPLIT.md` (file ownership and rules, follow them exactly), repo-root
 > `SUBMISSION_SUCCESS_METRICS.md` and `TRIAL_QUESTION_BANK.md` first.
@@ -117,7 +117,7 @@ Only the owner edits these. Paths are relative to `internal-brain/`.
 ## Prompt for Punya's agent (Piece C)
 
 > You're helping Punya (Member 3) finish YieldGPT for the AI CAN DO IT Tencent Cloud Hackathon (Aspire FinTech
-> track, "The Internal Brain"), due 16 Oct 2026. Repo: github.com/Imaad001M/Tencent---YieldGPT. The team's code is
+> track, "YieldGPT"), due 16 Oct 2026. Repo: github.com/Imaad001M/Tencent---YieldGPT. The team's code is
 > in `internal-brain/`; the repo-root `app/` is an old copy, never edit it. Read `internal-brain/README.md`,
 > `internal-brain/docs/WORK_SPLIT.md` (file ownership and rules, follow them exactly), `internal-brain/docs/MEMBER3.md`
 > and repo-root `SUBMISSION_SUCCESS_METRICS.md` first.

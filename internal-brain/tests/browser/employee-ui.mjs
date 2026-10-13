@@ -20,8 +20,14 @@ async function ask(text) {
   await page.locator('#answer-section').waitFor({state:'visible'});
 }
 try {
-  await page.goto(process.env.APP_URL || 'http://127.0.0.1:8765');
-  assert.equal(await page.title(), 'Internal Brain · Company A');
+  await page.goto(process.env.APP_URL || 'http://127.0.0.1:8000');
+  assert.equal(await page.title(), 'YieldGPT · Company A');
+  assert.equal(/internal\s+brain/i.test(await page.locator('body').textContent()), false);
+  await page.locator('#account-button').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#login-dialog').isVisible(), true);
+  await page.keyboard.press('Escape');
+  pass('YieldGPT naming and keyboard sign-in control');
   await signIn();
   assert.equal(await page.locator('#identity-name').textContent(), 'Jane Doe');
   assert.match(await page.locator('#source-mode-label').textContent(), /Simulated Company A data/);
@@ -71,6 +77,15 @@ try {
   assert.equal(await page.locator('body').textContent().then(text => text.includes('RESTRICTED ANSWER FROM PREVIOUS ACCOUNT')), false);
   pass('Delayed previous-user answer cannot render after account switch');
   await page.unroute('**/api/ask');
+  await signIn('jdoe');
+  await page.route('**/api/ask', route => route.fulfill({status:503, json:{detail:'Source unavailable'}}));
+  await page.locator('#question').fill('Force a safe error');
+  await page.locator('#ask-button').click();
+  await page.locator('#form-error').waitFor({state:'visible'});
+  assert.match(await page.locator('#form-error').textContent(), /try again/i);
+  assert.equal(await page.locator('#ask-button').isEnabled(), true);
+  await page.unroute('**/api/ask');
+  pass('Safe source failure is visible and retryable');
   await page.setViewportSize({width:390,height:844});
   assert.ok(await page.locator('#mobile-account').isVisible());
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
@@ -79,6 +94,12 @@ try {
   assert.equal(await page.locator('#mobile-account').textContent(), 'Sign in');
   assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
   pass('Mobile layout has no horizontal overflow; sign-out available; browser storage empty');
+  for (const viewport of [{width:768,height:900},{width:1440,height:1000}]) {
+    await page.setViewportSize(viewport);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+  }
+  pass('390, 768 and 1440 px layouts have no horizontal overflow');
   assert.deepEqual(errors, []);
   pass('No browser JavaScript errors');
 } finally { await browser.close(); }
+

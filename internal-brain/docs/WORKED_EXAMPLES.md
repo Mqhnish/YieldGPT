@@ -1,6 +1,6 @@
 # Five worked examples from the challenge brief
 
-Generated: 2026-09-29T11:46:21.738035+00:00
+Generated: 2026-10-13T18:57:05.203015+00:00
 
 Executed against fictional Company A using the offline evidence selector. All assembled context was independently checked against the current user permissions. This demonstrates application behavior, not live cloud service certification.
 
@@ -12,7 +12,7 @@ Executed against fictional Company A using the offline evidence selector. All as
 
 What's the status of the database migration project and were there any blockers raised in Slack last week?
 
-Query: `4a427326566e` · Generation: `extractive`
+Query: `9547d47b047b` · Generation: `extractive`
 
 MIG-1 [In Progress] Epic: Postgres 12 to 16 migration. [S1]
 Status: 70% of tables migrated. [S1]
@@ -26,10 +26,10 @@ Cutover cannot proceed until this is fixed. [S4]
 
 | Reference | Source | Version |
 |---|---|---|
-| S1 | [jira:MIG-1](https://companya.atlassian.net/browse/MIG-1) | 1790509581.553977 |
-| S2 | [gdrive:DRV-2](https://drive.google.com/file/d/DRV-2) | 1790163981.553977 |
-| S3 | [slack:T0COMPANYA/db-migration/2001](https://companya.slack.com/archives/db-migration/p2001) | d47d1880159d67c2f51009aaafeff8384172035c1cb5967d75ec445753aca2d1 |
-| S4 | [jira:MIG-7](https://companya.atlassian.net/browse/MIG-7) | 1790336781.553977 |
+| S1 | [jira:MIG-1](https://companya.atlassian.net/browse/MIG-1) | 2026-10-11T18:57:05.004+0000#71a444865464 |
+| S2 | [gdrive:DRV-2](https://drive.google.com/file/d/DRV-2) | 1791399425.004052 |
+| S3 | [slack:T0COMPANYA/db-migration/2001](https://companya.slack.com/archives/db-migration/p2001) | fc669c9249105e4c2b0e6208ab95015eee101a4e3045c3f2f55a55ae89428726 |
+| S4 | [jira:MIG-7](https://companya.atlassian.net/browse/MIG-7) | 2026-10-09T18:57:05.004+0000#339dfa64c839 |
 
 ## 2. Fresh runbook after a missed webhook
 
@@ -39,7 +39,7 @@ Action: Append critical failover step at the source; deliberately omit webhook a
 
 What's the latest runbook for the payment-service incident?
 
-Query: `b3a2ecc886e3` · Generation: `extractive`
+Query: `59a934539247` · Generation: `extractive`
 
 Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]
 Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]
@@ -61,18 +61,18 @@ Renewal job now pages on failure. [S6]
 
 | Reference | Source | Version |
 |---|---|---|
-| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 1788954381.553977 |
-| S2 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 1781178381.553977 |
-| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1781610381.553977 |
-| S4 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f |
-| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 1788090381.553977 |
-| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 1785498381.553977 |
+| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 1 |
+| S2 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 2026-06-25T18:57:05.004+0000#13dd9330a3bf |
+| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1782845825.004052 |
+| S4 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 8041aff9f7bf483954570f82620a6fa213c5d58952361860e216c9be823750f7 |
+| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 2026-09-13T18:57:05.004+0000#75436222f6ff |
+| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 2026-08-14T18:57:05.004+0000#176e36ff0279 |
 
 ### Request 2 — ravi
 
 What's the latest runbook for the payment-service incident?
 
-Query: `dadaeaca6868` · Generation: `extractive`
+Query: `6f44a0dfbae7` · Generation: `extractive`
 
 Step 1: Check the payments dashboard for elevated card authorisation errors. [S1]
 Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]
@@ -95,12 +95,12 @@ Renewal job now pages on failure. [S6]
 
 | Reference | Source | Version |
 |---|---|---|
-| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 1790682381.622682 |
-| S2 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 1781178381.553977 |
-| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1781610381.553977 |
-| S4 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f |
-| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 1788090381.553977 |
-| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 1785498381.553977 |
+| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 2 |
+| S2 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 2026-06-25T18:57:05.004+0000#13dd9330a3bf |
+| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1782845825.004052 |
+| S4 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 8041aff9f7bf483954570f82620a6fa213c5d58952361860e216c9be823750f7 |
+| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 2026-09-13T18:57:05.004+0000#75436222f6ff |
+| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 2026-08-14T18:57:05.004+0000#176e36ff0279 |
 
 ## 3. Negative case without a metadata disclosure
 
@@ -108,7 +108,7 @@ Renewal job now pages on failure. [S6]
 
 Show me the security incident report from the Q3 breach.
 
-Query: `9ab5873f1a8d` · Generation: `extractive`
+Query: `f7106a049ded` · Generation: `extractive`
 
 I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.
 
@@ -120,7 +120,7 @@ I couldn't find information you have access to that answers this. Try rephrasing
 
 Show me the unicorn migration to Mars report.
 
-Query: `54d5fe412984` · Generation: `extractive`
+Query: `901081d66f5b` · Generation: `extractive`
 
 I couldn't find information you have access to that answers this. Try rephrasing, or ask the owner of the relevant space, project or channel.
 
@@ -136,7 +136,7 @@ Action: Remove Ravi from private payments-oncall; omit webhook and polling; ask 
 
 What did payments-oncall say about the gateway certificate?
 
-Query: `d686b5c714fa` · Generation: `extractive`
+Query: `e4e4c542623b` · Generation: `extractive`
 
 @ravi: PAGE: card payments failing, TLS handshake errors to the card network gateway. [S1]
 @ravi: Found it: gateway certificate expired. [S1]
@@ -158,19 +158,19 @@ Renewal job now pages on failure. [S7]
 
 | Reference | Source | Version |
 |---|---|---|
-| S1 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 6e88137ca134c04bdfdfe1c398429bda8f0923ce372274f48f83e262bddf988f |
-| S2 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 1790682381.622682 |
-| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1781610381.553977 |
-| S4 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 1781178381.553977 |
-| S5 | [confluence:CONF-106](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106) | 1787226381.553977 |
-| S6 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 1788090381.553977 |
-| S7 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 1785498381.553977 |
+| S1 | [slack:T0COMPANYA/payments-oncall/3001](https://companya.slack.com/archives/payments-oncall/p3001) | 8041aff9f7bf483954570f82620a6fa213c5d58952361860e216c9be823750f7 |
+| S2 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 2 |
+| S3 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1782845825.004052 |
+| S4 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 2026-06-25T18:57:05.004+0000#13dd9330a3bf |
+| S5 | [confluence:CONF-106](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106) | 1 |
+| S6 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 2026-09-13T18:57:05.004+0000#75436222f6ff |
+| S7 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 2026-08-14T18:57:05.004+0000#176e36ff0279 |
 
 ### Request 2 — ravi
 
 What did payments-oncall say about the gateway certificate?
 
-Query: `f26ca5f9ab00` · Generation: `extractive`
+Query: `0030ada8a880` · Generation: `extractive`
 
 Step 2: Inspect TLS handshake errors between payment-service and the card network gateway. [S1]
 Step 5: If the certificate cannot be renewed within 10 minutes, fail over payment-service to the secondary card network gateway. [S1]
@@ -190,12 +190,12 @@ Renewal job now pages on failure. [S6]
 
 | Reference | Source | Version |
 |---|---|---|
-| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 1790682381.622682 |
-| S2 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1781610381.553977 |
-| S3 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 1781178381.553977 |
-| S4 | [confluence:CONF-106](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106) | 1787226381.553977 |
-| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 1788090381.553977 |
-| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 1785498381.553977 |
+| S1 | [confluence:CONF-101](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-101) | 2 |
+| S2 | [gdrive:DRV-1](https://drive.google.com/file/d/DRV-1) | 1782845825.004052 |
+| S3 | [jira:PAY-101](https://companya.atlassian.net/browse/PAY-101) | 2026-06-25T18:57:05.004+0000#13dd9330a3bf |
+| S4 | [confluence:CONF-106](https://companya.atlassian.net/wiki/spaces/payment-gateway/pages/CONF-106) | 1 |
+| S5 | [jira:PAY-102](https://companya.atlassian.net/browse/PAY-102) | 2026-09-13T18:57:05.004+0000#75436222f6ff |
+| S6 | [jira:PAY-103](https://companya.atlassian.net/browse/PAY-103) | 2026-08-14T18:57:05.004+0000#176e36ff0279 |
 
 ## 5. Compliance audit inquiry
 
@@ -205,8 +205,8 @@ Show me everything user 'jdoe' accessed related to the 'payment-gateway' Conflue
 
 | Actor | Query | Time (UTC) | Decisions | Answer recorded |
 |---|---|---|---:|---|
-| jdoe | c4016fc696fe | 2026-09-29T11:46:21.713382+00:00 | 25 | Yes |
-| jdoe | 0adc7ab606b0 | 2026-09-29T11:46:21.696336+00:00 | 21 | Yes |
+| jdoe | c6112d6601b6 | 2026-10-13T18:57:05.181818+00:00 | 25 | Yes |
+| jdoe | 1a25f0d900ba | 2026-10-13T18:57:05.166205+00:00 | 21 | Yes |
 
 Full questions, source decisions, context versions, timestamps and answers are preserved in the accompanying JSON report.
 
