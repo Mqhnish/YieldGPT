@@ -19,9 +19,9 @@ Any failed gate blocks the “submission ready” label, even if the UI looks co
 | G01 | Platforms represented end to end | 4/4 | Ask one answerable, cited question per platform through the release API | 4/4 in the simulated estate |
 | G02 | Required brief scenarios | 5/5 pass | Run permission filtering, missed-webhook freshness, non-disclosure, live revocation, and compliance-audit scenarios | Covered by automated tests |
 | G03 | Unauthorized content reaching model context | **0** | Instrument final context IDs and compare them with live source authorization decisions for every trial | 0 in current automated security tests |
-| G04 | Unauthorized disclosure in answers, citations, previews, or replay | **0** | Run all restricted, revoked, private-channel, DM, page-restriction, issue-security, and Drive-sharing trials | 0 in current automated tests; live services still need proof |
+| G04 | Unauthorized disclosure in answers, citations, previews, or replay | **0** | Run all restricted, revoked, private-channel, DM, page-restriction, issue-security, and Drive-sharing trials | 0 in current automated tests; live Confluence + Jira: 0 in 84 conformance checks and the lifecycle probe (13 Oct 2026); Slack, Drive still need proof |
 | G05 | Restricted-exists versus nonexistent response equivalence | 100% exact public-response match | Paired probes that differ only by whether inaccessible content exists | Verified in automated tests |
-| G06 | Permission revocation | 100% denied on the next query after the source confirms removal | Remove access, leave the index unchanged, immediately repeat the query | Verified against simulated sources; live proof required |
+| G06 | Permission revocation | 100% denied on the next query after the source confirms removal | Remove access, leave the index unchanged, immediately repeat the query | Simulated sources: verified. Live Confluence + Jira (13 Oct 2026): next query denied, held within 4.2 s / 2.9 s, no reindex (`internal-brain/evaluation/reports/atlassian-live.md`). Slack, Drive: live proof required |
 | G07 | Citation access recheck | 100% | Revoke access after answer creation, then open every old citation | Verified in automated tests |
 | G08 | Prior-answer replay access recheck | 100% | Revoke access after answer creation, then replay the saved answer | Verified in automated tests |
 | G09 | Released answers with a valid audit checkpoint | 100% | Compare release records with checkpoint records | Verified in automated tests |
@@ -29,7 +29,7 @@ Any failed gate blocks the “submission ready” label, even if the UI looks co
 | G11 | Unsupported factual claims in released answers | **0** in the adjudicated submission set | Sentence-level entailment review against authorized citations | 28/28 current grounding cases pass; broadened bank required |
 | G12 | Test suite | 100% pass, 0 unexpected skips | Run the full suite from a clean checkout | 321 passed, 4 live-service skips at last run |
 | G13 | Real model path | At least 1 approved real model; 0 silent stub fallbacks in the live report | Run the live evaluation with remote-use assertions enabled | Not yet verified with approved credentials |
-| G14 | Live connector proof | At least 1 real workspace/account per source, or a clearly disclosed organizer-approved simulation exception | Execute a create/update/revoke/delete probe for each connector | Slack adapter is implemented but only mocked; other live proofs pending |
+| G14 | Live connector proof | At least 1 real workspace/account per source, or a clearly disclosed organizer-approved simulation exception | Execute a create/update/revoke/delete probe for each connector | Confluence + Jira: live, real Atlassian Cloud site, conformance 84/84 and create/edit/revoke/delete probe 17/17 (13 Oct 2026). Slack adapter only mocked; Drive pending |
 | G15 | Tencent requirement | Written organizer confirmation recorded and implementation matches it | Save the rule/link/organizer response in `docs/TENCENT_REQUIREMENTS.md` | Still unconfirmed |
 
 ## Retrieval and answer quality

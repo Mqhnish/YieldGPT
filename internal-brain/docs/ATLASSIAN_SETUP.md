@@ -55,7 +55,8 @@ All 5 scenario tests from the brief run through `fixture` by default.
 4. **Deletions during downtime.** After a restart, the first reconciliation only rebuilds the baseline.
    A full re-crawl catches anything deleted while the app was down.
 5. **Webhooks not wired for Atlassian yet.** Polling + read-through only.
-6. **Fake site JSON shapes follow the public docs.** They are confirmed only once the live check below passes.
+6. **Fake site JSON shapes follow the public docs.** Confirmed on a real site for every endpoint the connectors use
+   (live check 84/84 and lifecycle probe 17/17, 13 Oct 2026). Endpoints only the seeder uses can still differ.
 7. **Pages only.** Confluence blog posts, comments and attachments aren't indexed. Jira attachments aren't either.
 8. **Restricted Jira comments are skipped entirely**, even for users who could see them. Safe, but those users get less context.
 9. **Code blocks lose their line breaks** when converted to text.
@@ -65,6 +66,12 @@ All 5 scenario tests from the brief run through `fixture` by default.
 11. **Two sources of group truth.** The prefilter uses groups from our identity directory; the live check uses
     Atlassian's own groups. If they disagree, the worst case is a page wrongly filtered out (fail closed),
     never one wrongly shown. In production both come from the same IdP via SCIM.
+12. **Jira's permission engine settles after admin changes.** Right after permission-scheme edits, and for invited
+    accounts that hadn't logged in yet, the same bulk check gave different answers seconds apart (always toward
+    "denied" in what we saw). The pipeline never retries a denial to get an allow. A short stale "allowed" after a
+    revoke is stopped by the release re-check (tested); the lifecycle probe measures how long a revoke takes to hold.
+13. **Seeded issue statuses.** The seeder only moves issues to their demo status if the site's workflow offers that
+    transition. On the default workflow several stay "To Do". Permissions are unaffected.
 
 ## Live setup (for the demo)
 
@@ -77,7 +84,8 @@ is nothing to enforce. Start a **Standard trial** for both Jira and Confluence o
 
 ### 2. Integration account
 
-- Create a dedicated account, e.g. `brain-bot@...`. Don't use a personal account.
+- Create a dedicated account, e.g. `brain-bot@...`. Don't use a personal account. (For a hackathon trial the site
+  creator's own admin account works, as long as it is not also a persona.)
 - Make it an admin (it must be allowed to check *other users'* permissions:
   Confluence admin for the content permission check, "Administer Jira" for the bulk permission check).
   Confirm this during step 5. If checks return 403, this is why.
@@ -87,8 +95,18 @@ is nothing to enforce. Start a **Standard trial** for both Jira and Confluence o
 ### 3. Invite the personas
 
 Invite 3 or 4 teammates as the personas (engineer, SRE, security engineer, compliance). Leave the
-contractor persona **without** an Atlassian account. Find each accountId (profile URL, or
-`GET /rest/api/3/user/search?query=email`) and write `accounts.json` (gitignored):
+contractor persona **without** an Atlassian account. A second address per person (e.g. a personal gmail) can cover
+a fourth persona. Then:
+
+- Every persona account must **accept the invite and log in once** (Jira and Confluence). Before that, Jira's bulk
+  permission check answered inconsistently for them.
+- **No persona account may hold an admin role** (org, site, user access or app admin). Leave "Administrator access"
+  unticked when inviting.
+- `python scripts/write_account_map.py jdoe=<email> ravi=<email> asha=<email> priya=<email>` looks up the accountIds
+  and writes `accounts.json` without printing them. A persona left out (dana, kim) has **no** Atlassian account in
+  live mode; its demo placeholder id is never sent to Atlassian.
+
+`accounts.json` (gitignored) looks like:
 
 ```json
 {
@@ -121,6 +139,17 @@ It then prints the **manual steps** (admin screens, once):
 - Jira permission schemes: who has *Browse Projects* in `MIG`, `PAY`, `SEC`
 - issue security scheme with level `security-only` (group `security`) on the projects
 
+What the manual steps looked like on a real Standard site (13 Oct 2026):
+
+- **Confluence uses space roles** ("roles-only mode"), which refuses the API grants. For each space: Space settings,
+  Manage access, add the group(s) with role **Viewer**, remove "All Confluence users" (it was Collaborator).
+- **Jira**: copy "Default Permission Scheme" once per project (MIG, PAY, SEC). In each: Browse Projects = the groups
+  plus **Project lead**, remove "Any logged in user" and the add-ons role; Set Issue Security and **Delete Issues**
+  include **Project lead** (the probe needs both). Associate each scheme with its project.
+- **Issue security scheme** with level `security-only`: members group `security` **and Project lead**. Without the
+  Project lead entry the integration account can't see PAY-110, so even asha gets "not found". Attach it to PAY.
+- The seeder creates projects with the integration account as project lead, which is why "Project lead" works.
+
 Org-wide permission policy is deliberately left to a human: automating it against a site we don't fully
 control is how you lock yourself out. Then:
 
@@ -140,10 +169,25 @@ export IB_ATLASSIAN_MODE=live
 python scripts/atlassian_live_check.py expectations.json
 ```
 
-It must print `ALL PASS` before the live demo. **Specifically confirm the Jira security-level issue**
-(`PAY-110` in the demo, its real key is in `seed_manifest.json`). If the bulk permission check lets a
-user browse an issue their security level hides, don't demo Jira live: switch `JiraCloudConnector._check`
-to also compare the issue's security level against the user's membership of that level, and re-run.
+It must print `ALL PASS` before the live demo. Add `--report evaluation/reports/atlassian-live-check.md` to save a
+dated, redacted copy.
+
+**Jira security level, confirmed live (13 Oct 2026):** the bulk permission check does exclude issues hidden by an
+issue security level. PAY-110 (real key PAY-4) was denied to ravi, who can browse PAY, and allowed to asha. No
+security-level fallback is needed in `JiraCloudConnector._check_batch`. Result: 84/84.
+
+### 5b. Lifecycle probe (WRITES to the site, run it yourself)
+
+```bash
+IB_ATLASSIAN_MODE=live IB_ACCOUNT_MAP=accounts.json python scripts/atlassian_lifecycle_probe.py --mode live --project PAY
+```
+
+Creates one page in ENG and one issue in PAY, then proves through the real pipeline: retrievable, edit served,
+revoke denied on the next query (page restriction / `security-only`), denial identical to "doesn't exist", insider
+still served, delete never served again. Timed; deletes what it created (the page goes to the trash, the issue is
+deleted permanently). It checks the integration account's Jira permissions first and creates nothing if one is
+missing. Use PAY: the security level is only attached there. Report: `evaluation/reports/atlassian-live.md`.
+Result on 13 Oct 2026: 17/17.
 
 Note for the audit demo: the brief's query says `'payment-gateway'`; on the real site that space is
 `PAYMENTGATEWAY`. Audit filters ignore case and `-`/`_`, so the brief's exact sentence still works.
