@@ -14,7 +14,6 @@ import argparse
 import json
 import os
 import pathlib
-import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -29,26 +28,9 @@ from app import audit, config  # noqa: E402
 from app.brain import Brain  # noqa: E402
 from app.identity import USERS  # noqa: E402
 from app.seeding.lifecycle import LifecycleProbe, ProbeConfig  # noqa: E402
+from app.seeding.report import commit_label, redact  # noqa: E402,F401  (redact re-exported for tests)
 from app.sources.registry import build_connectors  # noqa: E402
 from app.sources.world import World  # noqa: E402
-
-
-def _git(*args):
-    try:
-        return subprocess.run(["git", *args], capture_output=True, text=True, check=True).stdout.strip()
-    except Exception:  # noqa: BLE001
-        return "unknown"
-
-
-def redact(text: str) -> str:
-    secrets_ = [config.ATLASSIAN_API_TOKEN, config.ATLASSIAN_EMAIL]
-    host = config.ATLASSIAN_SITE.replace("https://", "").replace("http://", "").strip("/")
-    if host:
-        secrets_ += [host, host.split(".")[0]]
-    secrets_ += [a for u in USERS.values() for p, a in u.accounts if p in ("confluence", "jira") and a]
-    for s in sorted({s for s in secrets_ if s and len(s) >= 4}, key=len, reverse=True):
-        text = text.replace(s, "[redacted]")
-    return text
 
 
 def markdown(r):
@@ -89,8 +71,9 @@ def main():
     brain = Brain(world=world, connectors=build_connectors(world, atlassian_mode=a.mode))
     probe = LifecycleProbe(brain, cfg)
     steps = probe.run(tuple(a.platforms.split(",")))
+    commit, dirty = commit_label()
     r = {"mode": a.mode, "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-         "commit": _git("rev-parse", "HEAD"), "dirty": bool(_git("status", "--porcelain", "--untracked-files=no")),
+         "commit": commit, "dirty": dirty,
          "config": {k: getattr(cfg, k) for k in ("space_key", "project_key", "viewer", "insider", "security_level")},
          "steps": [s.__dict__ for s in steps], "passed": sum(s.ok for s in steps),
          "all_pass": bool(steps) and all(s.ok for s in steps)}
