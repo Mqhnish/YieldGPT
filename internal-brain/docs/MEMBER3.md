@@ -79,6 +79,17 @@ Each append is one SQLite `BEGIN IMMEDIATE` transaction: it reads the head hash 
 
 1. **Release rule.** `/api/ask` returns 200 only after a checkpoint covering the request's `answer_returned` row is committed to the WORM store. The response is buffered until then. If the checkpoint fails, the answer is withheld: the client gets a 503 and a `response_withheld` record is written.
 2. **Tail.** Events after the last checkpoint form the *uncheckpointed tail*, for example `response_delivered`, logins and audit reads. The maintenance thread commits the head every `IB_CHECKPOINT_INTERVAL_S` (30 s), and also every `ANCHOR_EVERY` rows. The verifier reports `verified_through` and `uncheckpointed_rows`, and never reports the tail as verified. `fully_verified` requires a verified status, an empty tail, and `independent_worm` assurance.
+3. **Independent anchors (A09).** Set a second store with the same variables plus a `_2` suffix
+   (`IB_CHECKPOINT_S3_ENDPOINT_2`, `..._BUCKET_2`, `..._WRITER_KEY_2`, ...; `_3` and so on also work).
+   Every checkpoint is then written to each store, and release still fails closed if any write fails.
+   The verifier reads all stores: if one store's anchors are replaced, they disagree with the other
+   store (equivocation), so a full local chain rewrite has to fool every anchor at once. `assurance`
+   is `independent_worm` only if every store enforces COMPLIANCE Object Lock. Locally,
+   `docker compose --profile second-anchor up -d` starts `minio-b` with its own root credential and
+   volume (run `python deploy/make_env.py` first; it only appends missing keys). Two MinIOs on one
+   host demonstrate the mechanism. In production, put anchor 2 with a different provider or account
+   (for example AWS S3 or a second Tencent COS account), so no single administrator controls both.
+   Evidence: `evaluation/reports/member3-worm-checkpoints.txt`.
 
 ### Threat model
 

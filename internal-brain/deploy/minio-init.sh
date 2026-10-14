@@ -3,7 +3,7 @@
 # the app and a read-only verifier. Safe to re-run. Runs once before the app starts.
 set -eu
 for i in $(seq 1 30); do
-  mc alias set store http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 && break
+  mc alias set store "${MINIO_URL:-http://minio:9000}" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 && break
   sleep 1
 done
 mc mb --ignore-existing --with-lock "store/$BUCKET"

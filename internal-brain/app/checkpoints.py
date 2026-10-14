@@ -15,8 +15,10 @@ application's write authority:
   LocalCheckpointStore Tests/dev only: a JSONL file the app itself can rewrite. The
                       verifier always labels it assurance="local_only".
 
-Selected by IB_CHECKPOINT_S3_ENDPOINT. SigV4 is implemented here with the stdlib
-over the existing httpx dependency (path-style URLs).
+Selected by IB_CHECKPOINT_S3_ENDPOINT. Further independent anchors use the same
+variables with a _2, _3, ... suffix (MultiAnchorStore writes to all of them).
+SigV4 is implemented here with the stdlib over the existing httpx dependency
+(path-style URLs).
 """
 from __future__ import annotations
 
@@ -154,11 +156,46 @@ def s3_configured() -> bool:
     return bool(os.getenv("IB_CHECKPOINT_S3_ENDPOINT"))
 
 
+class MultiAnchorStore:
+    """Every checkpoint goes to each independent store (A09). A write fails if any store
+    refuses, so release stays fail-closed. The verifier sees every store's checkpoints:
+    a store whose anchors were replaced disagrees with the others (equivocation), and a
+    rewritten local chain has to match all of them."""
+
+    def __init__(self, stores: list):
+        self.stores = stores
+        self.kind = "multi(" + ",".join(s.kind for s in stores) + ")"
+
+    def append(self, row_id: int, head_hash: str) -> None:
+        for i, store in enumerate(self.stores, 1):
+            try:
+                store.append(row_id, head_hash)
+            except CheckpointError as e:
+                raise CheckpointError(f"anchor {i}: {e}") from None
+
+    def checkpoints(self) -> list[dict]:
+        return [{**cp, "anchor": i} for i, s in enumerate(self.stores, 1) for cp in s.checkpoints()]
+
+    def assurance(self) -> str:
+        levels = [s.assurance() for s in self.stores]
+        return "independent_worm" if all(a == "independent_worm" for a in levels) else "+".join(levels)
+
+
+def _s3_from_env(suffix: str) -> S3ObjectLockStore | None:
+    """Anchor 1 uses IB_CHECKPOINT_*; anchor N uses the same names ending in _N."""
+    env = lambda name, default="": os.getenv(f"IB_CHECKPOINT_{name}{suffix}", default)  # noqa: E731
+    if not env("S3_ENDPOINT"):
+        return None
+    return S3ObjectLockStore(env("S3_ENDPOINT"), env("S3_BUCKET", "audit-checkpoints"),
+                             env("S3_PREFIX", "checkpoints/"), env("S3_REGION", "us-east-1"),
+                             (env("WRITER_KEY"), env("WRITER_SECRET")), (env("READER_KEY"), env("READER_SECRET")))
+
+
 def from_env(local_path: Path):
-    if not s3_configured():
+    first = _s3_from_env("")
+    if first is None:
         return LocalCheckpointStore(local_path)
-    env = os.getenv
-    return S3ObjectLockStore(env("IB_CHECKPOINT_S3_ENDPOINT"), env("IB_CHECKPOINT_S3_BUCKET", "audit-checkpoints"),
-                             env("IB_CHECKPOINT_S3_PREFIX", "checkpoints/"), env("IB_CHECKPOINT_S3_REGION", "us-east-1"),
-                             (env("IB_CHECKPOINT_WRITER_KEY", ""), env("IB_CHECKPOINT_WRITER_SECRET", "")),
-                             (env("IB_CHECKPOINT_READER_KEY", ""), env("IB_CHECKPOINT_READER_SECRET", "")))
+    stores = [first]
+    while (more := _s3_from_env(f"_{len(stores) + 1}")) is not None:
+        stores.append(more)
+    return stores[0] if len(stores) == 1 else MultiAnchorStore(stores)

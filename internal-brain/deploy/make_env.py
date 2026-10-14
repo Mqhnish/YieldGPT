@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Write deploy/.env with fresh random secrets. Refuses to overwrite an existing file."""
+"""Write deploy/.env with fresh random secrets. Never overwrites a value: on an existing file it
+only appends keys that are missing (e.g. the second checkpoint anchor added later)."""
 import base64
 import secrets
 from pathlib import Path
 
 target = Path(__file__).with_name(".env")
-if target.exists():
-    raise SystemExit(f"{target} already exists; delete it first to rotate every secret")
 token = lambda: secrets.token_urlsafe(24)  # noqa: E731
 values = {
     "IB_DEMO_MODE": "1",
@@ -18,7 +17,13 @@ values = {
     "CHECKPOINT_BUCKET": "audit-checkpoints", "CHECKPOINT_RETENTION_DAYS": "30",
     "CHECKPOINT_WRITER_KEY": "brain-checkpoint-writer", "CHECKPOINT_WRITER_SECRET": token(),
     "CHECKPOINT_READER_KEY": "audit-verifier", "CHECKPOINT_READER_SECRET": token(),
+    "MINIO_B_ROOT_USER": "anchor-b-admin", "MINIO_B_ROOT_PASSWORD": token(),
+    "CHECKPOINT_B_WRITER_KEY": "brain-checkpoint-writer", "CHECKPOINT_B_WRITER_SECRET": token(),
+    "CHECKPOINT_B_READER_KEY": "audit-verifier", "CHECKPOINT_B_READER_SECRET": token(),
 }
-target.write_text("".join(f"{k}={v}\n" for k, v in values.items()))
+existing = {line.split("=", 1)[0] for line in target.read_text().splitlines()} if target.exists() else set()
+missing = {k: v for k, v in values.items() if k not in existing}
+with open(target, "a") as f:
+    f.write("".join(f"{k}={v}\n" for k, v in missing.items()))
 target.chmod(0o600)
-print(f"wrote {target}")
+print(f"{target}: added {len(missing)} keys, kept {len(existing)} existing")
