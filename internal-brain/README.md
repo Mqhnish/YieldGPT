@@ -90,6 +90,7 @@ Permission decisions are Atlassian's own: Confluence's content permission check 
 
 These are single dated runs on a small seeded site, not throughput measurements. While permission schemes were being edited, Jira's bulk permission check briefly gave different answers for the same user seconds apart; the pipeline's release re-check stops a short stale "allowed" (tested), and the probe measures how long a revoke takes to hold.
 
+- Key design trade-offs (what each choice costs, and why): [docs/DESIGN_TRADEOFFS.md](docs/DESIGN_TRADEOFFS.md)
 - Live setup, seeding a real site with the demo company, and the read-only conformance check: [docs/ATLASSIAN_SETUP.md](docs/ATLASSIAN_SETUP.md)
 - Brief-sized estate (about 30,000 documents) and benchmark: [docs/SCALE.md](docs/SCALE.md)
 - Connector pattern for other platforms: [docs/CONNECTOR_GUIDE.md](docs/CONNECTOR_GUIDE.md)

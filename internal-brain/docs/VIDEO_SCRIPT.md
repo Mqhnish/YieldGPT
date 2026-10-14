@@ -1,4 +1,4 @@
-# YieldGPT demo video script (target 6:30, limit 5 to 8 min)
+# YieldGPT demo video script (target 7:00, limit 5 to 8 min)
 
 Three voices: **M** = Mohnish, **I** = Imaad, **P** = Punya. Slides come from `docs/deck/index.html`
 (press F for fullscreen). The app runs locally with **Confluence and Jira live** on our Atlassian site;
@@ -150,7 +150,24 @@ Slide 10:
 If the WorkBuddy connector is merged and working on the day, cut in a 5-second clip of a CodeBuddy
 chat calling YieldGPT. If not, stay on the slide.
 
-## 5:55 to 6:30 · Honest status and close (slides 12 and 13) · M
+## 5:55 to 6:25 · How we built it with CodeBuddy / WorkBuddy · each of us, ~10 s
+
+The handbook requires the video to include "a short reflection on your build approach and any
+development tool tips with reference to CodeBuddy/WorkBuddy". Show one real CodeBuddy or WorkBuddy
+chat screenshot per person (the same ones submitted as proof of usage). Fill in from what you
+actually did; don't read these placeholders out:
+
+- **M:** one thing CodeBuddy/WorkBuddy did on the connectors or permission checks, and one tip.
+  [fill in]
+- **I:** one thing on retrieval, grounding or the UI, and one tip. [fill in]
+- **P:** one thing on the audit chain, checkpoints or deployment, and one tip. [fill in]
+
+A line that works for all three, if true for you:
+
+> We split the build into three owners with no shared files, so our coding agents could work in
+> parallel without stepping on each other.
+
+## 6:25 to 7:00 · Honest status and close (slides 12 and 13) · M
 
 > What's live and verified: Confluence and Jira on a real site, write-once checkpoints, and the full
 > test suite on every pull request. What's still pending: switching Hunyuan on, live Slack and
