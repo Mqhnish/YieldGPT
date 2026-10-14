@@ -233,15 +233,23 @@ def log_many(entries: list[tuple[str, str, dict]]) -> list[int]:
 
 
 def _probe_check(actor: str):
-    """Security signal: many denials in a short window looks like someone probing."""
+    """Security signal: the same restricted doc denied to one actor across many separate attempts
+    in 10 minutes looks like someone probing. One broad search denies many docs once each, so raw
+    denied-row counts would alert on routine questions. An attempt is one request (or one query
+    when there is no request context); every phase row of that attempt counts once."""
+    # ponytail: enumeration that hits each restricted doc only once (many narrow queries) is not
+    # caught; add a distinct-docs-across-narrow-queries signal if that threat matters.
     since = f"{time.time() - 600:.6f}"
     with closing(_conn()) as c:
-        n = c.execute("SELECT COUNT(*) FROM audit_log WHERE actor=? AND decision='denied' AND ts>=?",
-                      (actor, since)).fetchone()[0]
+        n = c.execute("""SELECT COALESCE(MAX(attempts), 0) FROM (
+                             SELECT COUNT(DISTINCT COALESCE(NULLIF(request_id, ''), NULLIF(query_id, ''), id))
+                                    AS attempts
+                             FROM audit_log WHERE actor=? AND decision='denied' AND doc_uid!='' AND ts>=?
+                             GROUP BY doc_uid)""", (actor, since)).fetchone()[0]
         already = c.execute("SELECT COUNT(*) FROM audit_log WHERE actor=? AND event='probing_suspected' AND ts>=?",
                             (actor, since)).fetchone()[0]
     if n >= PROBE_ALERT_THRESHOLD and not already:
-        log(actor, "probing_suspected", severity="alert", denials_last_10min=n)
+        log(actor, "probing_suspected", severity="alert", attempts_on_one_doc_last_10min=n)
 
 
 # ---------------------------------------------------------------- checkpoints
