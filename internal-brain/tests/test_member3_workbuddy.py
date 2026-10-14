@@ -75,8 +75,11 @@ def test_handshake_and_tool_list(server):
                   {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
                   {"jsonrpc": "2.0", "method": "notifications/initialized"},
                   {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
-                  {"jsonrpc": "2.0", "id": 3, "method": "no/such"})
-    assert set(r) == {1, 2, 3}                                   # the notification got no reply
+                  {"jsonrpc": "2.0", "id": 3, "method": "no/such"},
+                  {"jsonrpc": "2.0", "id": 4, "method": "prompts/list"},
+                  {"jsonrpc": "2.0", "id": 5, "method": "resources/list"})
+    assert set(r) == {1, 2, 3, 4, 5}                             # the notification got no reply
+    assert r[4]["result"] == {"prompts": []} and r[5]["result"] == {"resources": []}  # IDE probes, no error
     assert r[1]["result"]["serverInfo"]["name"] == "yieldgpt"
     tools = {t["name"]: t for t in r[2]["result"]["tools"]}
     assert set(tools) == {"yieldgpt_ask", "yieldgpt_evidence"}

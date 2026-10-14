@@ -28,6 +28,7 @@ import urllib.request
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_INFO = {"name": "yieldgpt", "version": "1.0.0"}
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+EMPTY_LISTS = {"prompts/list": "prompts", "resources/list": "resources", "resources/templates/list": "resourceTemplates"}
 
 TOOLS = [
     {"name": "yieldgpt_ask",
@@ -159,6 +160,8 @@ def handle(msg: dict, client_factory):
         result = {}
     elif method == "tools/list":
         result = {"tools": TOOLS}
+    elif method in EMPTY_LISTS:  # IDE clients (e.g. CodeBuddy) probe these; answer empty, not an error
+        result = {EMPTY_LISTS[method]: []}
     elif method == "tools/call":
         params = msg.get("params") or {}
         try:
