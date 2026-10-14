@@ -1,7 +1,7 @@
 {
   "mode": "live",
-  "date": "2026-10-13T02:16:52+00:00",
-  "commit": "8cc20bd7335596a6d1da2ccc6faf35e5be3fa795",
+  "date": "2026-10-14T13:32:53+00:00",
+  "commit": "1ade5eee87b4d3ce667476308fed89fcf54d5817",
   "dirty": false,
   "config": {
     "space_key": "ENG",
@@ -15,29 +15,50 @@
       "platform": "confluence",
       "step": "create: retrievable by viewer",
       "ok": true,
-      "seconds": 16.038,
-      "detail": "write 1.55s, then 3 poll+ask round(s)"
+      "seconds": 16.875,
+      "detail": "write 1.95s, then 3 poll+ask round(s)"
     },
     {
       "platform": "confluence",
       "step": "edit: new version served, old text not served",
       "ok": true,
-      "seconds": 4.175,
+      "seconds": 5.079,
       "detail": "1 poll+ask round(s); old version or text served: False"
+    },
+    {
+      "platform": "confluence",
+      "step": "child page: retrievable by viewer",
+      "ok": true,
+      "seconds": 13.499,
+      "detail": "2 poll+ask round(s)"
     },
     {
       "platform": "confluence",
       "step": "revoke: viewer denied on next query (no reindex)",
       "ok": true,
       "seconds": 1.556,
-      "detail": "revoke write 1.41s, next query 0.15s, check=confluence_read_denied"
+      "detail": "revoke write 1.28s, next query 0.27s, check=confluence_read_denied"
     },
     {
       "platform": "confluence",
       "step": "revoke: denial holds within 5 s of the revoke",
       "ok": true,
-      "seconds": 4.153,
-      "detail": "3 denied queries in a row; allowed again after a denial: 0 time(s)"
+      "seconds": 3.189,
+      "detail": "after the platform confirmed (revoke write 1.28s); 3 denied queries in a row; allowed again after a denial: 0 time(s)"
+    },
+    {
+      "platform": "confluence",
+      "step": "revoke: child page denied too (inherited restriction)",
+      "ok": true,
+      "seconds": 6.468,
+      "detail": "first query after the revoke denied: True, check=confluence_read_denied, allowed again after a denial: 0 time(s); seconds since the parent's revoke was confirmed"
+    },
+    {
+      "platform": "confluence",
+      "step": "revoke: insider still served the child page",
+      "ok": true,
+      "seconds": 4.126,
+      "detail": ""
     },
     {
       "platform": "confluence",
@@ -50,21 +71,21 @@
       "platform": "confluence",
       "step": "revoke: insider still served",
       "ok": true,
-      "seconds": 2.74,
+      "seconds": 3.472,
       "detail": ""
     },
     {
       "platform": "confluence",
       "step": "delete: not served on next query (no reindex)",
       "ok": true,
-      "seconds": 0.582,
-      "detail": "delete write 0.31s, next query 0.28s"
+      "seconds": 1.33,
+      "detail": "delete write 0.70s, next query 0.62s"
     },
     {
       "platform": "confluence",
       "step": "delete: removed from index by reconciliation, still not served",
       "ok": true,
-      "seconds": 0.67,
+      "seconds": 1.129,
       "detail": "1 poll round(s)"
     },
     {
@@ -78,29 +99,36 @@
       "platform": "jira",
       "step": "create: retrievable by viewer",
       "ok": true,
-      "seconds": 9.37,
-      "detail": "write 0.88s, then 2 poll+ask round(s)"
+      "seconds": 3.1,
+      "detail": "write 0.84s, then 1 poll+ask round(s)"
     },
     {
       "platform": "jira",
       "step": "edit: new version served, old text not served",
       "ok": true,
-      "seconds": 2.739,
+      "seconds": 2.672,
       "detail": "1 poll+ask round(s); old version or text served: False"
+    },
+    {
+      "platform": "jira",
+      "step": "status change and new comment served",
+      "ok": true,
+      "seconds": 3.795,
+      "detail": "new status 'Open', 1 poll+ask round(s)"
     },
     {
       "platform": "jira",
       "step": "revoke: viewer denied on next query (no reindex)",
       "ok": true,
-      "seconds": 0.555,
-      "detail": "revoke write 0.35s, next query 0.21s, check=jira_browse_denied"
+      "seconds": 0.571,
+      "detail": "revoke write 0.40s, next query 0.18s, check=jira_browse_denied"
     },
     {
       "platform": "jira",
       "step": "revoke: denial holds within 5 s of the revoke",
       "ok": true,
-      "seconds": 2.915,
-      "detail": "3 denied queries in a row; allowed again after a denial: 0 time(s)"
+      "seconds": 2.977,
+      "detail": "after the platform confirmed (revoke write 0.40s); 3 denied queries in a row; allowed again after a denial: 0 time(s)"
     },
     {
       "platform": "jira",
@@ -113,24 +141,24 @@
       "platform": "jira",
       "step": "revoke: insider still served",
       "ok": true,
-      "seconds": 2.434,
+      "seconds": 2.475,
       "detail": ""
     },
     {
       "platform": "jira",
       "step": "delete: not served on next query (no reindex)",
       "ok": true,
-      "seconds": 1.005,
-      "detail": "delete write 0.85s, next query 0.15s"
+      "seconds": 1.063,
+      "detail": "delete write 0.87s, next query 0.20s"
     },
     {
       "platform": "jira",
       "step": "delete: removed from index by reconciliation, still not served",
       "ok": true,
-      "seconds": 0.764,
+      "seconds": 0.755,
       "detail": "1 poll round(s)"
     }
   ],
-  "passed": 17,
+  "passed": 21,
   "all_pass": true
 }
