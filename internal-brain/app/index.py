@@ -22,7 +22,8 @@ STOP = set('''the a an and or of to in on for is are was were be been with by at
 what how who why which any all me show did do does there their from into about last week we our
 was were i you please tell summarize summarise summary latest current status information know
 explain give find looking look need want can could would should has have had when happened
-raised around new since days day sprint weeks next its it's what's'''.split())
+raised around new since days day sprint weeks next its it's what's go goes going went gone anything something any
+hey hi hello thanks please could would'''.split())
 # Small, auditable retrieval vocabulary. This never rewrites evidence or generated claims.
 ALIASES = {
     'db': 'database', 'postgres': 'database', 'postgresql': 'database', 'pg16': 'database',
@@ -38,6 +39,8 @@ ALIASES = {
     'conversation': 'discussion', 'discussed': 'discussion', 'discuss': 'discussion',
     'onboarding': 'onboard', 'onboard': 'onboard', 'credential': 'credential',
     'choose': 'decision', 'chosen': 'decision', 'decided': 'decision', 'choice': 'decision',
+    'decide': 'decision', 'deciding': 'decision', 'decisions': 'decision',
+    'down': 'outage', 'crash': 'outage', 'crashed': 'outage', 'broke': 'outage', 'broken': 'outage',
     'posted': 'post', 'posting': 'post', 'upgrade': 'migration',
     'approved': 'approval', 'approve': 'approval', 'approving': 'approval',
     'license': 'licence', 'licensed': 'licence',

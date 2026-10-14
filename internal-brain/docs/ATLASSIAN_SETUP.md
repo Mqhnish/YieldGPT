@@ -56,7 +56,7 @@ All 5 scenario tests from the brief run through `fixture` by default.
    A full re-crawl catches anything deleted while the app was down.
 5. **Webhooks not wired for Atlassian yet.** Polling + read-through only.
 6. **Fake site JSON shapes follow the public docs.** Confirmed on a real site for every endpoint the connectors use
-   (live check 84/84 and lifecycle probe 17/17, 13 Oct 2026). Endpoints only the seeder uses can still differ.
+   (live check 84/84, 13 Oct 2026; lifecycle probe 21/21, 14 Oct 2026). Endpoints only the seeder uses can still differ.
 7. **Pages only.** Confluence blog posts, comments and attachments aren't indexed. Jira attachments aren't either.
 8. **Restricted Jira comments are skipped entirely**, even for users who could see them. Safe, but those users get less context.
 9. **Code blocks lose their line breaks** when converted to text.
@@ -187,7 +187,7 @@ revoke denied on the next query (page restriction / `security-only`), denial ide
 still served, delete never served again. Timed; deletes what it created (the page goes to the trash, the issue is
 deleted permanently). It checks the integration account's Jira permissions first and creates nothing if one is
 missing. Use PAY: the security level is only attached there. Report: `evaluation/reports/atlassian-live.md`.
-Result on 13 Oct 2026: 17/17.
+Result on 14 Oct 2026: 21/21, including the inherited page restriction and a Jira status change and comment.
 
 Note for the audit demo: the brief's query says `'payment-gateway'`; on the real site that space is
 `PAYMENTGATEWAY`. Audit filters ignore case and `-`/`_`, so the brief's exact sentence still works.

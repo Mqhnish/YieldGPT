@@ -27,9 +27,28 @@ def write_report(path: str | None, text: str) -> None:
         target.write_text(text, encoding="utf-8")
 
 
+def provider_label(mode: str, base_url: str) -> str:
+    """'live' only for a remote model endpoint. A localhost or private-network endpoint (a stand-in
+    or mock used to test the plumbing) must never produce a report that reads as live evidence."""
+    if mode != "live":
+        return "stub"
+    import ipaddress
+    from urllib.parse import urlparse
+    host = (urlparse(base_url).hostname or "").strip("[]").lower()
+    if host in ("", "localhost") or host.endswith((".localhost", ".local", ".internal")):
+        return "local_endpoint_not_live"
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return "live"
+    return "local_endpoint_not_live" if (ip.is_loopback or ip.is_private or ip.is_link_local) else "live"
+
+
 def markdown(report: dict) -> str:
     summary = report["summary"]
     lines = ["# Company A " + report["provider"] + " evaluation (" + report["variant"] + ")", "", f"Generated: {report['generated_at']}", "",
+             *(["**Not live evidence:** the model endpoint was on this machine or a private network (a stand-in "
+                "used to test the plumbing).", ""] if report["provider"] == "local_endpoint_not_live" else []),
              "These are measured results on fictional fixtures. The provider mode is recorded above. "
              "They do not establish production authorization, semantic entailment, or live-model quality.", "",
              f"- Cases passed: **{summary['passed']}/{summary['total']}**",
@@ -192,7 +211,7 @@ def run(cases: list[dict], scratch: Path, mode="offline", baseline=False) -> dic
     met = sum(r["source_obligations_met"] for r in rows)
     digest = hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest()
     return {"schema": "internal-brain.evaluation/2", "status": "completed", "variant": "frozen_member1_lexical" if baseline else "current", "generated_at": datetime.now(timezone.utc).isoformat(),
-            "provider": "live" if mode == "live" else "stub", "corpus": "fictional Company A app/sources/world.py", "case_sha256": digest,
+            "provider": provider_label(mode, llm.LLM_BASE_URL), "corpus": "fictional Company A app/sources/world.py", "case_sha256": digest,
             "implementation_sha256_at_start": implementation,
             "summary": {"total": len(rows), "passed": sum(r["passed"] for r in rows),
                         "source_obligations": obligations, "source_obligations_met": met,

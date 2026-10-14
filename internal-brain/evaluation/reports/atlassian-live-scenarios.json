@@ -1,0 +1,94 @@
+{
+  "mode": "live",
+  "date": "2026-10-14T13:10:38+00:00",
+  "commit": "0db7dc41d12df3e81a64cf73842a3051ff7bfbc8",
+  "dirty": false,
+  "checks": [
+    {
+      "scenario": "S1",
+      "check": "jdoe: migration answer cites the Jira epic and the Slack thread",
+      "ok": true,
+      "detail": "4 citations"
+    },
+    {
+      "scenario": "S1",
+      "check": "answer spans 2+ platforms, all citation links https",
+      "ok": true,
+      "detail": "gdrive, jira, slack"
+    },
+    {
+      "scenario": "S1",
+      "check": "private channel jdoe is not in is omitted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S1",
+      "check": "ravi: outage answer stitches Jira root cause, Drive doc and follow-up tickets",
+      "ok": true,
+      "detail": "6 citations"
+    },
+    {
+      "scenario": "S3",
+      "check": "kim: restricted report answer identical to a nonexistent one",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S3",
+      "check": "jdoe: no security-level issue, security project or security space page cited",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S3",
+      "check": "jdoe's denial on the security-level issue (demo PAY-110) is in the audit trail",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S3",
+      "check": "asha (security group) does get the security-level issue",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S3",
+      "check": "kim (no Atlassian account) gets no Jira citations",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S3",
+      "check": "child page of a restricted page is denied (inherited restriction)",
+      "ok": true,
+      "detail": "confluence_read_denied"
+    },
+    {
+      "scenario": "S5",
+      "check": "compliance question parsed (user, space, platform)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S5",
+      "check": "each matching request has the question, per-document decisions and the answer",
+      "ok": true,
+      "detail": "2 request(s)"
+    },
+    {
+      "scenario": "S5",
+      "check": "matched documents are allowed Confluence pages in that space",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "scenario": "S5",
+      "check": "'who retrieved the breach report' names only asha",
+      "ok": true,
+      "detail": "asha"
+    }
+  ],
+  "passed": 14,
+  "all_pass": true
+}
