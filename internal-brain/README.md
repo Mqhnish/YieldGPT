@@ -95,7 +95,20 @@ These are single dated runs on a small seeded site, not throughput measurements.
 
 [Slack setup](docs/SLACK_MEMBER2.md) covers multiple workspaces, `TEAM/USER` identities, `TEAM/CHANNEL/THREAD` resource IDs, delegated reads, encrypted OAuth installs, single-use state, refresh rotation, signed events and 15-minute reconciliation. The common contract suite exercises DMs, public-channel scope, edits, deletion and retention on simulated and mocked HTTP implementations. A separate [live verifier](scripts/verify_live_slack.py) records real-workspace checks once configured.
 
-Member 3’s independent S3 Object Lock checkpoint implementation is included. Default local checkpoints are explicitly weaker; live WORM tests need a configured service. Read [Member 3 operations](docs/MEMBER3.md) and [the integration handoff](docs/HANDOFF_MEMBER2.md).
+## Audit, checkpoints and load (Member 3)
+
+Every answer is checkpointed to an S3 Object Lock (COMPLIANCE) store before release; set a second store with the `_2` variables and every checkpoint goes to both (`docker compose --profile second-anchor up -d` starts one locally). Default local-file checkpoints are explicitly weaker. Architecture and every permission check: [docs/architecture-trust-boundaries.png](docs/architecture-trust-boundaries.png). Operations: [docs/MEMBER3.md](docs/MEMBER3.md).
+
+Measured 12 Oct 2026 on Apple Silicon macOS (15 CPUs); fixture data and stub model unless stated:
+
+| Check | Result | Report |
+|---|---|---|
+| Live WORM tests, two local MinIO instances (Object Lock COMPLIANCE) | 18/18 pass; a fully forged anchor 1 still fails verification against anchor 2 | [member3-worm-checkpoints.txt](evaluation/reports/member3-worm-checkpoints.txt) |
+| 25 users x 5 min, local uvicorn, MinIO checkpoints | 19,223/19,223 answers, 63.9 answers/s, 0 permission leaks, 0 audit gaps, 0 cross-user evidence hits | [member3-load-test.md](evaluation/reports/member3-load-test.md) |
+| End to end, 120 warmed requests, MinIO checkpoints | p50 37.5 ms, p95 50.9 ms; authorization/read p95 17.1 ms; audit/release p95 26.2 ms; citation preview p95 28.2 ms | [member3-e2e-latency-minio.md](evaluation/reports/member3-e2e-latency-minio.md) |
+| Compliance search over 100,005 synthetic events | worst p95 950 ms (target 2 s) | [member3-audit-search-latency.md](evaluation/reports/member3-audit-search-latency.md) |
+
+Not yet done: live Google Drive lifecycle (needs a Workspace test domain), a public Tencent-hosted URL, the organizer's written answer on mandatory Tencent services (`docs/TENCENT_REQUIREMENTS.md` says pending), and anchors at two separate providers. Steps: [docs/MEMBER3_SETUP.md](docs/MEMBER3_SETUP.md). Integration history: [docs/HANDOFF_MEMBER2.md](docs/HANDOFF_MEMBER2.md).
 
 ## Boundaries
 

@@ -8,30 +8,36 @@ It answers natural-language questions across **Confluence, Jira, Slack and Googl
 piece of content respects the source platform's own permissions, and every retrieval and answer is
 recorded in a tamper-evident, queryable audit trail.
 
-This repo runs fully offline: the four platforms are simulated (`app/sources/world.py`) with realistic,
-fictional Company A data, and the LLM has an offline stand-in until Hunyuan keys are added.
+By default it runs offline on fictional Company A data. Confluence and Jira have also been verified on a
+real Atlassian Cloud site (13 Oct 2026). Live Slack, live Google Drive and the real-model run are still pending
+and are disclosed as such in the scorecard.
 
-## Quick start
+## Where the submission is
+
+**Everything that is submitted, tested and demonstrated lives in [`internal-brain/`](internal-brain/).**
+Start with [internal-brain/README.md](internal-brain/README.md) and the
+[architecture / trust-boundary diagram](internal-brain/docs/architecture-trust-boundaries.png).
 
 ```bash
-pip install -r requirements.txt
-uvicorn app.main:app --reload        # open http://localhost:8000
-python -m pytest -q                  # 90 tests: scenarios, security, connector contract, handoff
-python -m pytest tests/contract -q   # just the connector contract every adapter must pass
+cd internal-brain
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -r requirements-lock.txt
+cp .env.example .env
+python -m uvicorn app.server:app --host 127.0.0.1 --port 8000 --workers 1   # open http://127.0.0.1:8000
+python -m pytest -q
 ```
 
-Demo users (password `demo`):
+Always start `app.server:app`; it wraps every answer in the checkpoint-before-release delivery layer.
 
-| User | Who | Sees |
-|---|---|---|
-| `jdoe` | Backend engineer | Eng docs, MIG + PAY Jira (not security-level issues), channels she's in |
-| `ravi` | SRE, payments on-call | Payment gateway space, private #payments-oncall and #mig-leads |
-| `asha` | Security engineer | Security space, SEC project, security-level issues, #sec-incidents |
-| `kim` | External contractor | Only the shared vendor channel and externally shared Drive folder |
-| `priya` | Compliance officer | Can query the audit trail |
-| `dana` | Platform admin | Demo controls + audit metadata only. Admin grants no source access and no audit content |
+| Path | What it is |
+|---|---|
+| `internal-brain/` | The integrated team build: app, tests, docs, evaluation reports, deployment |
+| `SUBMISSION_SUCCESS_METRICS.md`, `TRIAL_QUESTION_BANK.md` | Team scorecard and frozen question bank |
+| `app/`, `tests/`, `data/`, `requirements.txt` (repo root) | **Archived early prototype.** Kept for history only; not maintained, not tested in CI, not the submission. The rest of this page describes that prototype. |
+| `archive/` | Superseded hand-off bundles (zips, patch) and scratch files |
 
-## Architecture
+## Prototype architecture (archived)
+
 
 ```
             +------------------------- TRUST BOUNDARY: YieldGPT ---------------------------+

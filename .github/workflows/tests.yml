@@ -1,0 +1,33 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  suite:
+    name: pytest (${{ matrix.atlassian_mode }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        atlassian_mode: [fixture, sim]
+    defaults:
+      run:
+        working-directory: internal-brain
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"   # same as deploy/Dockerfile
+          cache: pip
+          cache-dependency-path: internal-brain/requirements-lock.txt
+      - run: python -m pip install -r requirements-lock.txt
+      # No .env and no live credentials: the live S3 / Atlassian / Slack / Drive / model tests skip.
+      - run: python -m pytest -q
+        env:
+          IB_ATLASSIAN_MODE: ${{ matrix.atlassian_mode }}

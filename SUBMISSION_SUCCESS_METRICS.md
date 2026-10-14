@@ -80,15 +80,15 @@ Latency must be measured with at least 100 warmed requests and reported as p50, 
 | P04 | Local retrieval p95 | **≤500 ms** | Baseline 10 Oct 2026 (Apple M5, synthetic): 262 ms, met (was 769 ms on the same machine before the index fix) |
 | P05 | Expected evidence in top 10, synthetic sanity set | **8/8** | Current baseline: 8/8; this is a sanity check, not a quality evaluation |
 | P06 | Peak process memory at 19,700 objects | **≤512 MiB** | Baseline 10 Oct 2026 (Apple M5, synthetic): 239 MiB whole process |
-| P07 | End-to-end answer latency p50 | **≤4 seconds** | Includes authorization, model, grounding, audit, and release |
-| P08 | End-to-end answer latency p95 | **≤8 seconds** | Report by answerable/no-answer and by source mix |
-| P09 | Authorization/read phase p95 | **≤2 seconds** | Report separately from model time |
+| P07 | End-to-end answer latency p50 | **≤4 seconds** | Includes authorization, model, grounding, audit, and release. Baseline 12 Oct 2026 (Apple Silicon macOS, 15 CPUs, fixture + stub model, MinIO checkpoints, 120 warmed requests through `app.server:app`): 37.5 ms; model time not included (`internal-brain/evaluation/reports/member3-e2e-latency-minio.md`) |
+| P08 | End-to-end answer latency p95 | **≤8 seconds** | Report by answerable/no-answer and by source mix. Baseline 12 Oct 2026 (same run): 50.9 ms, split by outcome and cited source mix in `internal-brain/evaluation/reports/member3-e2e-latency-minio.md` |
+| P09 | Authorization/read phase p95 | **≤2 seconds** | Report separately from model time. Baseline 12 Oct 2026 (same run): 17.1 ms |
 | P10 | Model phase p95 | **≤5 seconds** | Generation plus provider network time; do not combine with authorization |
 | P11 | Grounding phase p95 | **≤750 ms** | Sentence verification and citation mapping |
-| P12 | Audit/release phase p95 | **≤500 ms** | Final access check, checkpoint, and delivery record |
-| P13 | Citation preview p95 | **≤2 seconds** | Includes a fresh native access check |
-| P14 | Concurrent demo load | **25 users for 5 minutes**, ≥99% successful requests | No permission leak, audit gap, or cross-user cache contamination |
-| P15 | Throughput under demo load | **≥5 completed answers/second** | Report hardware, model, and dataset version |
+| P12 | Audit/release phase p95 | **≤500 ms** | Final access check, checkpoint, and delivery record. Baseline 12 Oct 2026 (same run): 26.2 ms (release authorization + checkpoint + delivery); 24.5 ms with two MinIO anchors |
+| P13 | Citation preview p95 | **≤2 seconds** | Includes a fresh native access check. Baseline 12 Oct 2026 (same run, 80 previews): 28.2 ms |
+| P14 | Concurrent demo load | **25 users for 5 minutes**, ≥99% successful requests | No permission leak, audit gap, or cross-user cache contamination. Baseline 12 Oct 2026 (Apple Silicon macOS, 15 CPUs, fixture + stub model, MinIO checkpoints, local uvicorn): 25 users x 300 s, 19,223/19,223 asks OK, 0 leaks, 0 audit gaps, 0/1,937 cross-user evidence hits (`internal-brain/evaluation/reports/member3-load-test.md`) |
+| P15 | Throughput under demo load | **≥5 completed answers/second** | Report hardware, model, and dataset version. Baseline 12 Oct 2026 (same run): 63.9 completed answers/s (31.2/s with citations) |
 | P16 | Model cost per answered question | **≤US$0.02 median, ≤US$0.05 p95** | Use actual provider usage and pricing; report currency/date |
 | P17 | Model tokens per answered question | **≤5,000 p95** | Input plus output; retrieve less before truncating supporting evidence |
 
@@ -118,9 +118,9 @@ The existing synthetic report measures only local retrieval. It excludes native 
 | A04 | Audit-chain verification | **100% pass when intact** | Verify all events from genesis through latest external checkpoint |
 | A05 | Tamper detection | **100%** | Detect row mutation, row deletion, truncation, reordering, and full local chain recomputation |
 | A06 | Audit search correctness | **100% on 20 reference queries** | Filter by user, project/container, platform, decision, and time range |
-| A07 | Audit query latency | **≤2 s p95 over 100,000 events** | Use the compliance API/UI, not a direct database shortcut |
+| A07 | Audit query latency | **≤2 s p95 over 100,000 events** | Use the compliance API/UI, not a direct database shortcut. Baseline 12 Oct 2026 (Apple Silicon macOS, 15 CPUs, synthetic, 100,005 events, POST /api/compliance/requests): worst p95 950 ms (by container) (`internal-brain/evaluation/reports/member3-audit-search-latency.md`) |
 | A08 | Sensitive audit-data exposure | **0** | Only compliance-authorized identities can search decision details |
-| A09 | Checkpoint durability | **At least 2 independently protected anchors** | Demonstrate that an attacker rewriting local storage cannot silently replace every anchor |
+| A09 | Checkpoint durability | **At least 2 independently protected anchors** | Demonstrate that an attacker rewriting local storage cannot silently replace every anchor. Baseline 12 Oct 2026 (live, two local MinIO instances, Object Lock COMPLIANCE): mechanism verified, one fully forged anchor still fails verification (`internal-brain/evaluation/reports/member3-worm-checkpoints.txt`); separate providers/accounts not yet shown |
 
 ## Live service and integration proof
 

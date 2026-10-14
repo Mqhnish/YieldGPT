@@ -23,7 +23,7 @@
 
   <rect width="1240" height="1600" fill="#f8fafc"/>
   <text x="40" y="48" font-size="26" font-weight="800" fill="#0f172a">YieldGPT: one question, every permission check, every trust boundary</text>
-  <text x="40" y="74" class="s">Status as of 12 Oct 2026. Green boxes are permission checks against the native platform. Red is untrusted. Purple dashes are audit writes.</text>
+  <text x="40" y="74" class="s">Status as of 14 Oct 2026. Green boxes are permission checks against the native platform. Red is untrusted. Purple dashes are audit writes.</text>
 
   <!-- ===================== trusted server boundary ===================== -->
   <rect x="24" y="96" width="760" height="1300" rx="14" fill="#eef2ff" fill-opacity="0.45" stroke="#4338ca" stroke-width="2" stroke-dasharray="10 6"/>
@@ -143,10 +143,10 @@
   <g>
     <rect class="step" x="826" y="172" width="374" height="70" rx="8"/>
     <text x="840" y="195" class="h">Confluence + Jira</text>
-    <text x="840" y="214" class="s">Real REST connectors (spaces, page restrictions,</text>
-    <text x="840" y="230" class="s">issue security). Tested against a fake Atlassian site.</text>
-    <rect x="1078" y="180" width="112" height="20" rx="10" fill="#fef3c7" stroke="#b45309"/>
-    <text x="1134" y="194" text-anchor="middle" class="tag" fill="#92400e">live run: M1</text>
+    <text x="840" y="214" class="s">Real REST connectors on a real Atlassian Cloud site:</text>
+    <text x="840" y="230" class="s">conformance 84/84, create/edit/revoke/delete 17/17.</text>
+    <rect x="1078" y="180" width="112" height="20" rx="10" fill="#dcfce7" stroke="#15803d"/>
+    <text x="1134" y="194" text-anchor="middle" class="tag" fill="#166534">live 13 Oct</text>
   </g>
   <g>
     <rect class="step" x="826" y="252" width="374" height="70" rx="8"/>
@@ -219,7 +219,7 @@
 
   <!-- ===================== legend ===================== -->
   <rect x="24" y="1420" width="1192" height="160" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="44" y="1448" font-weight="800" fill="#0f172a">Legend and evidence (12 Oct 2026)</text>
+  <text x="44" y="1448" font-weight="800" fill="#0f172a">Legend and evidence (14 Oct 2026)</text>
   <rect x="44" y="1462" width="22" height="16" rx="3" class="check"/><text x="76" y="1475" class="t">Permission check on the native platform (A is a filter only; B to F are live)</text>
   <rect x="44" y="1488" width="22" height="16" rx="3" class="untrusted"/><text x="76" y="1501" class="t">Untrusted component: output is verified, never obeyed</text>
   <line x1="44" y1="1522" x2="66" y2="1522" class="audit"/><text x="76" y="1527" class="t">Audit write (hash-chained, fail closed)</text>
