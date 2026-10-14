@@ -1,4 +1,4 @@
-# YieldGPT in WorkBuddy
+# YieldGPT in WorkBuddy and CodeBuddy
 
 `yieldgpt_mcp_server.py` lets a WorkBuddy agent ask YieldGPT questions in a normal WorkBuddy
 conversation. It is a WorkBuddy connector (an MCP server over stdio), one file, Python standard
@@ -32,6 +32,10 @@ password never crosses a network unencrypted.
    `yieldgpt_evidence`.
 7. Then ask, for example: "Use YieldGPT: what's the status of the database migration project and
    were there any blockers raised in Slack last week?" and "Open source S1."
+
+**CodeBuddy** (the Tencent IDE) reads the same entry from `~/.codebuddy/mcp.json`: add the same
+`"yieldgpt"` block there, restart CodeBuddy, check that **yieldgpt** is enabled in its MCP settings,
+and ask in an agent chat ("Use YieldGPT: ...").
 
 Windows: use the absolute path of `python.exe` and double backslashes in the JSON paths, and save
 `mcp.json` as UTF-8 without a BOM.
