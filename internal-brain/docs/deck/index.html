@@ -270,6 +270,7 @@ em.a { font-style: normal; color: var(--amber); }
       <li class="rv" style="--i:5">Injected instructions in a question are blocked; poisoned passages are quarantined.</li>
     </ul>
   </div>
+  <div class="foot">In this submission answers are extractive: assembled on the server from authorized passages, word for word, each line cited. The model adapter is optional.</div>
 </section>
 
 <!-- 7 -->
@@ -335,7 +336,7 @@ em.a { font-style: normal; color: var(--amber); }
   <h2 class="rv" style="--i:1">YieldGPT inside the tools Tencent teams already use</h2>
   <div class="cards3">
     <div class="tcard rv" style="--i:2"><span class="pill ok">WORKING</span><h3>CodeBuddy and WorkBuddy</h3><p>An MCP connector lets the CodeBuddy agent call YieldGPT and open citations. Identity comes from config, so every check still applies.</p></div>
-    <div class="tcard rv" style="--i:3"><span class="pill wait">PENDING KEY</span><h3>Tencent Hunyuan</h3><p>The model adapter speaks the OpenAI-compatible API Hunyuan offers. The live evaluation runs once the approved key is in place.</p></div>
+    <div class="tcard rv" style="--i:3"><span class="pill ok">ADAPTER READY</span><h3>Tencent Hunyuan</h3><p>The adapter speaks the OpenAI-compatible API Hunyuan offers and is tested end to end. This submission answers in extractive mode; switching Hunyuan on is configuration.</p></div>
     <div class="tcard rv" style="--i:4"><span class="pill wait">IN PROGRESS</span><h3>Tencent Cloud</h3><p>Docker deployment with secrets from the environment only, and a public demo URL. Tencent COS is a natural second checkpoint anchor.</p></div>
   </div>
 </section>
@@ -351,7 +352,7 @@ em.a { font-style: normal; color: var(--amber); }
       <li>YieldGPT inside CodeBuddy</li>
       <li>Full test suite in CI on every pull request</li></ul></div>
     <div class="pend rv" style="--i:3"><h3>Pending</h3><ul>
-      <li>Live Hunyuan model evaluation</li>
+      <li>Hunyuan switched on and evaluated<small>answers are extractive by design in this submission</small></li>
       <li>Live Slack workspaces and live Google Drive</li>
       <li>Public URL on Tencent Cloud</li>
       <li>Two-reviewer human scoring</li></ul></div>

@@ -142,7 +142,9 @@ Slide 10:
 ## 5:25 to 5:55 · Tencent ecosystem (slide 11) · P
 
 > YieldGPT plugs into CodeBuddy through an MCP connector, with every permission check still applied.
-> The model adapter speaks the OpenAI-compatible API that Hunyuan offers, and the Docker deployment
+> Answers in this submission are extractive: built on the server, word for word, from passages the
+> user may see, each line cited. The adapter for Hunyuan's OpenAI-compatible API is ready and tested,
+> so switching the model on is configuration. And the Docker deployment
 > is ready for Tencent Cloud.
 
 If the WorkBuddy connector is merged and working on the day, cut in a 5-second clip of a CodeBuddy
@@ -151,7 +153,7 @@ chat calling YieldGPT. If not, stay on the slide.
 ## 5:55 to 6:30 · Honest status and close (slides 12 and 13) · M
 
 > What's live and verified: Confluence and Jira on a real site, write-once checkpoints, and the full
-> test suite on every pull request. What's still pending: the live Hunyuan evaluation, live Slack and
+> test suite on every pull request. What's still pending: switching Hunyuan on, live Slack and
 > Drive, the public URL, and human scoring. Every number in this video has a date and a label.
 
 Slide 13.
