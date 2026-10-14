@@ -38,5 +38,18 @@ def build_connectors(world: World, atlassian_mode: str | None = None) -> dict[st
     else:
         client = atlassian_client(world, mode)
         atl = [ConfluenceCloudConnector(client), JiraCloudConnector(client)]
+    if mode == "live":
+        _map_demo_ids(world)
     cs = atl + [SlackConnector(world), DriveConnector(world)]
     return {c.platform: c for c in cs}
+
+
+def _map_demo_ids(world: World, path: str | None = None) -> int:
+    """Point the simulated Slack/Drive content at the seeded site's real Jira keys and page ids."""
+    import json
+    import pathlib
+    p = pathlib.Path(path or config.SEED_MANIFEST)
+    if not p.exists():
+        return 0
+    m = json.loads(p.read_text())
+    return world.apply_id_map(m.get("issues", {}), m.get("pages", {}))

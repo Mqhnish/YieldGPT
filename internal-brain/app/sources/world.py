@@ -253,6 +253,44 @@ class World:
         self.issues[key]["level"] = level
         self._changed("jira", key, push, kind="acl")
 
+    def apply_id_map(self, issues: dict, pages: dict) -> int:
+        """Live mode: the seeder gave the demo's Confluence pages and Jira issues new ids on the real
+        site (MIG-7 became MIG-2). Rewrite the simulated Slack and Drive content and links to match,
+        so a Slack message about MIG-7 names the ticket the citation shows. One combined
+        substitution, so MIG-7 -> MIG-2 can't chain into MIG-2 -> anything. Returns rewrites made."""
+        import re
+        if getattr(self, "_ids_mapped", False):
+            return 0
+        self._ids_mapped = True
+        if not issues and not pages:
+            return 0
+        rx = re.compile(r"\b(" + "|".join(re.escape(k) for k in sorted(issues, key=len, reverse=True)) + r")\b") if issues else None
+        n = 0
+
+        def text(t):
+            nonlocal n
+            if not rx:
+                return t
+            out, k = rx.subn(lambda m: issues[m.group(1)], t)
+            n += k
+            return out
+
+        def uid(u):
+            nonlocal n
+            platform, _, nid = u.partition(":")
+            new = {"jira": issues, "confluence": pages}.get(platform, {}).get(nid)
+            if new and new != nid:
+                n += 1
+                return f"{platform}:{new}"
+            return u
+
+        for th in self.threads.values():
+            th["msgs"] = [(who, ts, text(body)) for who, ts, body in th["msgs"]]
+        for f in self.files.values():
+            f["text"] = text(f["text"])
+            f["links"] = [uid(u) for u in f.get("links", [])]
+        return n
+
     def delete(self, platform: str, native_id: str, push: bool = True):
         store = {"confluence": self.pages, "jira": self.issues, "slack": self.threads, "gdrive": self.files}[platform]
         store.pop(native_id, None)

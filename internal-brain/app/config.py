@@ -55,6 +55,8 @@ ATLASSIAN_MODE = os.getenv("IB_ATLASSIAN_MODE", "fixture")
 ATLASSIAN_SITE = os.getenv("IB_ATLASSIAN_SITE", "")          # e.g. https://yourteam.atlassian.net
 ATLASSIAN_EMAIL = os.getenv("IB_ATLASSIAN_EMAIL", "")        # integration account email
 ATLASSIAN_API_TOKEN = os.getenv("IB_ATLASSIAN_API_TOKEN", "")  # id.atlassian.com API token, never commit
+# Seeder output (demo id -> real id). Live mode uses it to align the simulated Slack/Drive content.
+SEED_MANIFEST = os.getenv("IB_SEED_MANIFEST", "seed_manifest.json")
 # How often polling does a full id listing to detect deletions (0 = every poll).
 RECONCILE_EVERY_S = int(os.getenv("IB_RECONCILE_EVERY_S", "600"))
 # Reconciliation refuses to delete >20% of an estate in one go unless this is set (see cloud_polling.py).
