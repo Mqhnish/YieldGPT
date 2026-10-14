@@ -79,6 +79,7 @@ Permission decisions are Atlassian's own: Confluence's content permission check 
 |---|---|---|
 | Conformance: every persona x every seeded page and issue, decided by Atlassian | **84/84** | [atlassian-live-check.md](evaluation/reports/atlassian-live-check.md) |
 | Jira issue security level (demo PAY-110): hidden from ravi who can browse the project, shown to asha | pass, no code workaround needed | same |
+| Brief scenarios S1 (unified query), S3 (negative cases), S5 (audit inquiry) asked as each persona | **14/14** | [atlassian-live-scenarios.md](evaluation/reports/atlassian-live-scenarios.md) |
 | Lifecycle probe through the real pipeline: create, edit, revoke, delete on Confluence and Jira | **17/17** | [atlassian-live.md](evaluation/reports/atlassian-live.md) |
 | New object retrievable (immediate poll) | Confluence 16.0 s, Jira 9.4 s | same |
 | Revoked user denied on the very next query, no reindex; denial held (3 in a row) | Confluence 4.2 s, Jira 2.9 s, never re-allowed | same |
