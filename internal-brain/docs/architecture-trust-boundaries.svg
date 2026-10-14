@@ -1,0 +1,234 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1600" width="1240" height="1600" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14">
+  <title>YieldGPT architecture and trust boundaries</title>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/>
+    </marker>
+    <style>
+      .step { fill: #ffffff; stroke: #475569; stroke-width: 1.3; }
+      .check { fill: #ecfdf5; stroke: #047857; stroke-width: 1.8; }
+      .untrusted { fill: #fef2f2; stroke: #b91c1c; stroke-width: 1.8; }
+      .h { font-weight: 700; font-size: 15px; fill: #0f172a; }
+      .t { fill: #1e293b; }
+      .s { fill: #475569; font-size: 12.5px; }
+      .tag { font-size: 11.5px; font-weight: 700; }
+      .flow { stroke: #334155; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+      .audit { stroke: #7c3aed; stroke-width: 1.2; stroke-dasharray: 4 4; fill: none; }
+      .deny { stroke: #b91c1c; stroke-width: 1.4; fill: none; marker-end: url(#arrRed); stroke-dasharray: 5 3; }
+    </style>
+  </defs>
+
+  <rect width="1240" height="1600" fill="#f8fafc"/>
+  <text x="40" y="48" font-size="26" font-weight="800" fill="#0f172a">YieldGPT: one question, every permission check, every trust boundary</text>
+  <text x="40" y="74" class="s">Status as of 12 Oct 2026. Green boxes are permission checks against the native platform. Red is untrusted. Purple dashes are audit writes.</text>
+
+  <!-- ===================== trusted server boundary ===================== -->
+  <rect x="24" y="96" width="760" height="1300" rx="14" fill="#eef2ff" fill-opacity="0.45" stroke="#4338ca" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="40" y="120" font-weight="800" fill="#4338ca">TRUSTED: YieldGPT server process (app.server:app)</text>
+
+  <!-- 0 employee -->
+  <rect x="300" y="134" width="240" height="44" rx="22" fill="#0f172a"/>
+  <text x="420" y="161" text-anchor="middle" fill="#fff" font-weight="700">Employee asks a question</text>
+  <path class="flow" d="M420,178 V200"/>
+
+  <!-- 1 delivery wrapper -->
+  <rect class="step" x="60" y="202" width="700" height="56" rx="8"/>
+  <text x="76" y="225" class="h">1  AuditedDelivery (ASGI middleware)</text>
+  <text x="76" y="246" class="s">Signed session token -> user. request_received logged. The whole response is held back until step 12.</text>
+  <path class="flow" d="M420,258 V280"/>
+
+  <!-- 2 guard -->
+  <rect class="step" x="60" y="282" width="700" height="56" rx="8"/>
+  <text x="76" y="305" class="h">2  Guard: prompt-injection check on the question</text>
+  <text x="76" y="326" class="s">Injection attempt -> blocked answer, alert, nothing retrieved.</text>
+  <path class="flow" d="M420,338 V360"/>
+
+  <!-- 3 planner -->
+  <rect class="step" x="60" y="362" width="700" height="56" rx="8"/>
+  <text x="76" y="385" class="h">3  Planner</text>
+  <text x="76" y="406" class="s">Which platforms and which time window. Routing only: it grants nothing.</text>
+  <path class="flow" d="M420,418 V440"/>
+
+  <!-- 4 prefilter -->
+  <rect class="check" x="60" y="442" width="700" height="66" rx="8"/>
+  <text x="76" y="465" class="h">4  CHECK A  Index prefilter (acl_hint from last sync)</text>
+  <text x="76" y="486" class="s">Drops candidates the user clearly cannot see. A hint can only remove, never allow.</text>
+  <text x="76" y="502" class="s">No top-k cutoff before authorization. One authz_decision row per candidate (stage=prefilter).</text>
+  <path class="flow" d="M420,508 V530"/>
+
+  <!-- 5 live checks -->
+  <rect class="check" x="60" y="532" width="700" height="82" rx="8"/>
+  <text x="76" y="555" class="h">5  CHECK B + C  Live native check, before and after reading</text>
+  <text x="76" y="576" class="s">B: connector.check(user) on the platform itself -> fetch the current version -></text>
+  <text x="76" y="593" class="s">C: check again, and the version must match. Linked documents (link hops) pass the same B + C gates.</text>
+  <text x="76" y="609" class="s">Deny or unavailable at any point -> the document is dropped (stage=live / fetch rows).</text>
+  <path class="flow" d="M420,614 V636"/>
+
+  <!-- 6 context -->
+  <rect class="step" x="60" y="638" width="700" height="56" rx="8"/>
+  <text x="76" y="661" class="h">6  Guard on content: redact secrets, quarantine poisoned passages</text>
+  <text x="76" y="682" class="s">context_assembled logs exactly which document versions and passages go to the model.</text>
+  <path class="flow" d="M760,666 H850"/>
+
+  <!-- 8 grounding -->
+  <rect class="step" x="60" y="730" width="700" height="72" rx="8"/>
+  <text x="76" y="753" class="h">8  Grounding (server side)</text>
+  <text x="76" y="774" class="s">Unsupported claims are dropped; citations may only point at sources the model was given.</text>
+  <text x="76" y="791" class="s">The server rebuilds the factual text and citations from authorized snapshots, not from model text.</text>
+  <path class="flow" d="M850,766 H760"/>
+  <path class="flow" d="M420,802 V824"/>
+
+  <!-- 9 release -->
+  <rect class="check" x="60" y="826" width="700" height="82" rx="8"/>
+  <text x="76" y="849" class="h">9  CHECK D + E  Release recheck for every cited source</text>
+  <text x="76" y="870" class="s">Live check before and after a fresh read, just before the answer is released.</text>
+  <text x="76" y="887" class="s">Access revoked meanwhile -> draft discarded (answer_discarded), rebuilt once without that source,</text>
+  <text x="76" y="903" class="s">otherwise withheld. answer_returned records answer, citations, release outcome.</text>
+  <path class="flow" d="M420,908 V930"/>
+
+  <!-- 10 audit chain -->
+  <rect x="60" y="932" width="700" height="96" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="76" y="955" class="h">10  Audit chain (SQLite, append only)</text>
+  <text x="76" y="976" class="s">Every row hashes the previous one. Each phase is written in one transaction (log_many); a failed</text>
+  <text x="76" y="993" class="s">write fails the question. Question/answer/title text sealed with AES-GCM, redacted after retention.</text>
+  <text x="76" y="1010" class="s">Repeated attempts at one restricted doc raise probing_suspected.</text>
+  <path class="flow" d="M420,1028 V1050"/>
+
+  <!-- 11 checkpoint -->
+  <rect x="60" y="1052" width="700" height="66" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="76" y="1075" class="h">11  Checkpoint: head (row id, hash) written to EVERY external anchor</text>
+  <text x="76" y="1096" class="s">Put-only credential. Any anchor write fails -> 503, response_withheld, no answer bytes leave.</text>
+  <text x="76" y="1112" class="s">Release rule: no protected checkpoint, no release.</text>
+  <path class="flow" d="M760,1085 H850"/>
+  <path class="flow" d="M420,1118 V1140"/>
+
+  <!-- 12 delivered -->
+  <rect class="step" x="60" y="1142" width="700" height="56" rx="8"/>
+  <text x="76" y="1165" class="h">12  Answer released to the employee</text>
+  <text x="76" y="1186" class="s">response_delivered logged. Cache-Control: no-store, private.</text>
+  <path class="flow" d="M420,1198 V1220"/>
+
+  <!-- 13 preview -->
+  <rect class="check" x="60" y="1222" width="700" height="66" rx="8"/>
+  <text x="76" y="1245" class="h">13  CHECK F  Citation preview, on click</text>
+  <text x="76" y="1266" class="s">Per-user evidence cache (never shared across users) + live check + fresh read + fingerprint match</text>
+  <text x="76" y="1282" class="s">+ check again. Any failure -> 404 "Evidence is not available".</text>
+
+  <!-- compliance -->
+  <rect class="step" x="60" y="1310" width="700" height="72" rx="8"/>
+  <text x="76" y="1333" class="h">Compliance view (audit_policy)</text>
+  <text x="76" y="1354" class="s">Compliance: full stories. Platform admin: metadata only, pseudonymised actors. Everyone else: nothing.</text>
+  <text x="76" y="1371" class="s">Every audit read is itself audited. Standalone verifier: scripts/verify_audit.py (read-only key).</text>
+
+  <!-- audit taps -->
+  <path class="audit" d="M60,230 H40 V980 H60"/>
+  <path class="audit" d="M60,475 H40"/>
+  <path class="audit" d="M60,573 H40"/>
+  <path class="audit" d="M60,666 H40"/>
+  <path class="audit" d="M60,866 H40"/>
+  <path class="audit" d="M60,1170 H40 V980"/>
+  <path class="audit" d="M60,1255 H40 V1170"/>
+
+  <!-- ===================== right column: external systems ===================== -->
+
+  <!-- native platforms -->
+  <rect x="810" y="96" width="406" height="420" rx="14" fill="#ecfdf5" fill-opacity="0.6" stroke="#047857" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="826" y="120" font-weight="800" fill="#047857">SOURCE OF TRUTH: native platforms</text>
+  <text x="826" y="140" class="s">Each platform's own permission rules decide.</text>
+  <text x="826" y="156" class="s">YieldGPT never copies ACLs into a decision.</text>
+
+  <g>
+    <rect class="step" x="826" y="172" width="374" height="70" rx="8"/>
+    <text x="840" y="195" class="h">Confluence + Jira</text>
+    <text x="840" y="214" class="s">Real REST connectors (spaces, page restrictions,</text>
+    <text x="840" y="230" class="s">issue security). Tested against a fake Atlassian site.</text>
+    <rect x="1078" y="180" width="112" height="20" rx="10" fill="#fef3c7" stroke="#b45309"/>
+    <text x="1134" y="194" text-anchor="middle" class="tag" fill="#92400e">live run: M1</text>
+  </g>
+  <g>
+    <rect class="step" x="826" y="252" width="374" height="70" rx="8"/>
+    <text x="840" y="275" class="h">Slack</text>
+    <text x="840" y="294" class="s">Multi-workspace OAuth, delegated reads, signed events.</text>
+    <text x="840" y="310" class="s">Simulated + mocked HTTP in tests.</text>
+    <rect x="1078" y="260" width="112" height="20" rx="10" fill="#fef3c7" stroke="#b45309"/>
+    <text x="1134" y="274" text-anchor="middle" class="tag" fill="#92400e">live run: M2</text>
+  </g>
+  <g>
+    <rect class="step" x="826" y="332" width="374" height="70" rx="8"/>
+    <text x="840" y="355" class="h">Google Drive</text>
+    <text x="840" y="374" class="s">Drive API v3 connector, asker's own token for checks.</text>
+    <text x="840" y="390" class="s">Simulated by default; tested against a fake Drive API.</text>
+    <rect x="1078" y="340" width="112" height="20" rx="10" fill="#fef3c7" stroke="#b45309"/>
+    <text x="1134" y="354" text-anchor="middle" class="tag" fill="#92400e">live run: M3</text>
+  </g>
+  <rect class="step" x="826" y="412" width="374" height="88" rx="8"/>
+  <text x="840" y="435" class="h">Sync (polling + webhooks)</text>
+  <text x="840" y="454" class="s">Keeps the index and acl_hint fresh. Webhooks verified</text>
+  <text x="840" y="470" class="s">with each platform's own signature scheme. Freshness</text>
+  <text x="840" y="486" class="s">helps recall only; checks B to F always go live.</text>
+
+  <path class="flow" d="M760,573 H800 V300 H826" stroke-dasharray="0"/>
+  <text x="799" y="440" class="tag" fill="#047857" transform="rotate(-90 799 440)">check() + fetch</text>
+
+  <!-- LLM -->
+  <rect x="810" y="560" width="406" height="260" rx="14" fill="#fef2f2" fill-opacity="0.7" stroke="#b91c1c" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="826" y="584" font-weight="800" fill="#b91c1c">UNTRUSTED: the language model</text>
+  <rect class="untrusted" x="852" y="600" width="348" height="204" rx="8"/>
+  <text x="868" y="624" class="h">7  LLM (stub today; Tencent Hunyuan</text>
+  <text x="868" y="643" class="h">    via OpenAI-compatible adapter: M2)</text>
+  <text x="868" y="667" class="s">Sees only passages that passed checks A to C.</text>
+  <text x="868" y="685" class="s">Holds no credentials and calls no tools.</text>
+  <text x="868" y="703" class="s">Its output is treated as a proposal:</text>
+  <text x="868" y="721" class="s">grounding (8) and the release recheck (9)</text>
+  <text x="868" y="739" class="s">decide what reaches the user.</text>
+  <text x="868" y="763" class="s">Prompt injection inside documents cannot</text>
+  <text x="868" y="781" class="s">widen access: permissions are never asked of it.</text>
+
+  <!-- WORM anchors -->
+  <rect x="810" y="860" width="406" height="330" rx="14" fill="#f5f3ff" fill-opacity="0.8" stroke="#7c3aed" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="826" y="884" font-weight="800" fill="#6d28d9">INDEPENDENT: WORM checkpoint anchors</text>
+  <text x="826" y="904" class="s">Outside the app's write authority.</text>
+  <rect class="step" x="826" y="918" width="374" height="78" rx="8"/>
+  <text x="840" y="941" class="h">Anchor 1: S3 Object Lock, COMPLIANCE</text>
+  <text x="840" y="960" class="s">App credential: PutObject only. Verifier: read only.</text>
+  <text x="840" y="976" class="s">Even storage root cannot delete a locked version.</text>
+  <rect class="step" x="826" y="1006" width="374" height="78" rx="8"/>
+  <text x="840" y="1029" class="h">Anchor 2: separate S3 Object Lock store</text>
+  <text x="840" y="1048" class="s">Own administrator and credentials. A forged anchor 1</text>
+  <text x="840" y="1064" class="s">disagrees with anchor 2 -> verify fails (equivocation).</text>
+  <rect x="840" y="1098" width="160" height="22" rx="11" fill="#dcfce7" stroke="#15803d"/>
+  <text x="920" y="1113" text-anchor="middle" class="tag" fill="#166534">live: 2 x MinIO</text>
+  <rect x="1010" y="1098" width="180" height="22" rx="11" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1100" y="1113" text-anchor="middle" class="tag" fill="#92400e">cloud (COS / S3): M3</text>
+  <text x="826" y="1146" class="s">Verifier checks genesis to latest anchor; reports</text>
+  <text x="826" y="1162" class="s">verified_through and the uncheckpointed tail separately.</text>
+
+  <!-- identity -->
+  <rect x="810" y="1220" width="406" height="162" rx="14" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+  <text x="826" y="1244" font-weight="800" fill="#334155">Identity</text>
+  <text x="826" y="1266" class="s">Demo personas with seeded login and signed tokens</text>
+  <text x="826" y="1282" class="s">(demo mode only; not SSO). Each persona maps to its</text>
+  <text x="826" y="1298" class="s">own real account on each platform, so checks B to F</text>
+  <text x="826" y="1314" class="s">run as that person. Admin rights grant no source or</text>
+  <text x="826" y="1330" class="s">audit-content access.</text>
+  <rect x="826" y="1344" width="190" height="22" rx="11" fill="#e2e8f0" stroke="#475569"/>
+  <text x="921" y="1359" text-anchor="middle" class="tag" fill="#334155">simulated: needs SSO</text>
+
+  <!-- ===================== legend ===================== -->
+  <rect x="24" y="1420" width="1192" height="160" rx="12" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="44" y="1448" font-weight="800" fill="#0f172a">Legend and evidence (12 Oct 2026)</text>
+  <rect x="44" y="1462" width="22" height="16" rx="3" class="check"/><text x="76" y="1475" class="t">Permission check on the native platform (A is a filter only; B to F are live)</text>
+  <rect x="44" y="1488" width="22" height="16" rx="3" class="untrusted"/><text x="76" y="1501" class="t">Untrusted component: output is verified, never obeyed</text>
+  <line x1="44" y1="1522" x2="66" y2="1522" class="audit"/><text x="76" y="1527" class="t">Audit write (hash-chained, fail closed)</text>
+  <rect x="44" y="1540" width="60" height="18" rx="9" fill="#dcfce7" stroke="#15803d"/><text x="114" y="1554" class="t">verified live</text>
+  <rect x="214" y="1540" width="60" height="18" rx="9" fill="#fef3c7" stroke="#b45309"/><text x="284" y="1554" class="t">built, live run pending (owner)</text>
+  <rect x="514" y="1540" width="60" height="18" rx="9" fill="#e2e8f0" stroke="#475569"/><text x="584" y="1554" class="t">simulated</text>
+  <text x="720" y="1475" class="s">Load test (fixture, stub model, MinIO anchors): 25 users x 5 min,</text>
+  <text x="720" y="1492" class="s">19,223 answers, 0 permission leaks, 0 audit gaps, 0 cross-user hits.</text>
+  <text x="720" y="1509" class="s">End to end p95 51 ms (fixture, stub model; model time excluded).</text>
+  <text x="720" y="1526" class="s">Audit search over 100,000 events: p95 950 ms (synthetic).</text>
+  <text x="720" y="1546" class="s">Reports: internal-brain/evaluation/reports/member3-*</text>
+</svg>
