@@ -177,3 +177,17 @@ def test_crash_after_child_page_cleans_up_child_and_parent(monkeypatch):
     monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_ for _ in ()).throw(RuntimeError("boom")))
     probe.run(("confluence",))
     assert not _probe_objects(w) and probe.created == []
+
+
+def test_slow_revoke_write_does_not_count_against_the_hold_time(monkeypatch):
+    # Live: Atlassian took 3.1 s to accept a page restriction; the denial then held in about 3 s.
+    # F04 times from when the platform confirms the revoke, so the write's own latency is excluded.
+    import time as _time
+    w, probe = _probe()
+    probe.cfg.hold_within_s = 0.25         # far below the 0.4 s write: passes only if the write is excluded
+    real = probe._c_revoke
+    monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_time.sleep(0.4), real(pid)))
+    steps = {s.step: s for s in probe.run(("confluence",))}
+    assert steps["revoke: denial holds within 5 s of the revoke"].ok
+    assert steps["revoke: child page denied too (inherited restriction)"].ok
+    assert "revoke write 0.4" in steps["revoke: denial holds within 5 s of the revoke"].detail

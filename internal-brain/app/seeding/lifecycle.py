@@ -44,6 +44,7 @@ class ProbeConfig:
     security_level: str = "security-only"
     timeout_s: float = 240.0          # live search indexes can lag; polling has minute precision
     poll_every_s: float = 5.0
+    hold_within_s: float = 5.0        # F04: denial must hold within this long after the platform confirms
 
 
 @dataclass
@@ -261,7 +262,7 @@ class LifecycleProbe:
         t = time.perf_counter()
         revoke(nid)
         write_s = time.perf_counter() - t
-        t = time.perf_counter()
+        confirmed = t = time.perf_counter()
         resp = self._ask(self.cfg.viewer, tok2)                   # no poll: the index still has the doc
         next_q_s = time.perf_counter() - t
         denied_now = not self._cites(resp, uid)
@@ -272,19 +273,20 @@ class LifecycleProbe:
         # Atlassian's permission engine can take a moment to apply a change everywhere (seen live:
         # the same bulk check flipped between calls seconds apart). Measure how long until the
         # denial holds: 3 denied queries in a row. F04's bar is 5 s after the source confirms.
-        held, s, flips, resp = self._hold_denied(self.cfg.viewer, tok2, uid, time.perf_counter())
-        held_s = write_s + s
-        self._record(platform, "revoke: denial holds within 5 s of the revoke", held and held_s <= 5.0,
-                     held_s, f"3 denied queries in a row; allowed again after a denial: {flips} time(s)")
+        # Timed from when the platform confirmed the revoke (the write returned), as F04 defines it.
+        # The write's own latency is Atlassian's and is reported separately.
+        held, held_s, flips, resp = self._hold_denied(self.cfg.viewer, tok2, uid, confirmed)
+        self._record(platform, "revoke: denial holds within 5 s of the revoke", held and held_s <= self.cfg.hold_within_s,
+                     held_s, f"after the platform confirmed (revoke write {write_s:.2f}s); "
+                                 f"3 denied queries in a row; allowed again after a denial: {flips} time(s)")
         if child:
-            t = time.perf_counter()
             child_now = not self._cites(self._ask(self.cfg.viewer, tok3), child_uid)
             ccheck = conn.check(USERS[self.cfg.viewer], child)
-            held_c, s, flips_c, _ = self._hold_denied(self.cfg.viewer, tok3, child_uid, t)
+            held_c, s, flips_c, _ = self._hold_denied(self.cfg.viewer, tok3, child_uid, confirmed)
             self._record(platform, "revoke: child page denied too (inherited restriction)",
-                         child_now and ccheck.decision.value == "denied" and held_c and write_s + s <= 5.0,
-                         write_s + s, f"next query denied: {child_now}, check={ccheck.reason_code}, "
-                                      f"allowed again after a denial: {flips_c} time(s)")
+                         child_now and ccheck.decision.value == "denied" and held_c and s <= self.cfg.hold_within_s,
+                         s, f"after the parent's revoke was confirmed; next query denied: {child_now}, "
+                            f"check={ccheck.reason_code}, allowed again after a denial: {flips_c} time(s)")
             ok, s, _ = self._until(platform, lambda: self._cites(self._ask(self.cfg.insider, tok3), child_uid))
             self._record(platform, "revoke: insider still served the child page", ok, s)
         missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
