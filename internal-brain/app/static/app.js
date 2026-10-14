@@ -53,7 +53,7 @@
     return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
   }
   function modeLabel(mode) {
-    const labels = { conversation: 'YieldGPT assistant · No sources needed', extractive: 'Evidence extracts · No language model used', model_selected: 'AI-selected evidence · Exact source passages',
+    const labels = { model_summary: 'AI answer · Every sentence checked against its sources', conversation: 'YieldGPT assistant · No sources needed', extractive: 'Evidence extracts · No language model used', model_selected: 'AI-selected evidence · Exact source passages',
       extractive_fallback: 'Evidence extracts · Model fallback', stub: 'Evidence extracts · No language model used',
       hunyuan: 'Hunyuan · Evidence selection', model: 'AI-assisted evidence selection' };
     return labels[mode] || 'Answer mode unavailable';

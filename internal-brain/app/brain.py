@@ -13,7 +13,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
-from . import audit, conversation, grounding, guard, llm, planner
+from . import audit, conversation, grounding, guard, llm, planner, synthesis
 from .config import CONTEXT_BUDGET_CHARS, PER_PLATFORM_K
 from .metrics import Measurement, timed
 from .identity import User, principals
@@ -193,9 +193,22 @@ class Brain:
         refs = set(grounding._CITE.findall(answer))
         citations = [{k:s[k] for k in ('ref','platform','title','url','container','updated_iso','uid','version')}
                      for s in sources if s['ref'] in refs]
+        summary_dropped = 0
         if citations:
             answer = conversation.present(answer, citations)
-        return answer, citations, stats, n_red, {'mode': mode, 'rejected_claims': stats['dropped'],
+            # Optional model-written answer on top, from the cited (already authorized) sources only,
+            # checked sentence by sentence. The exact extracts below it stay the source of truth.
+            summary, sm = synthesis.summarize(question, [s for s in sources if s['ref'] in refs])
+            self._log(user.username, 'summary_measurement', query_id=qid,
+                      **{k: v for k, v in sm.items() if k != 'dropped_text'})
+            if sm.get('dropped'):
+                self._log(user.username, 'unsupported_summary_sentences_removed', severity='warning',
+                          query_id=qid, dropped=sm.get('dropped_text', []))
+            if summary:
+                summary, _ = guard.redact(summary)
+                answer = summary + "\n\n" + answer.replace("Here's what I found in ", "Evidence from ", 1)
+                mode, summary_dropped = 'model_summary', sm.get('dropped', 0)
+        return answer, citations, stats, n_red, {'mode': mode, 'rejected_claims': stats['dropped'] + summary_dropped,
                                                 'grounding': 'complete_source_passages'}
 
     @timed('retrieval_ms')
