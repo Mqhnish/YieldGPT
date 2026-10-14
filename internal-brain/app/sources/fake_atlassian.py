@@ -73,6 +73,7 @@ class FakeAtlassian:
             self._jid(k)
         self.by_account = _LiveAccounts()   # resolved per request: group changes apply immediately
         self.calls: list[str] = []  # request log, handy in tests
+        self.bot_lacks: set[str] = set()   # Jira project permissions the integration account lacks
 
     def transport(self) -> httpx.MockTransport:
         return httpx.MockTransport(self.handle)
@@ -230,7 +231,9 @@ class FakeAtlassian:
             "summary": i["summary"], "status": {"name": i["status"]},
             "project": {"id": str(sorted(self.w.projects).index(i["project"]) + 10000), "key": i["project"]},
             "security": {"id": "10100", "name": i["level"]} if i["level"] else None,
-            "updated": _iso_jira(i["updated"]), "description": adf, "issuelinks": links}}
+            "updated": _iso_jira(i["updated"]), "description": adf, "issuelinks": links,
+            "comment": {"comments": [{"id": str(n), "author": {"displayName": c["author"]}, "body": c["body"]}
+                                     for n, c in enumerate(i.get("comments", []))]}}}
 
     def _remotelinks(self, key):
         out = []
@@ -357,6 +360,10 @@ def _jira_write(self, method, rest, q, body):
     from .textconv import adf_to_text
     from .links import uid_from_url
     w = self.w
+    if rest == ["mypermissions"] and method == "GET":
+        wanted = [x for x in q.get("permissions", "").split(",") if x]
+        return self._json(200, {"permissions": {p: {"key": p, "havePermission": p not in self.bot_lacks}
+                                                for p in wanted}})
     if rest == ["group"] and method == "POST":
         if body["name"] in self.groups:
             return self._json(400, {"errorMessages": ["group exists"]})
@@ -406,6 +413,12 @@ def _jira_write(self, method, rest, q, body):
         issue["updated"] = time.time()
         w._changed("jira", rest[1], False)
         return self._json(204)
+    if len(rest) == 3 and rest[0] == "issue" and rest[2] == "comment" and method == "POST":
+        issue = w.issues[rest[1]]
+        issue.setdefault("comments", []).append({"author": "Integration bot", "body": body["body"]})
+        issue["updated"] = time.time()
+        w._changed("jira", rest[1], False)
+        return self._json(201, {"id": str(len(issue["comments"]))})
     if len(rest) == 2 and rest[0] == "issue" and method == "DELETE":
         w.issues[rest[1]]
         w.delete("jira", rest[1], push=False)

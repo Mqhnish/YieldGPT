@@ -51,13 +51,17 @@ class LifecycleProbe:
     brain: object
     cfg: ProbeConfig = field(default_factory=ProbeConfig)
     sleep: callable = time.sleep
+    # Client for the probe's own writes. The connectors' client keeps a short timeout so permission
+    # checks fail closed fast; writes don't need that (seen live: a Jira transition took over 10 s).
+    writer: object = None
     steps: list[Step] = field(default_factory=list)
-    created: dict = field(default_factory=dict)   # platform -> native id, for cleanup
+    created: list = field(default_factory=list)   # (platform, native id) in creation order, for cleanup
+    stage: str = ""                               # current step, named in error reports
 
     # ------------------------------------------------------------------ helpers
     @property
     def api(self):
-        return self.brain.connectors["confluence"].api
+        return self.writer or self.brain.connectors["confluence"].api
 
     def _ask(self, who, tok):
         return self.brain.ask(USERS[who], f"lifecycle probe {tok}")
@@ -86,11 +90,12 @@ class LifecycleProbe:
         return {"representation": "storage",
                 "value": f"<p>YieldGPT lifecycle probe {tok}. Temporary test page, deleted automatically.</p>"}
 
-    def _c_create(self, tok):
+    def _c_create(self, tok, parent=None):
         sid = self.api.get("/wiki/api/v2/spaces", keys=self.cfg.space_key)["results"][0]["id"]
-        r = self.api.post("/wiki/api/v2/pages", {"spaceId": sid, "status": "current",
-                                                  "title": f"YieldGPT lifecycle probe {tok}", "body": self._c_body(tok)})
-        return str(r["id"])
+        body = {"spaceId": sid, "status": "current", "title": f"YieldGPT lifecycle probe {tok}", "body": self._c_body(tok)}
+        if parent:
+            body["parentId"] = parent
+        return str(self.api.post("/wiki/api/v2/pages", body)["id"])
 
     def _c_edit(self, pid, tok):
         cur = self.api.get(f"/wiki/api/v2/pages/{quote(pid, safe='')}")
@@ -127,9 +132,32 @@ class LifecycleProbe:
             "summary": f"YieldGPT lifecycle probe {tok}",
             "description": self._adf(f"YieldGPT lifecycle probe {tok}. Temporary test issue, deleted automatically.")}})
 
+    def _j_transition(self, key):
+        """Move the issue to any other status the workflow offers. Returns the new status name."""
+        cur = self.api.get(f"/rest/api/3/issue/{quote(key, safe='')}", fields="status")["fields"]["status"]["name"]
+        ts = self.api.get(f"/rest/api/3/issue/{quote(key, safe='')}/transitions").get("transitions", [])
+        t = next(t for t in ts if (t.get("to") or {}).get("name") and t["to"]["name"] != cur)
+        self.api.post(f"/rest/api/3/issue/{quote(key, safe='')}/transitions", {"transition": {"id": t["id"]}})
+        return t["to"]["name"]
+
+    def _j_comment(self, key, tok):
+        self.api.post(f"/rest/api/3/issue/{quote(key, safe='')}/comment",
+                      {"body": self._adf(f"Lifecycle probe comment {tok}.")})
+
     def _j_revoke(self, key):
         self.api.request("PUT", f"/rest/api/3/issue/{quote(key, safe='')}",
                          json={"fields": {"security": {"name": self.cfg.security_level}}})
+
+    JIRA_NEEDS = ("BROWSE_PROJECTS", "CREATE_ISSUES", "EDIT_ISSUES", "TRANSITION_ISSUES", "ADD_COMMENTS",
+                  "SET_ISSUE_SECURITY", "DELETE_ISSUES")
+
+    def _j_missing(self):
+        """Project permissions the integration account lacks. Checked BEFORE creating anything,
+        so a missing grant can't leave a probe issue behind (seen live: no Delete Issues)."""
+        r = self.api.get("/rest/api/3/mypermissions", projectKey=self.cfg.project_key,
+                         permissions=",".join(self.JIRA_NEEDS))
+        perms = r.get("permissions", {})
+        return [p for p in self.JIRA_NEEDS if not (perms.get(p) or {}).get("havePermission")]
 
     def _j_delete(self, key):
         self.api.request("DELETE", f"/rest/api/3/issue/{quote(key, safe='')}")
@@ -138,18 +166,40 @@ class LifecycleProbe:
     def _account(username, platform):
         return dict(USERS[username].accounts).get(platform)
 
+    def _hold_denied(self, who, tok, uid, t0):
+        """Ask until 3 denials in a row (or timeout). Returns (held, seconds since t0, re-allows, last response)."""
+        streak, flips = 0, 0
+        while True:
+            resp = self._ask(who, tok)
+            if self._cites(resp, uid):
+                flips += streak > 0
+                streak = 0
+            else:
+                streak += 1
+            if streak >= 3 or time.perf_counter() - t0 > self.cfg.timeout_s:
+                return streak >= 3, time.perf_counter() - t0, flips, resp
+            self.sleep(min(self.cfg.poll_every_s, 1.0))
+
     # ------------------------------------------------------------------ the lifecycle
     def run_platform(self, platform):
         conn = self.brain.connectors[platform]
+        if platform == "jira":
+            self.stage = "preflight"
+            missing = self._j_missing()
+            self._record(platform, "preflight: integration account has the Jira permissions it needs", not missing,
+                         0.0, f"missing in {self.cfg.project_key}: {', '.join(missing)}" if missing else "")
+            if missing:
+                return
         w = {"confluence": (self._c_create, self._c_edit, self._c_revoke, self._c_delete),
              "jira": (self._j_create, self._j_edit, self._j_revoke, self._j_delete)}[platform]
         create, edit, revoke, delete = w
         tok1, tok2 = "zq" + secrets.token_hex(4), "zq" + secrets.token_hex(4)
 
         # 1. create -> retrievable
+        self.stage = "create"
         t = time.perf_counter()
         nid = create(tok1)
-        self.created[platform] = nid
+        self.created.append((platform, nid))
         uid = conn.uid(nid)
         write_s = time.perf_counter() - t
         hit, s, tries = self._until(platform, lambda: self._cites(self._ask(self.cfg.viewer, tok1), uid))
@@ -159,6 +209,7 @@ class LifecycleProbe:
             return
 
         # 2. edit -> new version served, old text gone
+        self.stage = "edit"
         t = time.perf_counter()
         edit(nid, tok2)
         write_s = time.perf_counter() - t
@@ -175,7 +226,38 @@ class LifecycleProbe:
         self._record(platform, "edit: new version served, old text not served", hit and old_gone, write_s + s,
                      f"{tries} poll+ask round(s); old version or text served: {not old_gone}")
 
+        child = child_uid = tok3 = None
+        if platform == "confluence":
+            # 2b. a child page, to prove restrictions on the parent are inherited (L05)
+            self.stage = "child page"
+            tok3 = "zq" + secrets.token_hex(4)
+            t = time.perf_counter()
+            child = self._c_create(tok3, parent=nid)
+            self.created.append((platform, child))
+            child_uid = conn.uid(child)
+            hit, s, tries = self._until(platform, lambda: self._cites(self._ask(self.cfg.viewer, tok3), child_uid))
+            self._record(platform, "child page: retrievable by viewer", hit, time.perf_counter() - t,
+                         f"{tries} poll+ask round(s)")
+        else:
+            # 2b. workflow status change and a new comment both served (L06)
+            self.stage = "status and comment"
+            tok3 = "zq" + secrets.token_hex(4)
+            t = time.perf_counter()
+            status = self._j_transition(nid)
+            self._j_comment(nid, tok3)
+            write_s = time.perf_counter() - t
+            def updated_served():
+                live = conn.fetch(nid)
+                c = self._cites(self._ask(self.cfg.viewer, tok3), uid)
+                entry = self.brain.index.get(uid)
+                return (c and c[0]["version"] == live.version and entry is not None
+                        and f"[{status}]" in entry.doc.text and tok3 in entry.doc.text)
+            hit, s, tries = self._until(platform, updated_served)
+            self._record(platform, "status change and new comment served", hit, write_s + s,
+                         f"new status '{status}', {tries} poll+ask round(s)")
+
         # 3. revoke -> denied on the very next query, no reindex, looks like "no results"
+        self.stage = "revoke"
         t = time.perf_counter()
         revoke(nid)
         write_s = time.perf_counter() - t
@@ -184,34 +266,58 @@ class LifecycleProbe:
         next_q_s = time.perf_counter() - t
         denied_now = not self._cites(resp, uid)
         check = conn.check(USERS[self.cfg.viewer], nid)
-        missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
-        same_as_missing = (resp["answer"], resp["citations"], resp["status"]) == \
-                          (missing["answer"], missing["citations"], missing["status"])
-        insider_ok = self._cites(self._ask(self.cfg.insider, tok2), uid)
         self._record(platform, "revoke: viewer denied on next query (no reindex)", denied_now and
                      check.decision.value == "denied", write_s + next_q_s,
                      f"revoke write {write_s:.2f}s, next query {next_q_s:.2f}s, check={check.reason_code}")
+        # Atlassian's permission engine can take a moment to apply a change everywhere (seen live:
+        # the same bulk check flipped between calls seconds apart). Measure how long until the
+        # denial holds: 3 denied queries in a row. F04's bar is 5 s after the source confirms.
+        held, s, flips, resp = self._hold_denied(self.cfg.viewer, tok2, uid, time.perf_counter())
+        held_s = write_s + s
+        self._record(platform, "revoke: denial holds within 5 s of the revoke", held and held_s <= 5.0,
+                     held_s, f"3 denied queries in a row; allowed again after a denial: {flips} time(s)")
+        if child:
+            t = time.perf_counter()
+            child_now = not self._cites(self._ask(self.cfg.viewer, tok3), child_uid)
+            ccheck = conn.check(USERS[self.cfg.viewer], child)
+            held_c, s, flips_c, _ = self._hold_denied(self.cfg.viewer, tok3, child_uid, t)
+            self._record(platform, "revoke: child page denied too (inherited restriction)",
+                         child_now and ccheck.decision.value == "denied" and held_c and write_s + s <= 5.0,
+                         write_s + s, f"next query denied: {child_now}, check={ccheck.reason_code}, "
+                                      f"allowed again after a denial: {flips_c} time(s)")
+            ok, s, _ = self._until(platform, lambda: self._cites(self._ask(self.cfg.insider, tok3), child_uid))
+            self._record(platform, "revoke: insider still served the child page", ok, s)
+        missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
+        same_as_missing = (resp["answer"], resp["citations"], resp["status"]) == \
+                          (missing["answer"], missing["citations"], missing["status"])
         self._record(platform, "revoke: denial identical to a nonexistent document", same_as_missing, 0.0)
-        self._record(platform, "revoke: insider still served", insider_ok, 0.0)
+        insider_ok, s, _ = self._until(platform, lambda: self._cites(self._ask(self.cfg.insider, tok2), uid))
+        self._record(platform, "revoke: insider still served", insider_ok, s)
 
         # 4. delete -> never served again
+        self.stage = "delete"
+        if child:
+            delete(child)
+            self.created.remove((platform, child))
         t = time.perf_counter()
         delete(nid)
         write_s = time.perf_counter() - t
         t = time.perf_counter()
-        gone_now = not self._cites(self._ask(self.cfg.insider, tok2), uid)
+        gone_now = not self._cites(self._ask(self.cfg.insider, tok2), uid) and \
+            not (child and self._cites(self._ask(self.cfg.insider, tok3), child_uid))
         next_q_s = time.perf_counter() - t
         self._record(platform, "delete: not served on next query (no reindex)", gone_now, write_s + next_q_s,
                      f"delete write {write_s:.2f}s, next query {next_q_s:.2f}s")
-        purged, s, tries = self._until(platform, lambda: self.brain.index.get(uid) is None)
+        purged, s, tries = self._until(platform, lambda: self.brain.index.get(uid) is None and
+                                       (not child or self.brain.index.get(child_uid) is None))
         still_gone = not self._cites(self._ask(self.cfg.insider, tok2), uid)
         self._record(platform, "delete: removed from index by reconciliation, still not served",
                      purged and still_gone, s, f"{tries} poll round(s)")
-        self.created.pop(platform, None)
+        self.created.remove((platform, nid))
 
     def cleanup(self):
         """Delete whatever this probe created and has not deleted yet. Touches nothing else."""
-        for platform, nid in list(self.created.items()):
+        for platform, nid in reversed(list(self.created)):
             try:
                 (self._c_delete if platform == "confluence" else self._j_delete)(nid)
                 self._record(platform, "cleanup: probe object deleted", True, 0.0)
@@ -220,7 +326,7 @@ class LifecycleProbe:
             except Exception as e:  # noqa: BLE001
                 self._record(platform, "cleanup: probe object deleted", False, 0.0,
                              f"{type(e).__name__}: delete it by hand ({platform} {nid})")
-            self.created.pop(platform, None)
+            self.created.remove((platform, nid))
 
     def run(self, platforms=("confluence", "jira")):
         try:
@@ -228,7 +334,7 @@ class LifecycleProbe:
                 try:
                     self.run_platform(p)
                 except Exception as e:  # noqa: BLE001  (record and move on; cleanup below)
-                    self._record(p, "error", False, 0.0, type(e).__name__)
+                    self._record(p, "error", False, 0.0, f"during {self.stage or 'setup'}: {type(e).__name__}: {e}")
         finally:
             self.cleanup()
         return self.steps

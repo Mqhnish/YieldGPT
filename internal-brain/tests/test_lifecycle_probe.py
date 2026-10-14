@@ -54,7 +54,7 @@ def test_probe_cleans_up_when_a_step_crashes(monkeypatch):
     w, probe = _probe()
     monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_ for _ in ()).throw(RuntimeError("boom")))
     steps = probe.run(("confluence",))
-    assert any(s.step == "error" and not s.ok for s in steps)
+    assert any(s.step == "error" and not s.ok and s.detail.startswith("during revoke") for s in steps)
     assert any(s.step == "cleanup: probe object deleted" and s.ok for s in steps)
     assert not _probe_objects(w)
 
@@ -64,11 +64,116 @@ def test_report_redacts_token_email_site_and_account_ids(monkeypatch):
     from app.identity import USERS
     monkeypatch.setattr(config, "ATLASSIAN_API_TOKEN", "ATATT3xFfGF0secret-token-value")
     monkeypatch.setattr(config, "ATLASSIAN_EMAIL", "bot@example.org")
-    monkeypatch.setattr(config, "ATLASSIAN_SITE", "https://yieldgpt-demo.atlassian.net")
+    monkeypatch.setattr(config, "ATLASSIAN_SITE", "https://example-site.atlassian.net")
     sys.path.insert(0, "scripts")
     mod = importlib.import_module("atlassian_lifecycle_probe")
     acct = dict(USERS["ravi"].accounts)["jira"]
-    text = mod.redact(f"ATATT3xFfGF0secret-token-value bot@example.org https://yieldgpt-demo.atlassian.net/wiki {acct} ok")
-    for leaked in ("secret-token", "bot@example.org", "yieldgpt-demo", acct):
+    text = mod.redact(f"ATATT3xFfGF0secret-token-value bot@example.org https://example-site.atlassian.net/wiki {acct} ok")
+    for leaked in ("secret-token", "bot@example.org", "example-site", acct):
         assert leaked not in text
     assert text.endswith("ok")
+
+
+def test_probe_reports_a_revocation_that_lags(monkeypatch):
+    # Seen live: Atlassian's permission check can keep answering the old way for a moment.
+    w, probe = _probe()
+    jira = probe.brain.connectors["jira"]
+    real = jira._check_batch
+    stale = {"left": 0}
+    real_revoke = probe._j_revoke
+
+    def revoke(key):
+        real_revoke(key)
+        # Long enough to outlast one whole question. (With only 2 stale answers the pipeline's
+        # release re-check already denies it, so the issue is never cited.)
+        stale["left"] = 8
+
+    def lagging(user, account, keys):
+        out = real(user, account, keys)
+        if stale["left"] > 0 and user.username == "ravi":
+            stale["left"] -= 1
+            return {k: (Decision.ALLOWED, "jira_browse_allowed", "stale", "") for k in out}
+        return out
+    monkeypatch.setattr(probe, "_j_revoke", revoke)
+    monkeypatch.setattr(jira, "_check_batch", lagging)
+    steps = {s.step: s for s in probe.run(("jira",))}
+    assert not steps["revoke: viewer denied on next query (no reindex)"].ok      # caught, not hidden
+    assert steps["revoke: denial holds within 5 s of the revoke"].ok              # and it settles
+    assert not _probe_objects(w)
+
+
+def test_short_stale_allow_is_stopped_by_the_release_recheck(monkeypatch):
+    # Defense in depth: if Atlassian still says "allowed" for the before-read and after-read
+    # checks right after a revoke, the release re-check denies it and nothing is cited.
+    w, probe = _probe()
+    jira = probe.brain.connectors["jira"]
+    real, stale, real_revoke = jira._check_batch, {"left": 0}, probe._j_revoke
+
+    def revoke(key):
+        real_revoke(key)
+        stale["left"] = 2
+
+    def lagging(user, account, keys):
+        out = real(user, account, keys)
+        if stale["left"] > 0 and user.username == "ravi":
+            stale["left"] -= 1
+            return {k: (Decision.ALLOWED, "jira_browse_allowed", "stale", "") for k in out}
+        return out
+    monkeypatch.setattr(probe, "_j_revoke", revoke)
+    monkeypatch.setattr(jira, "_check_batch", lagging)
+    steps = {s.step: s for s in probe.run(("jira",))}
+    assert steps["revoke: viewer denied on next query (no reindex)"].ok
+    assert not _probe_objects(w)
+
+
+def test_missing_jira_permission_stops_before_creating_anything():
+    # Live: the bot lacked Delete Issues, so three runs each left a probe issue behind.
+    w, probe = _probe()
+    fake = probe.brain.connectors["jira"].api._http._transport.handler.__self__
+    fake.bot_lacks = {"DELETE_ISSUES"}
+    before = set(w.issues)
+    steps = probe.run(("jira",))
+    assert [(s.step, s.ok) for s in steps] == [("preflight: integration account has the Jira permissions it needs", False)]
+    assert "DELETE_ISSUES" in steps[0].detail
+    assert set(w.issues) == before and not any("POST /rest/api/3/issue" == c for c in fake.calls)
+
+
+def test_probe_covers_inherited_restriction_and_status_and_comment():
+    w, probe = _probe()
+    steps = {s.step: s for s in probe.run()}
+    for name in ("child page: retrievable by viewer", "revoke: child page denied too (inherited restriction)",
+                 "revoke: insider still served the child page", "status change and new comment served"):
+        assert steps[name].ok, name
+    assert not _probe_objects(w)
+
+
+def test_probe_catches_a_restriction_that_is_not_inherited(monkeypatch):
+    w, probe = _probe()
+    conf = probe.brain.connectors["confluence"]
+    real = conf._check
+    children = set()
+    real_create = probe._c_create
+
+    def create(tok, parent=None):
+        pid = real_create(tok, parent)
+        if parent:
+            children.add(pid)
+        return pid
+
+    def no_inherit(user, account, pid):           # a bug: child pages ignore the parent's restriction
+        if pid in children:
+            return Decision.ALLOWED, "confluence_read_allowed", "bug", ""
+        return real(user, account, pid)
+    monkeypatch.setattr(probe, "_c_create", create)
+    monkeypatch.setattr(conf, "_check", no_inherit)
+    monkeypatch.setattr(conf, "supports_batch", False, raising=False)
+    steps = {s.step: s for s in probe.run(("confluence",))}
+    assert not steps["revoke: child page denied too (inherited restriction)"].ok
+    assert not _probe_objects(w)
+
+
+def test_crash_after_child_page_cleans_up_child_and_parent(monkeypatch):
+    w, probe = _probe()
+    monkeypatch.setattr(probe, "_c_revoke", lambda pid: (_ for _ in ()).throw(RuntimeError("boom")))
+    probe.run(("confluence",))
+    assert not _probe_objects(w) and probe.created == []

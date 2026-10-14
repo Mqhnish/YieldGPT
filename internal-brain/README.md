@@ -45,7 +45,7 @@ python scripts/judging_demo.py --markdown docs/WORKED_EXAMPLES.md --json evaluat
 
 The controlled comparison runs the original Member 1 lexical pipeline and the current pipeline on the **same** current fixtures and 65 question expectations. It measures **50/65 → 65/65** passing questions and **85.7% → 100%** required-source recall. The separate 28-case grounding category measures **15/28 → 28/28**, with false accepts falling from 13 to zero. Neither pipeline exposed unauthorized citations/context in this fixture set. This is a reconstructed offline comparison, not historical production evidence.
 
-The integrated automated suite passes **395 tests** (default `fixture` mode), with four real-S3 checks skipped because no endpoint is configured. `IB_ATLASSIAN_MODE=sim python -m pytest -q` runs the same suite against the in-process simulator (393 pass, two fixture-only checks skip).
+The integrated automated suite passes **413 tests** (default `fixture` mode, 13 Oct 2026), with four real-S3 checks skipped because no endpoint is configured. `IB_ATLASSIAN_MODE=sim python -m pytest -q` runs the same suite against the in-process simulator (404 pass, 13 skip: the S3 checks plus fixture-only checks that drive the HTTP connectors).
 
 See [the comparison](evaluation/reports/comparison.md), [current per-case measurements](evaluation/reports/current.json), [integration review](docs/INTEGRATION_REVIEW.md) and [evaluation methods](docs/EVALUATION.md). The 19,700-object synthetic benchmark measures the local index only.
 
@@ -73,6 +73,20 @@ Confluence and Jira run through **real REST connectors** (`app/sources/confluenc
 
 Permission decisions are Atlassian's own: Confluence's content permission check for the asker's accountId, and Jira's bulk `permissions/check` (one call per pipeline phase for every issue in it). Every phase of the pipeline (before read, after read, link hops, release) batches its checks per platform under one shared deadline. Confluence checks also report the page version, so an edit landing between read and recheck is caught. Errors, timeouts and rate limits fail closed; tokens never appear in errors and are never sent off-site. Polling uses an overlap window with dedupe, plus deletion reconciliation that holds back suspicious mass deletes.
 
+**Verified live (13 Oct 2026, real Atlassian Cloud site, Standard trial, four teammates as personas, kim without an account):**
+
+| Check | Result | Report |
+|---|---|---|
+| Conformance: every persona x every seeded page and issue, decided by Atlassian | **84/84** | [atlassian-live-check.md](evaluation/reports/atlassian-live-check.md) |
+| Jira issue security level (demo PAY-110): hidden from ravi who can browse the project, shown to asha | pass, no code workaround needed | same |
+| Lifecycle probe through the real pipeline: create, edit, revoke, delete on Confluence and Jira | **17/17** | [atlassian-live.md](evaluation/reports/atlassian-live.md) |
+| New object retrievable (immediate poll) | Confluence 16.0 s, Jira 9.4 s | same |
+| Revoked user denied on the very next query, no reindex; denial held (3 in a row) | Confluence 4.2 s, Jira 2.9 s, never re-allowed | same |
+| Denial identical to a document that never existed | pass on both | same |
+| Deleted object not served on the next query, then removed from the index | pass on both | same |
+
+These are single dated runs on a small seeded site, not throughput measurements. While permission schemes were being edited, Jira's bulk permission check briefly gave different answers for the same user seconds apart; the pipeline's release re-check stops a short stale "allowed" (tested), and the probe measures how long a revoke takes to hold.
+
 - Live setup, seeding a real site with the demo company, and the read-only conformance check: [docs/ATLASSIAN_SETUP.md](docs/ATLASSIAN_SETUP.md)
 - Brief-sized estate (about 30,000 documents) and benchmark: [docs/SCALE.md](docs/SCALE.md)
 - Connector pattern for other platforms: [docs/CONNECTOR_GUIDE.md](docs/CONNECTOR_GUIDE.md)
@@ -86,7 +100,7 @@ Member 3’s independent S3 Object Lock checkpoint implementation is included. D
 ## Boundaries
 
 - Production SSO is still a teammate integration. The seeded demo identity directory must be replaced before connecting real employees or sensitive company data.
-- Confluence and Jira use real REST connectors, tested against a fake Atlassian site; the live site run (`scripts/atlassian_live_check.py`) has not been done yet. Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Atlassian/Slack/Drive/model/OAuth/WORM deployments have not been verified.
+- Confluence and Jira use real REST connectors, verified on a real Atlassian Cloud site (Standard trial) on 13 Oct 2026: conformance 84/84 and lifecycle 17/17 (see above). Webhooks are not wired for Atlassian (polling plus read-through only), and the live site is a small seeded demo, not a 12,000-page estate; scale numbers come from the synthetic fixture run in [docs/SCALE.md](docs/SCALE.md). Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Slack/Drive/model/OAuth/WORM deployments have not been verified.
 - Conversation allowlists intentionally bound ingestion; multi-workspace support does not grant access to every private channel or DM. Slack itself authorizes every delegated read.
 - Search uses controlled lexical expansion and authorized link traversal, without embeddings. Broad queries can require many native permission calls; measure live throughput before scaling.
 - Grounding proves exact passage support, not source truth, complete answers, semantic entailment or perfect contradiction handling. Source dates remain visible.
