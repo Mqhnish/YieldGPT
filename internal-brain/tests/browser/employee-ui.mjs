@@ -39,9 +39,14 @@ try {
   await page.locator('.inline-citation').first().click();
   await page.locator('.evidence-passage').first().waitFor();
   assert.match(await page.locator('.evidence-link').getAttribute('href'), /^https:/);
-  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.evidence-link').getAttribute('target'), '_blank');
+  assert.equal(await page.locator('.evidence-followup').isVisible(), true);
+  assert.equal(await page.locator('.evidence-copy').isVisible(), true);
+  await page.locator('.evidence-followup').click();
   assert.equal(await page.locator('#evidence-dialog').isVisible(), false);
-  pass('Real retrieval, clickable citations, live evidence drawer, HTTPS source and Escape');
+  assert.match(await page.locator('#question').inputValue(), /^Follow-up about/);
+  assert.equal(await page.locator('#question').evaluate(element => element === document.activeElement), true);
+  pass('Real retrieval, actionable evidence drawer, new-tab source and grounded follow-up');
   await signIn('kim');
   assert.equal(await page.locator('#answer-section').isVisible(), false);
   assert.equal(await page.locator('#answer-body').textContent(), '');

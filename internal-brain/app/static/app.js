@@ -314,7 +314,7 @@
       const updated = dateLabel(citation.updated_iso);
       info.append(node('span', 'source-title', citation.title), node('span', 'source-subtitle',
         [platformInfo(citation.platform).label, citation.container, updated ? `Updated ${updated}` : ''].filter(Boolean).join(' · ')));
-      card.append(platformIcon(citation.platform), info, node('span', 'source-ref', citation.ref), node('span', 'source-arrow', '↗'));
+      card.append(platformIcon(citation.platform), info, node('span', 'source-ref', citation.ref), node('span', 'source-arrow', '→'));
       card.addEventListener('click', () => openEvidence(citation.ref)); $('source-list').append(card);
     }
     $('sources-section').hidden = citations.length === 0;
@@ -341,7 +341,6 @@
       const updated = dateLabel(evidence.updated_iso);
       content.append(node('div', 'evidence-metadata', [updated ? `Updated ${updated}` : '', evidence.version !== undefined ? `Version ${evidence.version}` : ''].filter(Boolean).join(' · ')));
       const url = httpsUrl(evidence.url);
-      if (url) { const link = node('a', 'evidence-link', 'Open original source ↗'); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; content.append(link); }
       content.append(node('div', 'section-label passages-label', 'SUPPORTING PASSAGES'));
       const passages = Array.isArray(evidence.passages) ? evidence.passages : [];
       passages.forEach((passage, index) => {
@@ -349,6 +348,32 @@
         quote.append(node('span', 'passage-id', `Passage ${index + 1}`), document.createTextNode(String(passage.text || ''))); content.append(quote);
       });
       if (!passages.length) content.append(node('p', 'evidence-empty', 'No supporting passages are available.'));
+      const actions = node('div', 'evidence-actions');
+      const followUp = node('button', 'primary-button evidence-followup', 'Ask a follow-up'); followUp.type = 'button';
+      followUp.addEventListener('click', () => {
+        const title = String(evidence.title || 'this source').slice(0, 140);
+        closeEvidence();
+        $('question').value = `Follow-up about “${title}”: `; updateCount();
+        $('question').focus(); $('question').setSelectionRange($('question').value.length, $('question').value.length);
+        $('question').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        announce(`Ready for a follow-up about ${title}.`);
+      });
+      const copyCitation = node('button', 'icon-button evidence-copy', 'Copy citation'); copyCitation.type = 'button';
+      copyCitation.addEventListener('click', async () => {
+        const citation = `[${ref}] ${evidence.title}${url ? ` | ${url}` : ''}`;
+        try {
+          await navigator.clipboard.writeText(citation); copyCitation.textContent = 'Copied'; announce('Citation copied.');
+          window.setTimeout(() => { if (copyCitation.isConnected) copyCitation.textContent = 'Copy citation'; }, 2000);
+        } catch (_) { announce('Copy is unavailable in this browser.'); }
+      });
+      actions.append(followUp, copyCitation);
+      if (url) {
+        const link = node('a', 'evidence-link', `Open in ${platformInfo(evidence.platform).label} ↗`);
+        link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; actions.append(link);
+      }
+      const returnToAnswer = node('button', 'text-button evidence-return', 'Return to answer'); returnToAnswer.type = 'button';
+      returnToAnswer.addEventListener('click', () => { closeEvidence(); $('answer-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      actions.append(returnToAnswer); content.append(actions);
       content.append(node('p', 'evidence-disclaimer', 'Access is checked when this source is opened. Ask again to refresh the answer when source content changes.'));
     } catch (error) {
       if (!isCurrent(epoch) || serial !== state.evidenceSerial || error.name === 'AbortError') return;

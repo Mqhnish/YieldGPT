@@ -19,7 +19,9 @@
 
 /* Display and interface typography, with self-contained system fallbacks. */
 :root{--font-display:"Space Grotesk","Avenir Next","Segoe UI",sans-serif;--font-interface:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace}
-body,button,input,textarea,summary{font-family:var(--font-interface)}\n.sources-footer .logo-loop{margin-left:auto;margin-right:auto}
+body,button,input,textarea,summary{font-family:var(--font-interface)}
+.sources-footer .logo-loop{margin-left:auto;margin-right:auto}
+.evidence-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px;padding-top:20px;border-top:1px solid #6b3048}.evidence-actions .evidence-followup{grid-column:1/-1;min-height:44px}.evidence-actions .evidence-copy,.evidence-actions .evidence-link{width:100%;min-height:42px;justify-content:center;text-align:center}.evidence-actions .evidence-return{grid-column:1/-1;margin:2px auto 0}.evidence-actions+.evidence-disclaimer{margin-top:18px}
 .brand,h1,h2,h3,.sidebar-note p,.suggestion-card strong,.primary-button{font-family:var(--font-display)}
 h1,h2,h3{font-variation-settings:"wght" 700;letter-spacing:-.035em}
 .brand,.suggestion-card strong,.primary-button{letter-spacing:-.015em}
