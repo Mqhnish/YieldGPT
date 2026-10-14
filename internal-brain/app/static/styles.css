@@ -19,7 +19,7 @@
 
 /* Display and interface typography, with self-contained system fallbacks. */
 :root{--font-display:"Space Grotesk","Avenir Next","Segoe UI",sans-serif;--font-interface:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace}
-body,button,input,textarea,summary{font-family:var(--font-interface)}
+body,button,input,textarea,summary{font-family:var(--font-interface)}\n.sources-footer .logo-loop{margin-left:auto;margin-right:auto}
 .brand,h1,h2,h3,.sidebar-note p,.suggestion-card strong,.primary-button{font-family:var(--font-display)}
 h1,h2,h3{font-variation-settings:"wght" 700;letter-spacing:-.035em}
 .brand,.suggestion-card strong,.primary-button{letter-spacing:-.015em}
