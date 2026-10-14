@@ -191,3 +191,16 @@ def test_slow_revoke_write_does_not_count_against_the_hold_time(monkeypatch):
     assert steps["revoke: denial holds within 5 s of the revoke"].ok
     assert steps["revoke: child page denied too (inherited restriction)"].ok
     assert "revoke write 0.4" in steps["revoke: denial holds within 5 s of the revoke"].detail
+
+
+def test_child_page_is_not_timed_on_the_parents_clock(monkeypatch):
+    # Live: the child is checked after the parent's hold loop, so its clock had already run ~3.5 s.
+    # It must pass when its first query after the revoke is denied and it stays denied.
+    import time as _time
+    w, probe = _probe()
+    probe.cfg.hold_within_s = 0.3
+    real_ask = probe._ask
+    monkeypatch.setattr(probe, "_ask", lambda who, tok: (_time.sleep(0.03), real_ask(who, tok))[1])
+    steps = {s.step: s for s in probe.run(("confluence",))}
+    child = steps["revoke: child page denied too (inherited restriction)"]
+    assert child.ok and child.seconds > probe.cfg.hold_within_s, child

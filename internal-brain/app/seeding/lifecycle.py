@@ -280,13 +280,16 @@ class LifecycleProbe:
                      held_s, f"after the platform confirmed (revoke write {write_s:.2f}s); "
                                  f"3 denied queries in a row; allowed again after a denial: {flips} time(s)")
         if child:
+            # Checked after the parent's hold loop, so the 5 s bar (measured on the parent above) can't be
+            # applied to the child's clock. What must hold: the child's FIRST query after the revoke is
+            # denied, and it stays denied (3 in a row, never re-allowed).
             child_now = not self._cites(self._ask(self.cfg.viewer, tok3), child_uid)
             ccheck = conn.check(USERS[self.cfg.viewer], child)
             held_c, s, flips_c, _ = self._hold_denied(self.cfg.viewer, tok3, child_uid, confirmed)
             self._record(platform, "revoke: child page denied too (inherited restriction)",
-                         child_now and ccheck.decision.value == "denied" and held_c and s <= self.cfg.hold_within_s,
-                         s, f"after the parent's revoke was confirmed; next query denied: {child_now}, "
-                            f"check={ccheck.reason_code}, allowed again after a denial: {flips_c} time(s)")
+                         child_now and ccheck.decision.value == "denied" and held_c and flips_c == 0,
+                         s, f"first query after the revoke denied: {child_now}, check={ccheck.reason_code}, "
+                            f"allowed again after a denial: {flips_c} time(s); seconds since the parent's revoke was confirmed")
             ok, s, _ = self._until(platform, lambda: self._cites(self._ask(self.cfg.insider, tok3), child_uid))
             self._record(platform, "revoke: insider still served the child page", ok, s)
         missing = self._ask(self.cfg.viewer, "zq" + secrets.token_hex(4))   # never existed
