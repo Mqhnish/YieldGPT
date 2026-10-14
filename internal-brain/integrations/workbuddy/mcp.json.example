@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "yieldgpt": {
+      "command": "/usr/bin/python3",
+      "args": ["/Users/<username>/coding/Tencent---YieldGPT/internal-brain/integrations/workbuddy/yieldgpt_mcp_server.py"],
+      "env": {
+        "YIELDGPT_URL": "http://127.0.0.1:8000",
+        "YIELDGPT_USERNAME": "jdoe",
+        "YIELDGPT_PASSWORD": "demo"
+      }
+    }
+  }
+}
