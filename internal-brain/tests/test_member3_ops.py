@@ -50,6 +50,7 @@ def test_answer_is_withheld_when_no_checkpoint_can_be_committed(client, monkeypa
     assert "replication" not in r.text.lower() and "citations" not in r.text
     withheld = audit.search(event="response_withheld")[0]
     assert withheld["query_id"] and withheld["request_id"] == r.headers["x-request-id"]
+    assert "unreachable" in withheld["detail"]["error"]  # the cause is recorded, never credentials
     assert audit.reconstruct(query_id=withheld["query_id"])[0]["delivery"] == "withheld"
 
 

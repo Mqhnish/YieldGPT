@@ -71,7 +71,8 @@ class AuditedDelivery:
                 await anyio.to_thread.run_sync(audit.checkpoint)
             except Exception as e:  # noqa: BLE001  (no protected checkpoint = no release)
                 await _log(actor, "response_withheld", severity="alert", query_id=qid, request_id=rid,
-                           reason_code="checkpoint_unavailable", error_type=type(e).__name__)
+                           reason_code="checkpoint_unavailable", error_type=type(e).__name__,
+                           error=str(e) if isinstance(e, checkpoints.CheckpointError) else "")
                 start = {"type": "http.response.start", "status": 503,
                          "headers": [(b"content-type", b"application/json")]}
                 body, status = WITHHELD, 503
