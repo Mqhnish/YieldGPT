@@ -291,11 +291,11 @@ em.a { font-style: normal; color: var(--amber); }
   <div class="counters">
     <div class="ctr rv" style="--i:2"><div class="num" data-count="84" data-of="84">0/84</div><p>permission decisions matched Atlassian: every persona against every seeded page and issue</p></div>
     <div class="ctr rv" style="--i:3"><div class="num" data-count="14" data-of="14">0/14</div><p>brief scenarios passed as each persona: unified query, negative cases, audit inquiry</p></div>
-    <div class="ctr rv" style="--i:4"><div class="num" data-count="17" data-of="17">0/17</div><p>lifecycle steps through the real pipeline: create, edit, revoke, delete on Confluence and Jira</p></div>
+    <div class="ctr rv" style="--i:4"><div class="num" data-count="21" data-of="21">0/21</div><p>lifecycle steps through the real pipeline: create, edit, revoke, delete, inherited restriction, status and comment</p></div>
   </div>
   <div class="timing">
-    <div class="tcell rv" style="--i:5">Revoked user denied on the <b>very next query</b>, no reindex: <span class="mono">0.26 s</span> Confluence, <span class="mono">0.17 s</span> Jira. Denial held within <span class="mono">4.2 s</span> / <span class="mono">2.9 s</span>, never re-allowed.</div>
-    <div class="tcell rv" style="--i:6">A denial looks identical to a document that never existed. Deleted objects are not served on the next query. Issue security levels enforced by Jira itself.</div>
+    <div class="tcell rv" style="--i:5">Revoked user denied on the <b>very next query</b>, no reindex: <span class="mono">0.27 s</span> Confluence, <span class="mono">0.18 s</span> Jira. Denial held <span class="mono">3.2 s</span> / <span class="mono">3.0 s</span> after Atlassian confirmed, never re-allowed.</div>
+    <div class="tcell rv" style="--i:6">A denial looks identical to a document that never existed. A child page inherits its parent's restriction. Deleted objects are not served on the next query. Issue security levels enforced by Jira itself.</div>
   </div>
   <div class="foot">Live runs, 13 to 14 Oct 2026 · Atlassian Cloud Standard trial · four teammates as personas · single dated runs, not throughput · Slack and Drive simulated in these runs</div>
 </section>
@@ -346,7 +346,7 @@ em.a { font-style: normal; color: var(--amber); }
   <h2 class="rv" style="--i:1">What is live, and what is still pending</h2>
   <div class="cols">
     <div class="rv" style="--i:2"><h3>Live and verified</h3><ul>
-      <li>Confluence and Jira on a real Atlassian site<small>84/84 decisions · 14/14 scenarios · 17/17 lifecycle</small></li>
+      <li>Confluence and Jira on a real Atlassian site<small>84/84 decisions · 14/14 scenarios · 21/21 lifecycle</small></li>
       <li>Write-once checkpoints on two stores<small>S3 Object Lock, compliance mode</small></li>
       <li>YieldGPT inside CodeBuddy</li>
       <li>Full test suite in CI on every pull request</li></ul></div>

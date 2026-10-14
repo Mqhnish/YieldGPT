@@ -80,9 +80,11 @@ Permission decisions are Atlassian's own: Confluence's content permission check 
 | Conformance: every persona x every seeded page and issue, decided by Atlassian | **84/84** | [atlassian-live-check.md](evaluation/reports/atlassian-live-check.md) |
 | Jira issue security level (demo PAY-110): hidden from ravi who can browse the project, shown to asha | pass, no code workaround needed | same |
 | Brief scenarios S1 (unified query), S3 (negative cases), S5 (audit inquiry) asked as each persona | **14/14** | [atlassian-live-scenarios.md](evaluation/reports/atlassian-live-scenarios.md) |
-| Lifecycle probe through the real pipeline: create, edit, revoke, delete on Confluence and Jira | **17/17** | [atlassian-live.md](evaluation/reports/atlassian-live.md) |
-| New object retrievable (immediate poll) | Confluence 16.0 s, Jira 9.4 s | same |
-| Revoked user denied on the very next query, no reindex; denial held (3 in a row) | Confluence 4.2 s, Jira 2.9 s, never re-allowed | same |
+| Lifecycle probe through the real pipeline: create, edit, revoke, delete on Confluence and Jira, plus an inherited page restriction and a Jira status change and comment | **21/21** | [atlassian-live.md](evaluation/reports/atlassian-live.md) |
+| New object retrievable (immediate poll) | Confluence 16.9 s, Jira 3.1 s | same |
+| Revoked user denied on the very next query, no reindex | Confluence 0.27 s, Jira 0.18 s (query time) | same |
+| Denial held (3 in a row) after the platform confirmed the revoke | Confluence 3.2 s, Jira 3.0 s, never re-allowed | same |
+| Child page of the restricted page denied from its first query (inherited restriction) | pass | same |
 | Denial identical to a document that never existed | pass on both | same |
 | Deleted object not served on the next query, then removed from the index | pass on both | same |
 
@@ -114,7 +116,7 @@ Not yet done: live Google Drive lifecycle (needs a Workspace test domain), a pub
 ## Boundaries
 
 - Production SSO is still a teammate integration. The seeded demo identity directory must be replaced before connecting real employees or sensitive company data.
-- Confluence and Jira use real REST connectors, verified on a real Atlassian Cloud site (Standard trial) on 13 Oct 2026: conformance 84/84 and lifecycle 17/17 (see above). Webhooks are not wired for Atlassian (polling plus read-through only), and the live site is a small seeded demo, not a 12,000-page estate; scale numbers come from the synthetic fixture run in [docs/SCALE.md](docs/SCALE.md). Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Slack/Drive/model/OAuth/WORM deployments have not been verified.
+- Confluence and Jira use real REST connectors, verified on a real Atlassian Cloud site (Standard trial) on 13 and 14 Oct 2026: conformance 84/84, brief scenarios 14/14 and lifecycle 21/21 (see above). Webhooks are not wired for Atlassian (polling plus read-through only), and the live site is a small seeded demo, not a 12,000-page estate; scale numbers come from the synthetic fixture run in [docs/SCALE.md](docs/SCALE.md). Drive is simulated unless `IB_DRIVE_CONFIG` points at a JSON file, which switches on the live Drive API v3 connector (`app/sources/gdrive_live.py`, see [Live Drive](docs/MEMBER3.md#live-drive)); it has only been tested against a fake Drive API. Real Slack/Drive/model/OAuth/WORM deployments have not been verified.
 - Conversation allowlists intentionally bound ingestion; multi-workspace support does not grant access to every private channel or DM. Slack itself authorizes every delegated read.
 - Search uses controlled lexical expansion and authorized link traversal, without embeddings. Broad queries can require many native permission calls; measure live throughput before scaling.
 - Grounding proves exact passage support, not source truth, complete answers, semantic entailment or perfect contradiction handling. Source dates remain visible.
