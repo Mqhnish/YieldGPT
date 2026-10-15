@@ -1,11 +1,16 @@
 # Vercel demo deployment
 
-Set the Vercel project **Root Directory** to `internal-brain`. The checked-in
-`api/index.py` configures the app as a synthetic-data demo and routes every URL
-through the audited FastAPI entrypoint.
+Set the Vercel project **Root Directory** to `internal-brain`. Vercel detects
+`app/server.py` as the FastAPI entrypoint and applies its native application
+routing.
 
 Set these environment variables in Vercel for Preview and Production:
 
+- `IB_DATA_DIR`: `/tmp/yieldgpt`
+- `IB_SERVERLESS`: `1`
+- `IB_DEMO_MODE`: `1`
+- `IB_ATLASSIAN_MODE`: `fixture`
+- `IB_LLM_PROVIDER`: `stub`
 - `IB_SECRET_KEY`: a long random value
 - `IB_WEBHOOK_SECRET`: a different long random value
 - `IB_AUDIT_PSEUDONYM_KEY`: another long random value
