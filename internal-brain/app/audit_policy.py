@@ -35,6 +35,7 @@ Member 3 sign-off (adopts Member 1's handoff section 4.3 defaults):
 """
 import hashlib
 import hmac
+import json
 
 from . import audit
 from .config import AUDIT_PSEUDONYM_KEY
@@ -105,3 +106,46 @@ def resolve_pseudonym(viewer: User, token: str) -> dict:
     audit.log(viewer.username, "audit_accessed", scope=FULL, action="resolve_pseudonym",
               filters={"pseudonym": token}, results=int(match is not None))
     return {"pseudonym": token, "actor": match}
+
+
+TRAIL_FILTERS = ("actor", "event", "severity", "decision", "platform", "doc_uid", "query_id", "request_id",
+                 "since", "until")
+TRAIL_PAGE_MAX = 500
+EXPORT_PAGE = 1000
+
+
+def trail(viewer: User, filters: dict, before_id: int | None = None, limit: int = 100) -> dict:
+    """The complete audit trail, one page at a time, newest first, with full (decrypted) detail.
+    Every event type is included: requests, decisions, deliveries, logins, alerts and audit reads.
+    Compliance only; administrators keep the pseudonymised metadata view (view_events)."""
+    filters = {k: v for k, v in filters.items() if k in TRAIL_FILTERS and v not in (None, "")}
+    if scope_for(viewer) != FULL:
+        audit.log(viewer.username, "audit_access_denied", severity="warning", action="trail", filters=filters)
+        raise PermissionError("the complete audit trail requires full audit access")
+    limit = max(1, min(int(limit), TRAIL_PAGE_MAX))
+    rows = audit.search(**filters, before_id=before_id, limit=limit + 1)
+    page, more = rows[:limit], len(rows) > limit
+    audit.log(viewer.username, "audit_accessed", scope=FULL, action="trail", filters=filters,
+              before_id=before_id, results=len(page))
+    return {"events": page, "next_before_id": page[-1]["id"] if more else None}
+
+
+def export_trail(viewer: User):
+    """Every audit row, newest first, as JSON lines with its hash links, so the export can be
+    checked offline. The export itself is audited before the first line is produced."""
+    if scope_for(viewer) != FULL:
+        audit.log(viewer.username, "audit_access_denied", severity="warning", action="export")
+        raise PermissionError("exporting the audit trail requires full audit access")
+    head = audit.head()
+    audit.log(viewer.username, "audit_accessed", scope=FULL, action="export", through_row=head[0] if head else 0)
+
+    def lines():
+        before = (head[0] + 1) if head else None
+        while before is None or before > 1:
+            page = audit.search(before_id=before, limit=EXPORT_PAGE)
+            if not page:
+                return
+            for row in page:
+                yield json.dumps(row, sort_keys=True, default=str) + "\n"
+            before = page[-1]["id"]
+    return lines()

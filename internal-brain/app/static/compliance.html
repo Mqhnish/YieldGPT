@@ -6,6 +6,66 @@
 <meta name="color-scheme" content="light">
 <title>YieldGPT · Compliance audit</title>
 <link rel="stylesheet" href="/static/styles.css">
+<style>
+  /* Compliance page layout in the app theme (styles.css carries no compliance classes). */
+  .compliance-page { --c-surface:#321522; --c-line:#6b3048; --c-ink:#f7e9ef; --c-muted:#c9a9b7; --c-teal:#0f9f91;
+    --c-amber:#f59e0b; --c-bad:#f87171; --c-black:#0f070b; font-family:var(--font-interface, "IBM Plex Mono", Menlo, monospace); font-size:14px; }
+  .audit-header { border-bottom:2px solid var(--c-line); background:#160a11; }
+  .audit-header-inner, .audit-page { max-width:1240px; margin:0 auto; padding:16px 24px; }
+  .audit-header-inner { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .audit-brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--c-ink); }
+  .audit-brand-mark { color:var(--c-teal); font-size:26px; }
+  .audit-brand strong { display:block; font-family:var(--font-display, "Space Grotesk", sans-serif); text-transform:uppercase; font-size:20px; }
+  .audit-brand span span { display:block; font-size:11px; color:var(--c-muted); }
+  .audit-backlink { color:var(--c-teal); text-decoration:none; border:1px solid var(--c-teal); padding:7px 12px; font-size:12px; }
+  .audit-backlink:hover { background:var(--c-teal); color:var(--c-black); }
+  .audit-intro { margin:24px 0 8px; }
+  .audit-intro h1 { margin:14px 0 12px; }
+  .audit-intro p { color:var(--c-muted); max-width:780px; line-height:1.7; }
+  .audit-layout { display:grid; grid-template-columns:340px minmax(0,1fr); gap:20px; align-items:start; }
+  @media (max-width: 900px) { .audit-layout { grid-template-columns:1fr; } }
+  .audit-card { background:var(--c-surface); border:2px solid var(--c-line); box-shadow:6px 6px 0 var(--c-black); padding:20px; margin:20px 0; color:var(--c-ink); }
+  .audit-card h2 { font-family:var(--font-display, "Space Grotesk", sans-serif); text-transform:uppercase; letter-spacing:.04em; font-size:15px; color:var(--c-teal); margin:0 0 14px; }
+  .audit-card label { display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--c-muted); margin-bottom:5px; }
+  .audit-card input, .audit-card select { width:100%; padding:8px 10px; border:1px solid var(--c-line); background:#200f18; color:var(--c-ink); font:inherit; border-radius:0; }
+  .audit-card input:focus-visible, .audit-card select:focus-visible { outline:2px solid var(--c-teal); outline-offset:1px; }
+  .audit-card button { padding:8px 14px; border:2px solid var(--c-teal); background:var(--c-teal); color:var(--c-black); font:inherit; font-weight:700; text-transform:uppercase; letter-spacing:.04em; border-radius:0; cursor:pointer; }
+  .audit-card button.quiet { background:transparent; color:var(--c-teal); }
+  .audit-card button:disabled { opacity:.45; cursor:default; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+  .row > div { flex:1; min-width:150px; }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .muted { color:var(--c-muted); font-size:13px; line-height:1.6; }
+  .mono { font-family:var(--font-interface, "IBM Plex Mono", Menlo, monospace); font-size:12px; overflow-wrap:anywhere; }
+  .hidden { display:none !important; }
+  .status { padding:12px; margin-bottom:12px; border:2px solid; }
+  .status b { display:block; font-size:16px; }
+  .s-verified { border-color:var(--c-teal); color:var(--c-teal); }
+  .s-failed { border-color:var(--c-bad); color:var(--c-bad); }
+  .s-unverifiable { border-color:var(--c-amber); color:var(--c-amber); }
+  dl { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0; font-size:13px; }
+  dt { color:var(--c-muted); } dd { margin:0; }
+  .chip { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--c-line); background:#200f18; margin:0 4px 4px 0; }
+  .chip.ok { border-color:var(--c-teal); color:var(--c-teal); }
+  .chip.bad { border-color:var(--c-bad); color:var(--c-bad); }
+  .chip.warn { border-color:var(--c-amber); color:var(--c-amber); }
+  .story { border:1px solid var(--c-line); background:#200f18; padding:14px; margin-top:12px; }
+  .story-head { display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; }
+  .compliance-page blockquote { margin:10px 0; padding:8px 12px; border-left:3px solid var(--c-teal); background:#2a1220; }
+  .answer { white-space:pre-wrap; margin:6px 0 0; line-height:1.6; }
+  .compliance-page details { margin-top:8px; }
+  .compliance-page summary { cursor:pointer; color:var(--c-teal); }
+  .table-wrap { overflow-x:auto; }
+  .compliance-page table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+  .compliance-page th, .compliance-page td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--c-line); vertical-align:top; }
+  .compliance-page th { color:var(--c-muted); font-weight:600; text-transform:uppercase; font-size:10px; letter-spacing:.06em; }
+  .compliance-page td.mono { white-space:nowrap; overflow-wrap:normal; }
+  .compliance-page pre { background:#200f18; border:1px solid var(--c-line); padding:8px; }
+  .allowed { color:var(--c-teal); } .denied { color:var(--c-bad); } .unavailable { color:var(--c-amber); }
+  .empty { color:var(--c-muted); padding:18px 0 6px; }
+  .error { color:var(--c-bad); }
+</style>
 </head>
 <body class="compliance-page">
 <header class="audit-header">
@@ -64,6 +124,23 @@
         <div class="actions"><button id="searchBtn">Search</button><button class="quiet" id="clearBtn">Clear</button></div>
         <div id="results" aria-live="polite"></div>
       </section>
+      <section class="audit-card hidden" id="trailCard">
+        <h2>Complete audit trail</h2>
+        <p class="muted">Every recorded event, newest first: questions, each permission decision, what the model saw, answers, deliveries and withheld responses, sign-ins, alerts, and every read of this audit trail. Sealed text is opened for this view.</p>
+        <div class="grid" style="margin-top:10px">
+          <div><label for="t-actor">Actor</label><input id="t-actor" placeholder="any"></div>
+          <div><label for="t-event">Event type</label><input id="t-event" list="t-events" placeholder="any"><datalist id="t-events"><option>query_received</option><option>authz_decision</option><option>context_assembled</option><option>answer_returned</option><option>answer_discarded</option><option>response_delivered</option><option>response_withheld</option><option>evidence_viewed</option><option>login</option><option>login_failed</option><option>probing_suspected</option><option>prompt_injection_blocked</option><option>audit_accessed</option><option>audit_access_denied</option><option>retention_applied</option></datalist></div>
+          <div><label for="t-sev">Severity</label><select id="t-sev"><option value="">Any</option><option>alert</option><option>warning</option><option>info</option></select></div>
+          <div><label for="t-decision">Decision</label><select id="t-decision"><option value="">Any</option><option>allowed</option><option>denied</option><option>unavailable</option></select></div>
+          <div><label for="t-qid">Query ID</label><input id="t-qid" class="mono"></div>
+          <div><label for="t-rid">Request ID</label><input id="t-rid" class="mono"></div>
+          <div><label for="t-since">From</label><input id="t-since" type="datetime-local"></div>
+          <div><label for="t-until">To</label><input id="t-until" type="datetime-local"></div>
+        </div>
+        <div class="actions"><button id="trailBtn">Load trail</button><button class="quiet" id="trailMore" disabled>Load older</button><button class="quiet" id="exportBtn">Export full trail (JSONL)</button></div>
+        <p id="trailCount" class="muted" aria-live="polite"></p>
+        <div id="trailOut" class="table-wrap"></div>
+      </section>
       <section class="audit-card hidden" id="metaCard">
         <h2>Operational events · metadata only</h2>
         <p class="muted">Administrators see event types, times, outcomes and pseudonymised actors. Questions, answers, document identifiers and reasons are not available in this scope.</p>
@@ -98,7 +175,8 @@ async function signIn() {
     const full = j.user.rights.includes("audit"), meta = j.user.rights.includes("audit_meta");
     $("who").innerHTML = `${esc(j.user.name)}, ${esc(j.user.title)}<br><span class="chip ${full ? "ok" : meta ? "warn" : "bad"}">${full ? "Full audit access" : meta ? "Metadata only" : "No audit access"}</span>`;
     ["integrityCard"].forEach(id => $(id).classList.toggle("hidden", !(full || meta)));
-    ["searchCard", "pseudoCard"].forEach(id => $(id).classList.toggle("hidden", !full));
+    ["searchCard", "trailCard", "pseudoCard"].forEach(id => $(id).classList.toggle("hidden", !full));
+    trailBefore = null; $("trailOut").innerHTML = ""; $("trailCount").textContent = ""; $("trailMore").disabled = true;
     $("metaCard").classList.toggle("hidden", !meta || full);
     $("noAccess").classList.toggle("hidden", full || meta);
     ["results", "eventsOut", "pseudoOut"].forEach(id => $(id).innerHTML = "");
@@ -187,6 +265,63 @@ async function events() {
   } catch (e) { $("eventsOut").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
 }
 
+let trailBefore = null, trailLoaded = 0;
+const sevTone = { alert: "bad", warning: "warn", info: "" };
+
+function trailRow(e) {
+  return `<tr><td class="mono">#${esc(e.id)}</td><td>${esc(when(e.ts))}</td><td class="mono">${esc(e.actor)}</td>
+    <td>${esc(e.event)}</td><td><span class="chip ${sevTone[e.severity] || ""}">${esc(e.severity)}</span></td>
+    <td class="${esc(e.decision)}">${esc(e.decision)}</td><td class="mono">${esc(e.doc_uid || e.platform)}</td>
+    <td class="mono">${esc(e.query_id)}</td>
+    <td><details><summary>detail</summary><pre class="mono" style="white-space:pre-wrap;max-width:460px;margin:6px 0">${esc(JSON.stringify(e.detail, null, 2))}</pre>
+      <div class="muted mono">request ${esc(e.request_id || "none")} · hash ${esc(String(e.hash).slice(0, 16))}…</div></details></td></tr>`;
+}
+
+async function loadTrail(older) {
+  const q = new URLSearchParams({ limit: "100" });
+  [["actor", "t-actor"], ["event", "t-event"], ["severity", "t-sev"], ["decision", "t-decision"],
+   ["query_id", "t-qid"], ["request_id", "t-rid"]].forEach(([k, id]) => { if ($(id).value.trim()) q.set(k, $(id).value.trim()); });
+  const since = epoch($("t-since").value), until = epoch($("t-until").value);
+  if (since) q.set("since", since);
+  if (until) q.set("until", until);
+  if (older && trailBefore) q.set("before_id", trailBefore);
+  $("trailBtn").disabled = true;
+  try {
+    const j = await api("/api/audit/trail?" + q);
+    const rows = j.events.map(trailRow).join("");
+    if (!older) {
+      trailLoaded = 0;
+      $("trailOut").innerHTML = `<table><thead><tr><th>Row</th><th>Time</th><th>Actor</th><th>Event</th><th>Severity</th><th>Decision</th><th>Document / platform</th><th>Query</th><th>Detail</th></tr></thead><tbody id="trailBody">${rows}</tbody></table>`;
+    } else {
+      $("trailBody").insertAdjacentHTML("beforeend", rows);
+    }
+    trailLoaded += j.events.length;
+    trailBefore = j.next_before_id;
+    $("trailMore").disabled = !trailBefore;
+    $("trailCount").textContent = j.events.length || trailLoaded
+      ? `${trailLoaded} event${trailLoaded === 1 ? "" : "s"} shown${trailBefore ? "; older events available" : "; this is the start of the record"}. This read was recorded.`
+      : "No events match these filters. This read was recorded.";
+  } catch (e) { $("trailCount").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+  $("trailBtn").disabled = false;
+}
+
+async function exportTrail() {
+  $("exportBtn").disabled = true;
+  try {
+    const r = await fetch("/api/audit/export", { headers: { Authorization: "Bearer " + token } });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || `HTTP ${r.status}`);
+    const text = await r.text();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "application/x-ndjson" }));
+    a.download = "yieldgpt-audit-trail.jsonl";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    const n = text ? text.trimEnd().split("\n").length : 0;
+    $("trailCount").textContent = `Exported ${n} audit rows with their hash links. The export was recorded.`;
+  } catch (e) { $("trailCount").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+  $("exportBtn").disabled = false;
+}
+
 async function resolvePseudonym() {
   try {
     const j = await api("/api/audit/pseudonym", { method: "POST", body: JSON.stringify({ pseudonym: $("pseudo").value.trim() }) });
@@ -199,6 +334,9 @@ $("verifyBtn").onclick = verify;
 $("searchBtn").onclick = search;
 $("eventsBtn").onclick = events;
 $("pseudoBtn").onclick = resolvePseudonym;
+$("trailBtn").onclick = () => loadTrail(false);
+$("trailMore").onclick = () => loadTrail(true);
+$("exportBtn").onclick = exportTrail;
 $("clearBtn").onclick = () => { document.querySelectorAll("#searchCard input, #searchCard select").forEach(el => el.value = ""); $("results").innerHTML = ""; };
 $("nl").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
 </script>

@@ -6,13 +6,14 @@ The shared app is mounted unchanged at "/". This module adds:
   - AuditedDelivery on /api/ask (receipt, terminal failure, checkpoint-before-release, delivery)
   - startup: config checks, restart recovery, retention, a startup checkpoint, maintenance
   - /api/health (public status only), /api/health/detail (admin)
-  - /api/compliance/requests, /api/audit/pseudonym and the /compliance page, all through audit_policy
+  - /api/compliance/requests, /api/audit/trail, /api/audit/export, /api/audit/pseudonym and the
+    /compliance page, all through audit_policy
 """
 from contextlib import asynccontextmanager
 import os
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from . import audit, audit_policy, main, reliability, history, slack_oauth
@@ -93,6 +94,26 @@ def compliance_requests(body: ComplianceIn, user: User = Depends(current_user)):
     filters = audit.parse_question(body.question) if body.question else {}
     filters.update({k: v for k, v in body.model_dump().items() if v not in (None, "") and k != "question"})
     return {"filters": filters, "results": _policy(audit_policy.reconstruct, user, filters)}
+
+
+@app.get("/api/audit/trail")
+def audit_trail(actor: str | None = None, event: str | None = None, severity: str | None = None,
+                decision: str | None = None, platform: str | None = None, doc_uid: str | None = None,
+                query_id: str | None = None, request_id: str | None = None, since: float | None = None,
+                until: float | None = None, before_id: int | None = None, limit: int = 100,
+                user: User = Depends(current_user)):
+    """Compliance: every audit event, paged newest first (pass next_before_id to go further back)."""
+    filters = {"actor": actor, "event": event, "severity": severity, "decision": decision, "platform": platform,
+               "doc_uid": doc_uid, "query_id": query_id, "request_id": request_id, "since": since, "until": until}
+    return _policy(audit_policy.trail, user, filters, before_id, limit)
+
+
+@app.get("/api/audit/export")
+def audit_export(user: User = Depends(current_user)):
+    """Compliance: the whole audit trail as JSON lines (newest first, with hash links)."""
+    lines = _policy(audit_policy.export_trail, user)
+    return StreamingResponse(lines, media_type="application/x-ndjson", headers={
+        "Content-Disposition": 'attachment; filename="yieldgpt-audit-trail.jsonl"', "Cache-Control": "no-store, private"})
 
 
 @app.post("/api/audit/pseudonym")
