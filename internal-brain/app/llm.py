@@ -173,6 +173,11 @@ def complete(question: str, sources: list[dict], asker: str) -> str:
         if not math.isfinite(timeout):
             raise ValueError('invalid timeout')
         timeout = min(max(timeout,1),60)
+        body = {'model':LLM_MODEL,'temperature':0,'max_tokens':1600,
+                'messages':build_messages(question,sources,asker)}
+        effort = os.getenv('IB_LLM_REASONING_EFFORT','').strip()
+        if effort:  # thinking models (e.g. Gemini) spend hidden tokens from max_tokens; "none" turns that off
+            body['reasoning_effort'] = effort
         with httpx.Client(timeout=timeout,follow_redirects=False) as client:
             for attempt in range(2):
                 measurement['remote_attempts'] += 1
@@ -180,9 +185,7 @@ def complete(question: str, sources: list[dict], asker: str) -> str:
                 status = None
                 try:
                     r = client.post(LLM_BASE_URL.rstrip('/')+'/chat/completions',
-                        headers={'Authorization':'Bearer '+LLM_API_KEY},
-                        json={'model':LLM_MODEL,'temperature':0,'max_tokens':1600,
-                              'messages':build_messages(question,sources,asker)})
+                        headers={'Authorization':'Bearer '+LLM_API_KEY},json=body)
                     status = r.status_code
                 finally:
                     elapsed = (time.perf_counter()-started)*1000

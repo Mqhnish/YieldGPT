@@ -282,3 +282,18 @@ def test_audit_failure_prevents_answer_delivery(brain, monkeypatch):
         return original(actor,event,**kw)
     brain._log = fail_on_answer
     with pytest.raises(OSError): brain.ask(USERS['jdoe'],Q)
+
+
+@pytest.mark.parametrize('effort, expected', [('none', 'none'), ('', None)])
+def test_reasoning_effort_is_sent_only_when_configured(monkeypatch, effort, expected):
+    seen = {}
+    def reply(request):
+        payload = json.loads(request.content)
+        seen['effort'] = payload.get('reasoning_effort')
+        evidence = json.loads(payload['messages'][1]['content'])['sources'][0]
+        selection = {'selections':[{'source':evidence['ref'],'passage':evidence['passages'][0]['id']}]}
+        return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(selection)}}]})
+    _mock_model(monkeypatch,reply)
+    monkeypatch.setenv('IB_LLM_REASONING_EFFORT', effort)
+    assert llm.complete('migration',assemble('migration',[(1,doc())]),'Jane').mode == 'model_selected'
+    assert seen['effort'] == expected
