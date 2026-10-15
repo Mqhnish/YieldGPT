@@ -55,7 +55,8 @@
   function modeLabel(mode) {
     const labels = { model_summary: 'AI answer · Every sentence checked against its sources', conversation: 'YieldGPT assistant · No sources needed', extractive: 'Evidence extracts · No language model used', model_selected: 'AI-selected evidence · Exact source passages',
       extractive_fallback: 'Evidence extracts · Model fallback', stub: 'Evidence extracts · No language model used',
-      hunyuan: 'Hunyuan · Evidence selection', model: 'AI-assisted evidence selection' };
+      hunyuan: 'Hunyuan · Evidence selection', model: 'AI-assisted evidence selection',
+      conversation: 'No workspace search needed' };
     return labels[mode] || 'Answer mode unavailable';
   }
   function updateModes(session) {
@@ -298,8 +299,9 @@
     state.answer = { ...result, citations }; state.question = question;
     const map = new Map(citations.map(citation => [citation.ref, citation]));
     $('asked-question').textContent = question;
+    const conversational = result.status === 'conversation';
     const noAnswer = result.status === 'no_answer' || result.status === 'blocked' || result.blocked;
-    $('answer-heading').textContent = noAnswer ? 'A note from your workspace' : 'From your workspace';
+    $('answer-heading').textContent = conversational ? 'YieldGPT' : noAnswer ? 'A note from your workspace' : 'From your workspace';
     $('answer-mode').textContent = noAnswer ? 'No answer available' : modeLabel(result.quality && result.quality.mode);
     for (const paragraph of String(result.answer || 'I couldn’t find enough information to answer that question.').split(/\n\s*\n/)) {
       const element = node('p', 'answer-paragraph'); appendCitedText(element, paragraph, map); $('answer-body').append(element);
