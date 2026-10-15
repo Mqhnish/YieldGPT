@@ -15,6 +15,7 @@ import re
 _SMALL_TALK = {
     "greeting": re.compile(r"^(hi+|hey+|hello+|hiya|yo|howdy|good (morning|afternoon|evening)|greetings)"
                            r"( there| yieldgpt| brain)?[!. ]*$"),
+    "wellbeing": re.compile(r"^(how are you|how are you doing|how's it going|hows it going)[?!. ]*$"),
     "thanks": re.compile(r"^(thanks?( you)?( so much| a lot)?|thank u|thx|ty|cheers|great|ok(ay)?|cool|nice)"
                          r"( thanks?)?[!. ]*$"),
     "help": re.compile(r"^((hi|hello|hey)[, ]+)?(help|\?+|what can you do|what do you do|who are you|what are you|"
@@ -53,6 +54,9 @@ def reply(kind: str, user) -> str:
     tries = "\n\n".join(f"• {q}" for q in examples)
     if kind == "thanks":
         return f"You're welcome, {first}. Ask me anything else about Company A's work."
+    if kind == "wellbeing":
+        return (f"I'm ready to help, {first}. Ask me about a project, incident, decision or runbook, "
+                "and I'll answer with evidence from the workspace sources you can access.")
     if kind == "greeting":
         return (f"Hi {first}! I can answer questions from Confluence, Jira, Slack and Google Drive, "
                 f"using only what you're allowed to open, with a link to every source.\n\nTry:\n\n{tries}")
