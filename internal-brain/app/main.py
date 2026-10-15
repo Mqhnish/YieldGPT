@@ -18,7 +18,7 @@ from functools import partial
 
 import anyio
 
-from . import audit, audit_policy, identity, llm
+from . import audit, audit_policy, config, identity, llm
 from .brain import Brain
 from .evidence import EvidenceUnavailable
 from .config import DATA_DIR, DEMO_MODE, POLL_INTERVAL_S, WEBHOOK_SECRET, WEBHOOK_SECRETS
@@ -35,6 +35,18 @@ state: dict = {}
 SERVERLESS = os.getenv("IB_SERVERLESS", "0") == "1"
 
 
+def _platform_modes(live_slack, live_drive) -> dict[str, str]:
+    """Which platforms are real ('live') and which are simulated ('demo'), for the UI's labels and links."""
+    atlassian = 'live' if config.ATLASSIAN_MODE == 'live' else 'demo'
+    return {'confluence': atlassian, 'jira': atlassian,
+            'slack': 'live' if live_slack else 'demo', 'gdrive': 'live' if live_drive else 'demo'}
+
+
+def _source_mode(platforms: dict[str, str]) -> str:
+    modes = set(platforms.values())
+    return 'live' if modes == {'live'} else 'mixed' if 'live' in modes else 'simulated'
+
+
 @asynccontextmanager
 async def lifespan(_app):
     if _app is app:
@@ -48,11 +60,12 @@ async def lifespan(_app):
     drive = gdrive_live.from_env()
     if drive:
         connectors['gdrive'] = drive
+    platforms = _platform_modes(live, drive)
     service = Brain(world, sync_store=SqliteSyncStateStore(DATA_DIR / "sync_state.db"), connectors=connectors)
     worker = SlackMaintenance(service.syncer, live[0], poll_interval_s=POLL_INTERVAL_S,
                               reconcile_interval_s=900, event_sink=audit.log) if live else None
     state.update(brain=service, slack_receiver=live[1] if live else None, slack_worker=worker,
-                 demo_mode=DEMO_MODE and not bool(live), source_mode='mixed' if live or drive else 'simulated')
+                 demo_mode=DEMO_MODE and not bool(live), source_mode=_source_mode(platforms), platforms=platforms)
     try:
         audit.log("system", "startup", indexed_docs=len(service.index), source_mode=state['source_mode'])
         if SERVERLESS:
@@ -165,7 +178,8 @@ def session(user: User = Depends(current_user)):
     return {'user': {'username': user.username, 'name': user.name, 'title': user.title,
                      'rights': sorted(user.app_roles)}, 'demo_mode': state.get('demo_mode', DEMO_MODE),
             'generation_mode': 'extractive' if llm.LLM_PROVIDER in ('stub', 'extractive') else 'model_selected',
-            'source_mode': state.get('source_mode', 'simulated')}
+            'source_mode': state.get('source_mode', 'simulated'),
+            'platforms': state.get('platforms', _platform_modes(None, None))}
 
 
 @app.post("/api/login")
