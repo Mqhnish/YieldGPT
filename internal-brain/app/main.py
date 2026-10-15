@@ -4,6 +4,7 @@ Run:  uvicorn app.server:app --reload     then open http://localhost:8000
 """
 import hashlib
 import hmac
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -31,6 +32,7 @@ from .sources.world import World
 
 STATIC = Path(__file__).parent / "static"
 state: dict = {}
+SERVERLESS = os.getenv("IB_SERVERLESS", "0") == "1"
 
 
 @asynccontextmanager
@@ -53,7 +55,9 @@ async def lifespan(_app):
                  demo_mode=DEMO_MODE and not bool(live), source_mode='mixed' if live or drive else 'simulated')
     try:
         audit.log("system", "startup", indexed_docs=len(service.index), source_mode=state['source_mode'])
-        if worker:
+        if SERVERLESS:
+            pass
+        elif worker:
             worker.start()
         else:
             service.syncer.start_polling(POLL_INTERVAL_S)

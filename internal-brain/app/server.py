@@ -9,6 +9,7 @@ The shared app is mounted unchanged at "/". This module adds:
   - /api/compliance/requests, /api/audit/pseudonym and the /compliance page, all through audit_policy
 """
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -17,6 +18,8 @@ from pydantic import BaseModel, Field
 from . import audit, audit_policy, main, reliability, history, slack_oauth
 from .identity import User
 from .main import STATIC, current_user, require
+
+SERVERLESS = os.getenv("IB_SERVERLESS", "0") == "1"
 
 
 @asynccontextmanager
@@ -29,14 +32,16 @@ async def lifespan(app):
         redacted = audit.apply_retention()
         audit.try_checkpoint()
         maintenance = reliability.Maintenance(main.brain().syncer.store)
-        maintenance.start()
+        if not SERVERLESS:
+            maintenance.start()
         audit.log("system", "reliability_started", abandoned_requests=abandoned, redacted_rows=redacted,
                   checkpoint_store=audit._store().kind,
                   config_warnings=[p["code"] for p in reliability.config_problems()])
         try:
             yield
         finally:
-            maintenance.stop()
+            if not SERVERLESS:
+                maintenance.stop()
             audit.try_checkpoint()
 
 
