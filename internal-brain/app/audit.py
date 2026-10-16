@@ -446,8 +446,13 @@ def _open_content(rows) -> dict[int, dict]:
 
 
 def search(actor=None, event=None, platform=None, container=None, doc_uid=None, decision=None,
-           query_id=None, since=None, until=None, severity=None, request_id=None, limit=500) -> list[dict]:
+           query_id=None, since=None, until=None, severity=None, request_id=None, limit=500,
+           before_id=None) -> list[dict]:
+    """Newest first. `before_id` pages backwards: pass the smallest id of the previous page."""
     where, args = [], []
+    if before_id:
+        where.append("id < ?")
+        args.append(int(before_id))
     if container:
         # Space keys on a real Confluence site can't contain '-' or '_' and are upper case
         # ("payment-gateway" is PAYMENTGATEWAY), so containers match ignoring case and separators.
